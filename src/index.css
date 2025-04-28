@@ -13,3 +13,7 @@
   --color-accentMain: var(--acccentColor);
   --color-fontSecondery: var(--fontClrSecondery);
 }
+
+.signinbg, .signupbg {
+  background-image: url(https://wallpapers.com/images/hd/red-white-and-black-abstract-1920-x-1080-86ew15vc9pz6p0le.jpg);
+}
