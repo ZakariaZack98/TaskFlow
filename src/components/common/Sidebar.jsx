@@ -149,7 +149,7 @@ const Sidebar = ({
         <h1 className="text-xl ">Favourite</h1>
         <div>
           {favouriteList?.map((item, index) => (
-            <div
+            <div key={item.name}
               onClick={() => navigate(item?.path)}
               className="flex items-center justify-between"
             >
