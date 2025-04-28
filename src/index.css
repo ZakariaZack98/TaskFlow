@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+:root {
+  --sidebarColor: #FCFAF8;
+  --focusColor: #FFEFE5;
+  --acccentColor: #DC4C3E;
+  --fontClrSecondery: #444444;
+}
+
+@theme {
+  --color-sidebarMain: var(--sidebarColor);
+  --color-focusMain: var(--focusColor);
+  --color-accentMain: var(--acccentColor);
+  --color-fontSecondery: var(--fontClrSecondery);
+}
