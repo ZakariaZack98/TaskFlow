@@ -1,11 +1,11 @@
 import React from 'react'
-import { auth, db } from '../../../Database/FirebaseConfig'
+import TaskPage from '../TaskPage/TaskPage'
 
 const Inbox = () => {
-  console.log(auth, db)
   return (
     <div className='h-full w-full'>
-      This is inbox
+      <p>This is inbox</p>
+      <TaskPage/>
     </div>
   )
 }
