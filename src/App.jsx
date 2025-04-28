@@ -4,6 +4,8 @@ import CommonLayout from './components/CommonLayout'
 import Inbox from './pages/home/Index'
 import Today from './pages/Today/Today'
 import Upcoming from './pages/Upcoming/Upcoming'
+import SignUp from './pages/SignUp/SignUp'
+import SignIn from './pages/SignIn/SignIn'
 
 const App = () => {
   return (
@@ -14,6 +16,8 @@ const App = () => {
           <Route path='/today' element={<Today/>}/>
           <Route path='/upcoming' element={<Upcoming/>}/>
         </Route>
+        <Route path='/signup' element={<SignUp/>}/>
+        <Route path='/signin' element={<SignIn/>}/>
       </Routes>
     </BrowserRouter>
   )
