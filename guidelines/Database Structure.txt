@@ -1,0 +1,71 @@
+//* ======================================= DATABASE STRUCTURE ================================================ *//
+
+
+users/                              (conatins user details)
+| |--/8asd87dsadbsd6UdgX7dshasd (user id from auth.uid) [Query Reference: `users/${userid}/`]
+| | |--/name: 'John Doe' (google auth's display name / user provided name)
+| | |--/id: 8asd87dsadbsd6UdgX7dshasd (user id from auth.uid)
+| | |--/createdAt: 04 28 2025 11:03:22 am (user creation time)
+| | |--/imgUrl: 'https://dummypic.com/dp.png' (profile picture url)
+| | |--/todaysDone: 3 (today's completed task)
+| | |--/todaysAddedTask: 7 (today's added task)
+| | |--/totalTaskDone: 12 (total completed task)
+| | |--/totalDueTask: 2 (total due task)
+| | |--/karmaScore: 335 (karma score, calculated from done & due tasks **ADVANCED FEATURE)
+| | |--/karmaLevel: 1 (karma level, calculated from done & due tasks **ADVANCED FEATURE)
+| |--/87f8asAasd67Xhg9asdAB889k (another user)
+| | |--/name:...
+| | |--/id: ...
+| |=........................................................................................more users
+|
+tasks/                              (contains task objects under the userId reference)
+| |--/8asd87dsadbsd6UdgX7dshasd (user id - reference to the user) [Query Reference: `tasks/${userid}/`]
+| | |--/ 1745805108519 (task reference in db: `tasks/${id}/${taskId}`) [contains task object]
+| | | |--/id: 1745805108519
+| | | |--/title: 'Buy Groceries'
+| | | |--/desc: 'Buy grocieries including rice, daal, vegitable, sugar etc. daily supplies'
+| | | |--/date: .........
+| | |--/ 1745805121332 (task reference in db: `tasks/${id}/${taskId}`)
+| | | |--/id: 1745805121332
+| | | |--/title: 'Clean room'
+| | | |--/desc: 'Clean room including washroom'
+| | | |--/date: .........
+| | |--/ 1745805121332 (task reference in db: `tasks/${id}/${taskId}`)
+| | | |--/id: 1745805121332
+| | | |--/title: 'Take cat to the vet'
+| | | |--/desc: ''
+| | | |--/date: .........
+| |--/87f8asAasd67Xhg9asdAB889k (another user)
+| | |--/ 1745805124132 (task reference in db: `tasks/${id}/${taskId}`)
+| | | |--/id: 1745805124132
+| | | |--/title: 'Buy Groceries'
+| | | |--/desc: 'Buy grocieries including rice, daal, vegitable, sugar etc. daily supplies'
+| | | |--/date: .........
+| | | ................................................................................more
+| |--/7ssd62ba8Ghsd7sdgGsdG (another user)
+| | |--/ 1745805108519 (task reference in db: `tasks/${id}/${taskId}`)
+| | | |--/id: 1745805108519
+| | | |--/title: 'Buy Groceries'
+| | | |--/desc: 'Buy grocieries including rice, daal, vegitable, sugar etc. daily supplies'
+| | | |--/date: .........
+| | | |...............................................................................more
+userPreferrences/    (settings that will be loaded by default) [Q. Reference: `userPreferrences/${userid}/`]
+| |--/8asd87dsadbsd6UdgX7dshasd (user id) (reference to the user)
+| | |--/theme: 'light' (light/dark)
+| | |--/defaultView: 'list' (list/board/calender style view)
+| | |--/defaultSort: 'date' (sorting style- date/priority/deadline)
+| | |--/homeView: 'inbox' (categorized tasks that will be on home by default) [home(all), personal, work, errands etc.]
+| | |--/sidebar:
+| | | |--/ [home, personal, work, errands] (array containing sidebar selection) 
+| | |--/ karma : true (karma on/off) (ADVANCED FEATURE)
+| | ...................................................................................more
+| |--/87f8asAasd67Xhg9asdAB889k (another user)
+| | |--/theme: 'light' (light/dark)
+| | |--/defaultView: 'list' (list/board/calender style view)
+| | |--/defaultSort: 'date' (sorting style- date/priority/deadline)
+| | |--/homeView: 'inbox' (categorized tasks that will be on home by default) [home(all), personal, work, errands etc.]
+| | |--/sidebar:
+| | |  |--/ [home, personal, work, errands] (array containing sidebar selection) 
+| | |--/ karma : true (karma on/off) (ADVANCED FEATURE)
+| | ...................................................................................more
+
