@@ -1,49 +1,25 @@
 import React, { useState } from "react";
 import RoundedCheckbox from "../../components/common/RoundedCheckbox";
-import { FaAngleDown, FaAngleRight, FaAngleUp, FaFlag } from "react-icons/fa6";
-import { PiDotsThreeOutline } from "react-icons/pi";
-import { AiOutlineClose } from "react-icons/ai";
+import { FaAngleDown, FaLock } from "react-icons/fa6";
 import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
-import { CiCalendarDate, CiCirclePlus, CiHashtag } from "react-icons/ci";
+import {CiCirclePlus} from "react-icons/ci";
 import moment from "moment";
 import { GrAttachment } from "react-icons/gr";
 import BtnPrimary from "../../components/common/BtnPrimary";
 import { useNavigate } from "react-router-dom";
-import CalendarPopup from "../../components/common/CalenderPopup";
-import { FiPlusCircle } from "react-icons/fi";
 import PrioritySelector from "../../components/common/PrioritySelector";
 import ProjectSelector from "../../components/common/ProjectSelector";
+import DateSelector from "../../components/common/DateSelector";
+import _ from "../../lib/lib";
 
 const TaskPage = ({ taskData }) => {
-  const navigate = useNavigate();
   const [showSubTasks, setShowSubTasks] = useState(true);
   const [showComments, setShowComments] = useState(true);
   const [subTasks, setSubTasks] = useState([]);
   const [comments, setComments] = useState([]);
   const [project, setProject] = useState('Personal');
-  const [openProjects, setOpenProjects] = useState(false);
-  const [openDate, setOpenDate] = useState(false);
-  const [openPriority, setOpenPriority] = useState(false);
   const [priority, setPriority] = useState({ level: 2, color: 'orange' });
-  const [date, setDate] = useState(new Date());
-  const icons = [
-    {
-      name: "prevTask",
-      icon: FaAngleUp,
-    },
-    {
-      name: "nextTask",
-      icon: FaAngleDown,
-    },
-    {
-      name: "options",
-      icon: PiDotsThreeOutline,
-    },
-    {
-      name: "closePopup",
-      icon: AiOutlineClose,
-    },
-  ];
+  const [date, setDate] = useState(new Date()); 
 
   const getIconClickHandler = (name) => { };
 
@@ -64,7 +40,7 @@ const TaskPage = ({ taskData }) => {
                 </div>
               </div>
               <div className="iconSec flex items-center gap-x-3">
-                {icons.map(({ name, icon: IconComponent }) => (
+                {_.taskPageIcons.map(({ name, icon: IconComponent }) => (
                   <span
                     className="text-2xl opacity-50 cursor-pointer hover:text-accentMain"
                     key={name}
@@ -176,63 +152,23 @@ const TaskPage = ({ taskData }) => {
                 <div className="project border-b border-[rgba(0,0,0,0.14)] pb-2">
                   {/* ================================= PROJECT SELECTION ===================================== */}
                   <p className="font-semibold text-sm">Projects</p>
-                  <div className=" relative ">
-                    <div className="active flex justify-between items-center py-2 px-4 my-2 rounded-md bg-focusMain cursor-pointer" onClick={() => setOpenProjects(prev => !prev)}>
-                      <div className="flex gap-x-1 text-sm">
-                        <span className={`text-xl ${project === 'Personal' ? 'text-blue-500' : project === 'Shopping' ? 'text-green-500' : project === 'Works' ? 'text-orange-500' : project === 'Errands' ? 'text-shadow-cyan-700' : 'text-gray-800'}`}>
-                          <CiHashtag />
-                        </span>
-                        <span>{project}</span>
-                      </div>
-                      <span>
-                        <FaAngleDown />
-                      </span>
-                    </div>
-                    {
-                      openProjects && <ProjectSelector setProject={setProject} setOpenProjects={setOpenProjects}/>
-                    }
-                  </div>
+                  <ProjectSelector project={project} setProject={setProject}/>
                 </div>
                 {/* ================================= DATE SELECTION ===================================== */}
-                <div className="date cursor-pointer relative" onClick={() => setOpenDate(prev => !prev)}>
-                  <p className="text-sm text-secondary translate-y-2">Date</p>
-                  <div className="flex gap-x-2 items-center py-4 border-b border-[rgba(0,0,0,0.19)]">
-                    <span>
-                      <CiCalendarDate />
-                    </span>
-                    <span className="text-sm text-secondary">Today</span>
-                  </div>
-                  {
-                    openDate && (
-                      <div className="absolute top-18 left-0 w-full">
-                        <CalendarPopup />
-                      </div>
-                    )
-                  }
+                <div className="date cursor-pointer relative" >
+                  <p className="text-sm text-secondary translate-y-2" >Date</p>
+                  <DateSelector date={date} setDate={setDate}/>
                 </div>
                 {/* ================================= PRIORITY SELECTION ===================================== */}
                 <div className="priority border-b border-[rgba(0,0,0,0.16)]">
-                  <div className="active flex justify-between items-center py-2 px-4 rounded-md bg-focusMain cursor-pointer my-5 " onClick={() => setOpenPriority(prev => !prev)}>
-                    <div className="flex gap-x-1 text-sm">
-                      <span className="text-xl" style={{color: priority.color}}>
-                        <FaFlag />
-                      </span>
-                      <span>Priority {priority.level}</span>
-                    </div>
-                    <span>
-                      <FaAngleDown />
-                    </span>
-                  </div>
-                  {
-                    openPriority && <PrioritySelector setPriority={setPriority} setOpenPriority={setOpenPriority}/>
-                  }
+                  <PrioritySelector priority={priority} setPriority={setPriority}/>
                 </div>
                 {/* ================================= REMINDER ===================================== */}
                 <div className="reminder py-4 border-b border-[#00000034]">
                   <div className="flex justify-between items-center">
                   <p className="text-sm font-semibold">Add reminders</p>
                   <span>
-                    <FiPlusCircle/>
+                    <FaLock className="text-red-500"/>
                   </span>
                   </div>
                 </div>
@@ -241,7 +177,7 @@ const TaskPage = ({ taskData }) => {
                   <div className="flex justify-between items-center">
                   <p className="text-sm font-semibold">Add location</p>
                   <span>
-                    <FiPlusCircle/>
+                    <FaLock className="text-red-500"/>
                   </span>
                   </div>
                 </div>
