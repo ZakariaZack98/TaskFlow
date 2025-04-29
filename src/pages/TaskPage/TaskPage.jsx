@@ -3,30 +3,36 @@ import RoundedCheckbox from "../../components/common/RoundedCheckbox";
 import { FaAngleDown, FaLock } from "react-icons/fa6";
 import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
 import {CiCirclePlus} from "react-icons/ci";
-import moment from "moment";
 import { GrAttachment } from "react-icons/gr";
 import BtnPrimary from "../../components/common/BtnPrimary";
-import { useNavigate } from "react-router-dom";
 import PrioritySelector from "../../components/common/PrioritySelector";
 import ProjectSelector from "../../components/common/ProjectSelector";
 import DateSelector from "../../components/common/DateSelector";
 import _ from "../../lib/lib";
 import CommentCard from "../../components/common/CommentCard";
 
-const TaskPage = ({ taskData }) => {
+const TaskPage = ({ taskData, setOpenTaskPage }) => {
   const dummyComments = _.dummyComments;
   const [showSubTasks, setShowSubTasks] = useState(true);
   const [showComments, setShowComments] = useState(true);
   const [subTasks, setSubTasks] = useState([]);
   const [comments, setComments] = useState([]);
   const [project, setProject] = useState('Personal');
-  const [priority, setPriority] = useState({ level: 2, color: 'orange' });
+  const [priority, setPriority] = useState(3);
   const [date, setDate] = useState(new Date()); 
+  
 
-  const getIconClickHandler = (name) => { };
+  const getIconClickHandler = (name) => {
+    if(name === 'closePopup') {
+      setOpenTaskPage(false);
+      console.log('closed');
+    }
+   };
+
+   console.log(taskData)
 
   return (
-    <div className="absolute top-0 left-0 w-svw h-svh ">
+    <div className={`absolute top-0 left-0 w-svw h-svh ${''} z-50 text-[16px]`}>
       <div className="backdrop absolute w-svw h-svh bg-[rgba(0,0,0,0.47)]"></div>
       <div className="absolute w-full h-full flex justify-center items-center">
         <div
@@ -56,7 +62,7 @@ const TaskPage = ({ taskData }) => {
               {/* ===================================== LEFT SIDE MARKUP ================================================= */}
               {/* =========================== HEADING PART ================================ */}
               <div className="main h-full w-7/10 p-3 overflow-y-scroll ">
-                <h3 className="text-xl font-semibold text-accentMain">{taskData?.title || "Take my cat to the vet"}</h3>
+                <h3 className="text-2xl font-semibold text-accentMain">{taskData?.title || "Take my cat to the vet"}</h3>
                 <div className="flex items-center gap-x-1">
                   <span className="text-xl">
                     <HiOutlineBars3BottomLeft />
@@ -66,7 +72,7 @@ const TaskPage = ({ taskData }) => {
                   </p>
                 </div>
                 {/* ========================== SUB TASKS SECTION ============================= */}
-                <div className="subTaskSec mt-3 flex items-center gap-x-1 px-2 ">
+                <div className="subTaskSec mt-3 flex items-center gap-x-1 px-2 text-lg">
                   <span className="text-xl cursor-pointer text-fontSecondery" onClick={() => setShowSubTasks((prev) => !prev)}>
                     {showSubTasks ? (
                       <FaAngleDown className="rotate-0 duration-200" />
@@ -74,7 +80,7 @@ const TaskPage = ({ taskData }) => {
                       <FaAngleDown className=" -rotate-90 duration-200" />
                     )}
                   </span>
-                  <p className="font-semibold text-fontSecondery">Sub tasks:</p>
+                  <p className="font-semibold  text-fontSecondery">Sub tasks:</p>
                 </div>
                 <div
                   className={`${showSubTasks ? "h-fit" : "h-0 opacity-0"
@@ -83,7 +89,7 @@ const TaskPage = ({ taskData }) => {
                     <span className="text-xl text-accentMain cursor-pointer">
                       <CiCirclePlus />
                     </span>
-                    <p className="text-fontSecondery">Add sub-task</p>
+                    <p className="text-fontSecondery ">Add sub-task</p>
                     {subTasks.length > 0 && (
                       <span>
                         task: {subTasks?.filter((task) => task.status === "complete") || 0} / {subTasks.length}
@@ -100,7 +106,7 @@ const TaskPage = ({ taskData }) => {
                       <FaAngleDown className=" -rotate-90 duration-200" />
                     )}
                   </span>
-                  <p className="font-semibold py-3 text-fontSecondery">Comments:</p>
+                  <p className="font-semibold py-3 text-md text-fontSecondery">Comments:</p>
                 </div>
                 <div className={`${showComments ? "h-[100%]" : "h-0 opacity-0"} subTaskList mx-3 pb-2 duration-300`}>
                   <div className="addComment flex items-center">
@@ -119,14 +125,14 @@ const TaskPage = ({ taskData }) => {
                   </div>
                   <div className="flex flex-col items-center gap-y-1">
                     {
-                      dummyComments.map(comment => <CommentCard key={comment.createdAt} commentData={comment}/>)
+                      taskData?.comments?.map((comment, idx) => <CommentCard key={idx} commentData={comment}/>)
                     }
                   </div>
                 </div>
               </div>
               {/* ===================================== LEFT SIDE MARKUP ENDS ================================================= */}
               {/* ======================================== SIDEBAR MARKUP STARTS ========================================== */}
-              <div className="sidebar h-full w-3/10 bg-sidebarMain p-5 ">
+              <div className="sidebar h-full w-3/10 bg-sidebarMain p-5">
                 <div className="project border-b border-[rgba(0,0,0,0.14)] pb-2">
                   {/* ================================= PROJECT SELECTION ===================================== */}
                   <p className="font-semibold text-sm">Projects</p>

@@ -69,7 +69,7 @@ export default function CalendarPopup({ date, onSelect }) {
             <button
               key={day}
               onClick={() => selectDate(day)}
-              className={`w-8 h-8 flex items-center justify-center rounded-full transition cursor-pointer
+              className={`w-8 h-8 text-sm flex items-center justify-center rounded-full transition cursor-pointer
                 ${
                   isToday
                     ? "bg-[#E44332] text-white"

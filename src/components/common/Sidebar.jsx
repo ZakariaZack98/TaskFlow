@@ -31,7 +31,7 @@ const Sidebar = ({
       id: 2,
       name: "Inbox",
       icon: <GoInbox />,
-      path: "/inbox",
+      path: "/",
       msg: 9,
     },
     {

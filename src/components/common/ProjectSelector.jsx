@@ -8,7 +8,7 @@ const ProjectSelector = ({ project, setProject }) => {
   const [openProjects, setOpenProjects] = useState(false);
   return (
     <>
-      <div className="relative">
+      <div className="relative min-w-45">
         <div className="active flex justify-between items-center py-2 px-4 my-2 rounded-md bg-focusMain cursor-pointer" onClick={() => setOpenProjects(prev => !prev)}>
           <div className="flex gap-x-1 text-sm">
             <span className={`text-xl ${project === 'Personal' ? 'text-blue-500' : project === 'Shopping' ? 'text-green-500' : project === 'Works' ? 'text-orange-500' : project === 'Errands' ? 'text-shadow-cyan-700' : 'text-gray-800'}`}>

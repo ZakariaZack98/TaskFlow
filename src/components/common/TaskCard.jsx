@@ -6,9 +6,20 @@ import { SlCalender } from 'react-icons/sl'
 import { GoPencil } from 'react-icons/go'
 import { MdOutlineDateRange } from 'react-icons/md'
 import { FaRegMessage } from 'react-icons/fa6'
+import { GetDateNow } from '../../utils/utils'
+import CalendarPopup from './CalenderPopup'
+import TaskPage from '../../pages/TaskPage/TaskPage'
 
-const TaskCard = ({ taskData = _.dummyTaskArr[0] }) => {
+const TaskCard = ({ taskData }) => {
   const [hover, setHover] = useState(false);
+  const [recheduleMode, setRecheduleMode] = useState(false);
+  const [date, setDate] = useState(taskData.date);
+  const [openTaskPage, setOpenTaskpage] = useState(false)
+
+  const handleRechedule = (taskId) => {
+
+  }
+
   return (
     <div className='flex justify-between items-start cursor-pointer pb-3' onMouseOver={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <div className="left flex items-start">
@@ -25,18 +36,27 @@ const TaskCard = ({ taskData = _.dummyTaskArr[0] }) => {
               <span>
                 <SlCalender />
               </span>
-              <p className='text-fontSecondery'>{taskData.date}</p>
+              <p className='text-fontSecondery'>{GetDateNow() === date ? 'Today' : Number(date.split(' ')[2]) - Number(GetDateNow().split(' ')[2]) === 1 ? 'Tomorrow' : date}</p>
             </div>
           </div>
         </div>
       </div>
       <div className="right flex flex-col justify-center items-center">
         <div className={`icons flex items-center gap-x-3 text-xl text-fontSecondery ${hover ? 'visible' : 'invisible'}`}>
-          <span className='text-2xl hover:text-accentMain'>
+          <span className='text-2xl hover:text-accentMain' onClick={() => setOpenTaskpage(true)}>
             <GoPencil />
           </span>
-          <span className='text-2xl hover:text-accentMain'>
+          {
+            openTaskPage && <TaskPage taskData={taskData} setOpenTaskPage={setOpenTaskpage} />
+          }
+          <span className='text-2xl hover:text-accentMain relative' onClick={() => setRecheduleMode(!recheduleMode)}>
             <MdOutlineDateRange />
+            <span className={`absolute top-10` + (recheduleMode ? ' visible' : ' invisible')}>
+              <CalendarPopup onSelect={selectedDate => {
+                console.log(selectedDate.toDateString())
+                setDate(selectedDate.toDateString().split(' ').slice(0, 3).join(' '));
+              }} />
+            </span>
           </span>
           <span className=' hover:text-accentMain'>
             <FaRegMessage />

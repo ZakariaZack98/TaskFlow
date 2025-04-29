@@ -7,7 +7,7 @@
   reminder: '04 28 2025 05:33 pm' //? reminder/notification push time (ADVANCED FEATURE)
   place: 'At shwapno supershop' //? place (ADVANCED FEATURE)
   deadline: '04 30 2025' //? deadline of the task in MM DD YYYY format (ADVANCED FEATURE)
-  category: 'Personal' //? category of the task
+  project: 'Personal' //? inside which project
   status: 'Pending' //? status of the task pending/complete/due
   comments: [{ //? comments added to the tasks including attachments (image file, voice)
     text: `this is the shopping list`,
