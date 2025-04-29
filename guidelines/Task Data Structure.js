@@ -1,6 +1,6 @@
 //* =========================== TASK DATA STUCTURE FOR STORING IN DATABASE =============================== *//
 {
-  id: Date.now() //? Timestamp of when the task is created
+  id: Date.now() //? UNIX Timestamp of when the task is created
   title: 'Buy Groceries' //? Main title of the task
   desc: 'Buy grocieries including rice, daal, vegitable, sugar etc. daily supplies' //? Task description
   date: '04 28 2025' //? date of the task in MM DD YYYY format
