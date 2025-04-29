@@ -11,6 +11,8 @@ import BtnPrimary from "../../components/common/BtnPrimary";
 import { useNavigate } from "react-router-dom";
 import CalendarPopup from "../../components/common/CalenderPopup";
 import { FiPlusCircle } from "react-icons/fi";
+import PrioritySelector from "../../components/common/PrioritySelector";
+import ProjectSelector from "../../components/common/ProjectSelector";
 
 const TaskPage = ({ taskData }) => {
   const navigate = useNavigate();
@@ -22,6 +24,8 @@ const TaskPage = ({ taskData }) => {
   const [openProjects, setOpenProjects] = useState(false);
   const [openDate, setOpenDate] = useState(false);
   const [openPriority, setOpenPriority] = useState(false);
+  const [priority, setPriority] = useState({ level: 2, color: 'orange' });
+  const [date, setDate] = useState(new Date());
   const icons = [
     {
       name: "prevTask",
@@ -38,37 +42,6 @@ const TaskPage = ({ taskData }) => {
     {
       name: "closePopup",
       icon: AiOutlineClose,
-    },
-  ];
-
-  const projects = [
-    {
-      id: 1,
-      icon: <CiHashtag />,
-      name: "Personal",
-      path: "/personal",
-      color: "blue"
-    },
-    {
-      id: 2,
-      icon: <CiHashtag />,
-      name: "Shopping",
-      path: "/shopping",
-      color: "magenta"
-    },
-    {
-      id: 3,
-      icon: <CiHashtag />,
-      name: "Works",
-      path: "/works",
-      color: "orange"
-    },
-    {
-      id: 4,
-      icon: <CiHashtag />,
-      name: "Errands",
-      path: "/errands",
-      color: 'brown'
     },
   ];
 
@@ -102,6 +75,8 @@ const TaskPage = ({ taskData }) => {
               </div>
             </div>
             <div className="taskBody w-full h-[90%] flex">
+              {/* ===================================== LEFT SIDE MARKUP ================================================= */}
+              {/* =========================== HEADING PART ================================ */}
               <div className="main h-full w-7/10 p-3 overflow-y-scroll ">
                 <h3 className="text-xl font-semibold text-accentMain">{taskData?.title || "Take my cat to the vet"}</h3>
                 <div className="flex items-center gap-x-1">
@@ -112,6 +87,7 @@ const TaskPage = ({ taskData }) => {
                     {taskData?.desc || "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo temporea velit."}
                   </p>
                 </div>
+                {/* ========================== SUB TASKS SECTION ============================= */}
                 <div className="subTaskSec mt-3 flex items-center gap-x-1 px-2 ">
                   <span className="text-xl cursor-pointer text-fontSecondery" onClick={() => setShowSubTasks((prev) => !prev)}>
                     {showSubTasks ? (
@@ -137,6 +113,7 @@ const TaskPage = ({ taskData }) => {
                     )}
                   </div>
                 </div>
+                {/* ============================ COMMENT SECTION ================================= */}
                 <div className="commentSec flex items-center gap-x-1 px-2">
                   <span className="text-xl cursor-pointer text-fontSecondery" onClick={() => setShowComments((prev) => !prev)}>
                     {showComments ? (
@@ -193,43 +170,30 @@ const TaskPage = ({ taskData }) => {
                   </div>
                 </div>
               </div>
+              {/* ===================================== LEFT SIDE MARKUP ENDS ================================================= */}
+              {/* ======================================== SIDEBAR MARKUP STARTS ========================================== */}
               <div className="sidebar h-full w-3/10 bg-sidebarMain p-5 ">
                 <div className="project border-b border-[rgba(0,0,0,0.14)] pb-2">
+                  {/* ================================= PROJECT SELECTION ===================================== */}
                   <p className="font-semibold text-sm">Projects</p>
                   <div className=" relative ">
                     <div className="active flex justify-between items-center py-2 px-4 my-2 rounded-md bg-focusMain cursor-pointer" onClick={() => setOpenProjects(prev => !prev)}>
                       <div className="flex gap-x-1 text-sm">
-                        <span className="text-xl text-blue-700">
+                        <span className={`text-xl ${project === 'Personal' ? 'text-blue-500' : project === 'Shopping' ? 'text-green-500' : project === 'Works' ? 'text-orange-500' : project === 'Errands' ? 'text-shadow-cyan-700' : 'text-gray-800'}`}>
                           <CiHashtag />
                         </span>
-                        <span>Personal</span>
+                        <span>{project}</span>
                       </div>
                       <span>
                         <FaAngleDown />
                       </span>
                     </div>
                     {
-                      openProjects && (
-                        <div className="absolute w-full left-0 top-10 p-2 rounded-md bg-white z-10" style={{ boxShadow: '0 0 5px 5px rgba(0, 0, 0, 0.2)' }}>
-                          <input type="text" className="px-3 py-1 border-2 border-accentMain rounded w-full" placeholder="Enter a project type..." />
-                          <p className="my-2 font-semibold">My Projects</p>
-                          {
-                            projects.map(project => (
-                              <div key={project.name} className="active flex justify-between items-center py-2 px-4 my-2 cursor-pointer hover:bg-[#cecece] rounded-md" onClick={() => navigate(project.path)}>
-                                <div className="flex gap-x-1 text-sm">
-                                  <span className={`text-xl`} style={{ color: project.color }}>
-                                    <CiHashtag />
-                                  </span>
-                                  <span className="text-fontSecondery">{project.name}</span>
-                                </div>
-                              </div>
-                            ))
-                          }
-                        </div>
-                      )
+                      openProjects && <ProjectSelector setProject={setProject} setOpenProjects={setOpenProjects}/>
                     }
                   </div>
                 </div>
+                {/* ================================= DATE SELECTION ===================================== */}
                 <div className="date cursor-pointer relative" onClick={() => setOpenDate(prev => !prev)}>
                   <p className="text-sm text-secondary translate-y-2">Date</p>
                   <div className="flex gap-x-2 items-center py-4 border-b border-[rgba(0,0,0,0.19)]">
@@ -246,37 +210,24 @@ const TaskPage = ({ taskData }) => {
                     )
                   }
                 </div>
+                {/* ================================= PRIORITY SELECTION ===================================== */}
                 <div className="priority border-b border-[rgba(0,0,0,0.16)]">
                   <div className="active flex justify-between items-center py-2 px-4 rounded-md bg-focusMain cursor-pointer my-5 " onClick={() => setOpenPriority(prev => !prev)}>
                     <div className="flex gap-x-1 text-sm">
-                      <span className="text-xl text-blue-700">
+                      <span className="text-xl" style={{color: priority.color}}>
                         <FaFlag />
                       </span>
-                      <span>Priority 3</span>
+                      <span>Priority {priority.level}</span>
                     </div>
                     <span>
                       <FaAngleDown />
                     </span>
                   </div>
                   {
-                    openPriority && (
-                      <div className="relative left-0 top-0 rounded-md p-2 bg-white z-10" style={{ boxShadow: '0 0 5px 5px rgba(0, 0, 0, 0.2)' }}>
-                        {
-                          ['red', 'orange', 'blue', 'green'].map((color, idx) => (
-                            <div className="active flex justify-between items-center py-2 px-4 my-2 rounded-md  cursor-pointer hover:bg-[#e6e6e6]" onClick={() => setOpenPriority(prev => !prev)}>
-                              <div className="flex gap-x-1 text-sm">
-                                <span className={`text-xl`} style={{ color: color }}>
-                                  <FaFlag />
-                                </span>
-                                <span>Priority {idx + 1}</span>
-                              </div>
-                            </div>
-                          ))
-                        }
-                      </div>
-                    )
+                    openPriority && <PrioritySelector setPriority={setPriority} setOpenPriority={setOpenPriority}/>
                   }
                 </div>
+                {/* ================================= REMINDER ===================================== */}
                 <div className="reminder py-4 border-b border-[#00000034]">
                   <div className="flex justify-between items-center">
                   <p className="text-sm font-semibold">Add reminders</p>
@@ -285,6 +236,7 @@ const TaskPage = ({ taskData }) => {
                   </span>
                   </div>
                 </div>
+                {/* ================================= LOCATION ===================================== */}
                 <div className="reminder py-4 border-b border-[#00000034]">
                   <div className="flex justify-between items-center">
                   <p className="text-sm font-semibold">Add location</p>
@@ -295,6 +247,7 @@ const TaskPage = ({ taskData }) => {
                 </div>
               </div>
             </div>
+            {/* ======================================== SIDEBAR MARKUP ENDS================================================= */}
           </div>
         </div>
       </div>
