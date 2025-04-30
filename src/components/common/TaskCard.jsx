@@ -9,6 +9,8 @@ import { FaRegMessage } from 'react-icons/fa6'
 import { GetDateNow } from '../../utils/utils'
 import CalendarPopup from './CalenderPopup'
 import TaskPage from '../../pages/TaskPage/TaskPage'
+import { ref, set } from 'firebase/database'
+import { db } from '../../../Database/FirebaseConfig'
 
 const TaskCard = ({ taskData }) => {
   const [hover, setHover] = useState(false);
@@ -16,8 +18,15 @@ const TaskCard = ({ taskData }) => {
   const [date, setDate] = useState(taskData.date);
   const [openTaskPage, setOpenTaskpage] = useState(false)
 
-  const handleRechedule = (taskId) => {
-
+  const handleRechedule = async (taskId, selectedDate) => {
+    const dateRef = ref(db, `tasks/${taskId}/date`);
+    const deadlineRef = ref(db, `tasks/${taskId}/deadline`)
+    try {
+      await Promise.all([set(dateRef, selectedDate), set(deadlineRef, selectedDate)])
+      console.log('rescheduling successful')
+    } catch (error) {
+      console.error('Task recheduling failed ', error)
+    }
   }
 
   return (
@@ -55,7 +64,9 @@ const TaskCard = ({ taskData }) => {
               <span className={`absolute top-10` + (recheduleMode ? ' visible' : ' invisible')}>
                 <CalendarPopup onSelect={selectedDate => {
                   console.log(selectedDate.toDateString())
-                  setDate(selectedDate.toDateString().split(' ').slice(0, 3).join(' '));
+                  const selectedDateStr = selectedDate.toDateString().split(' ').slice(0, 3).join(' ')
+                  setDate(selectedDateStr);
+                  handleRechedule(taskData.id, selectedDateStr)
                 }} />
               </span>
             </span>
