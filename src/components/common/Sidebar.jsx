@@ -22,7 +22,7 @@ const Sidebar = ({
 
   const {allTaskData, setAllTaskData} = useContext(TaskContext);
   /**
-   * TODO: FETCH ALL TASKS DATA FROM THE DATABASE
+   * TODO: FETCH ALL TASKS DATA FROM THE DATABASE AFTER USER AUTHENTICATION ==============
    * @param {userId} string containing user id
    * @returns {Array} containing all tasks data
    * */
@@ -35,7 +35,7 @@ const Sidebar = ({
           taskArr.push(taskSnapshot.val());
         })
       }
-      setAllTaskData(taskArr)
+      setAllTaskData(taskArr.sort((a, b) => b.id - a.id)) //* ascending from latest to oldest
     })
     return () => unsubscribe();
   }, [db])

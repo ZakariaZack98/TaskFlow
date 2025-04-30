@@ -21,52 +21,54 @@ const TaskCard = ({ taskData }) => {
   }
 
   return (
-    <div className='flex justify-between items-start cursor-pointer pb-3' onMouseOver={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-      <div className="left flex items-start">
-        <div className="flex  gap-x-1 ">
-          <div className="flex items-start translate-y-1">
-            <span className={`text-xl ${hover ? 'visible' : 'invisible'}`}>
-              <PiDotsSixVerticalBold />
-            </span>
-            <RoundedCheckbox />
-          </div>
-          <div className="flex flex-col">
-            <p>{taskData.title}</p>
-            <div className="flex justify-start items-center text-sm gap-x-2">
-              <span>
-                <SlCalender />
+    <>
+      {
+        openTaskPage && <TaskPage taskData={taskData} setOpenTaskPage={setOpenTaskpage} />
+      }
+      <div className='flex justify-between items-start cursor-pointer pb-3' onMouseOver={() => setHover(true)} onMouseLeave={() => setHover(false)} >
+        <div className="left flex items-start" onClick={() => setOpenTaskpage(true)}>
+          <div className="flex  gap-x-1 ">
+            <div className="flex items-start translate-y-1">
+              <span className={`text-xl ${hover ? 'visible' : 'invisible'}`}>
+                <PiDotsSixVerticalBold />
               </span>
-              <p className='text-fontSecondery'>{GetDateNow() === date ? 'Today' : Number(date.split(' ')[2]) - Number(GetDateNow().split(' ')[2]) === 1 ? 'Tomorrow' : date}</p>
+              <RoundedCheckbox />
+            </div>
+            <div className="flex flex-col">
+              <p>{taskData.title}</p>
+              <div className="flex justify-start items-center text-sm gap-x-2">
+                <span>
+                  <SlCalender />
+                </span>
+                <p className='text-fontSecondery'>{GetDateNow() === date ? 'Today' : Number(date.split(' ')[2]) - Number(GetDateNow().split(' ')[2]) === 1 ? 'Tomorrow' : date}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="right flex flex-col justify-center items-center">
-        <div className={`icons flex items-center gap-x-3 text-xl text-fontSecondery ${hover ? 'visible' : 'invisible'}`}>
-          <span className='text-2xl hover:text-accentMain' onClick={() => setOpenTaskpage(true)}>
-            <GoPencil />
-          </span>
-          {
-            openTaskPage && <TaskPage taskData={taskData} setOpenTaskPage={setOpenTaskpage} />
-          }
-          <span className='text-2xl hover:text-accentMain relative' onClick={() => setRecheduleMode(!recheduleMode)}>
-            <MdOutlineDateRange />
-            <span className={`absolute top-10` + (recheduleMode ? ' visible' : ' invisible')}>
-              <CalendarPopup onSelect={selectedDate => {
-                console.log(selectedDate.toDateString())
-                setDate(selectedDate.toDateString().split(' ').slice(0, 3).join(' '));
-              }} />
+        <div className="right flex flex-col justify-center items-center">
+          <div className={`icons flex items-center gap-x-3 text-xl text-fontSecondery ${hover ? 'visible' : 'invisible'}`}>
+            <span className='text-2xl hover:text-accentMain' >
+              <GoPencil />
             </span>
-          </span>
-          <span className=' hover:text-accentMain'>
-            <FaRegMessage />
-          </span>
-          <span className=' hover:text-accentMain'>
-            <PiDotsThreeOutline />
-          </span>
+            <span className='text-2xl hover:text-accentMain relative' onClick={() => setRecheduleMode(!recheduleMode)}>
+              <MdOutlineDateRange />
+              <span className={`absolute top-10` + (recheduleMode ? ' visible' : ' invisible')}>
+                <CalendarPopup onSelect={selectedDate => {
+                  console.log(selectedDate.toDateString())
+                  setDate(selectedDate.toDateString().split(' ').slice(0, 3).join(' '));
+                }} />
+              </span>
+            </span>
+            <span className=' hover:text-accentMain'>
+              <FaRegMessage />
+            </span>
+            <span className=' hover:text-accentMain'>
+              <PiDotsThreeOutline />
+            </span>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

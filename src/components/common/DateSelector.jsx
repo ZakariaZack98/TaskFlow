@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import CalendarPopup from './CalenderPopup';
 import { CiCalendarDate } from 'react-icons/ci';
 
-const DateSelector = ({date = new Date(), setDate, border}) => {
+const DateSelector = ({date = new Date().toDateString() , setDate, border}) => {
   const [openDate, setOpenDate] = useState(false);
   return (
     <div className='relative'>
@@ -10,14 +10,15 @@ const DateSelector = ({date = new Date(), setDate, border}) => {
         <span>
           <CiCalendarDate />
         </span>
-        {/* <span className="text-sm text-secondary">{date.toDateString() === new Date().toDateString() ? 'Today' : date.toDateString()}</span> */}
+        <span className="text-sm text-secondary">{date === new Date().toDateString() ? 'Today' : date}</span>
       </div>
       {
         openDate && (
           <div className="absolute top-18 left-0 w-full">
             <CalendarPopup onSelect={(date) => {
-              setDate(date);
+              setDate(date.toDateString().split(' ').slice(0, 3).join(' ')); //Making format like (Sunday 15 Apr)
               setOpenDate(false);
+              
               }} />
           </div>
         )

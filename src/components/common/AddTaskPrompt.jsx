@@ -5,7 +5,7 @@ import PrioritySelector from './PrioritySelector'
 import { IoMdCloseCircle } from 'react-icons/io'
 import BtnPrimary from './BtnPrimary'
 import { FaPlusCircle } from 'react-icons/fa'
-import { GetDateNow, GetTimeNow } from '../../utils/utils'
+import { GetTimeNow } from '../../utils/utils'
 import { ref, set } from 'firebase/database'
 import { db } from '../../../Database/FirebaseConfig'
 
@@ -13,7 +13,7 @@ const AddTaskPrompt = () => {
   const [openPrompt, setOpenPrompt] = useState(false);
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
-  const [date, setDate] = useState(new Date().toDateString());
+  const [date, setDate] = useState(new Date().toDateString().split(' ').slice(0,3).join(' '));
   const [project, setProject] = useState('Personal');
   const [priority, setPriority] = useState(3);
 
@@ -21,12 +21,12 @@ const AddTaskPrompt = () => {
     const newTask = {
       title, 
       desc, 
-      date: GetDateNow(), 
+      date,
       project, 
       priority,
       id: Date.now(),
       status: 'pending',
-      deadline: GetDateNow(),
+      deadline: date,
       createdAt: GetTimeNow()
     }
     const taskRef = ref(db, `tasks/${newTask.id}`);
@@ -35,12 +35,14 @@ const AddTaskPrompt = () => {
       setTitle('');
       setDesc('');
       setPriority(3);
-      setDate(new Date());
+      setDate(new Date().toDateString().split(' ').slice(0,3).join(' '));
       setProject('Personal');
       setOpenPrompt(false);
       console.log('Task added successfully');
     } catch(err) {
       console.error('Error adding task:', err.message)
+    } finally {
+      setOpenPrompt(false)
     }
   }
 
@@ -55,7 +57,7 @@ const AddTaskPrompt = () => {
       {
         openPrompt && (
           <div className='rounded-lg ps-3 pt-3 pe-3 w-full bg-white border border-fontSecondery flex flex-col gap-y-1 mt-3 relative'>
-            <span className='absolute right-4 top-4 text-accentMain text-2xl cursor-pointer' onClick={() => setOpenPrompt(prev => !prev)}>
+            <span className='absolute right-4 top-4 text-accentMain text-2xl cursor-pointer' onClick={() => setOpenPrompt(false)}>
               <IoMdCloseCircle />
             </span>
             <input type="text" placeholder='Task name' className='font-semibold w-full focus:outline-0' value={title} onChange={e => setTitle(e.target.value)}/>
