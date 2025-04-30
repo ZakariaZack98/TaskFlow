@@ -1,18 +1,57 @@
+import { push, ref, set } from "firebase/database";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { auth } from "../../../Database/FirebaseConfig";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { db } from "../../../Database/FirebaseConfig";
+import { Link, useNavigate } from "react-router-dom";
+import { GoogleAuthProvider } from "firebase/auth";
 
 export default function SignIn() {
+  const navigate = useNavigate();
+  // sign up data statw
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSignIn = (e) => {
     e.preventDefault();
     // Handle email/password login
+    signInWithEmailAndPassword(auth, email, password)
+      .then((info) => {
+        console.log(info);
+        navigate("/");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
     console.log("Email:", email, "Password:", password);
   };
 
   const handleGoogleSignIn = () => {
     // Handle Google login
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((userInfo) => {
+        const { user } = userInfo;
+
+        const userdb = ref(db, "users/");
+        set(push(userdb), {
+          userid: user?.uid,
+          username: user?.displayName || "name missing",
+          email: user?.email || "email missing",
+          profile_picture:
+            user?.photoURL ||
+            `https://images.pexels.com/photos/6940512/pexels-photo-6940512.jpeg?auto=compress&cs=tinysrgb&w=600`,
+        });
+      })
+      .then(() => {
+        navigate("/");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     console.log("Google Sign In");
   };
 
@@ -63,13 +102,19 @@ export default function SignIn() {
         <div className="mt-6 flex items-center justify-center">
           <span className="text-black">or</span>
         </div>
+        <p className="mt-5 text-center">
+          Don't have an Account?{" "}
+          <Link to={"/signup"} className="text-red-600">
+            Sign Up
+          </Link>
+        </p>
 
         <button
           onClick={handleGoogleSignIn}
           className="w-full mt-6 border border-gray-300 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 transition"
         >
           <span>
-          <FcGoogle />
+            <FcGoogle />
           </span>
           <span className="font-medium text-gray-700">Sign in with Google</span>
         </button>
