@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { AiOutlineAppstoreAdd } from "react-icons/ai";
 import { BiCheckboxChecked } from "react-icons/bi";
 import { BsBell } from "react-icons/bs";
@@ -10,12 +10,36 @@ import { MdOutlineCalendarToday } from "react-icons/md";
 import { SlCalender } from "react-icons/sl";
 import { VscLayoutSidebarLeftOff } from "react-icons/vsc";
 import { useLocation, useNavigate } from "react-router-dom";
+import { TaskContext } from "../../contexts/TaskContext";
+import { onValue, ref } from "firebase/database";
+import { db } from "../../../Database/FirebaseConfig";
 
 const Sidebar = ({
   userName = "Mahmudd",
   imgUrl = "https://images.pexels.com/photos/31630076/pexels-photo-31630076/free-photo-of-historic-street-scene-in-lisbon-with-cobblestones.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load",
   category = [],
 }) => {
+
+  const {allTaskData, setAllTaskData} = useContext(TaskContext);
+  /**
+   * TODO: FETCH ALL TASKS DATA FROM THE DATABASE
+   * @param {userId} string containing user id
+   * @returns {Array} containing all tasks data
+   * */
+  useEffect(() => {
+    const taskRef = ref(db, `tasks/`);
+    const unsubscribe = onValue(taskRef, (snapshot) => {
+      const taskArr = [];
+      if(snapshot.exists()) {
+        snapshot.forEach(taskSnapshot => {
+          taskArr.push(taskSnapshot.val());
+        })
+      }
+      setAllTaskData(taskArr)
+    })
+    return () => unsubscribe();
+  }, [db])
+
   const location = useLocation();
   const path = location.pathname;
   const navigate = useNavigate();

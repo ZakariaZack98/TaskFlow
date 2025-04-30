@@ -1,19 +1,20 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import TaskCard from '../../components/common/TaskCard'
 import _ from '../../lib/lib'
-import { FaPlusCircle } from 'react-icons/fa';
 import AddTaskPrompt from '../../components/common/AddTaskPrompt';
+import { TaskContext } from '../../contexts/TaskContext';
 
 const Inbox = () => {
-  const taskDataArr = _.dummyTaskArr.filter(task => task.status === 'Pending');
+  const {allTaskData, setAllTaskData} = useContext(TaskContext);
+  // const taskDataArr = _.dummyTaskArr.filter(task => task.status === 'Pending');
   return (
     <div className='h-full w-full'>
       <div className="pendingTaskContainer w-5/10 mx-auto ">
         <h1 className='text-3xl font-bold'>Inbox</h1>
         <div className="taskList flex flex-col gap-y-3 my-3">
           {
-            taskDataArr.length > 0 ? taskDataArr.map((task, index) => (
-              <div className={index < taskDataArr.length -1 ? 'border-b border-[rgba(0,0,0,0.22)]' : ''}>
+            allTaskData.length > 0 ? allTaskData.map((task, index) => (
+              <div className={index < allTaskData.length -1 ? 'border-b border-[rgba(0,0,0,0.22)]' : ''}>
                 <TaskCard key={index} taskData={task} />
               </div>
             )) : (

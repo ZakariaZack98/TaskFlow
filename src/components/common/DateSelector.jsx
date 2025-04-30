@@ -10,7 +10,7 @@ const DateSelector = ({date = new Date(), setDate, border}) => {
         <span>
           <CiCalendarDate />
         </span>
-        <span className="text-sm text-secondary">{date.toDateString() === new Date().toDateString() ? 'Today' : date.toDateString()}</span>
+        {/* <span className="text-sm text-secondary">{date.toDateString() === new Date().toDateString() ? 'Today' : date.toDateString()}</span> */}
       </div>
       {
         openDate && (

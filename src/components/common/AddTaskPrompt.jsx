@@ -5,7 +5,7 @@ import PrioritySelector from './PrioritySelector'
 import { IoMdCloseCircle } from 'react-icons/io'
 import BtnPrimary from './BtnPrimary'
 import { FaPlusCircle } from 'react-icons/fa'
-import { GetTimeNow } from '../../utils/utils'
+import { GetDateNow, GetTimeNow } from '../../utils/utils'
 import { ref, set } from 'firebase/database'
 import { db } from '../../../Database/FirebaseConfig'
 
@@ -13,7 +13,7 @@ const AddTaskPrompt = () => {
   const [openPrompt, setOpenPrompt] = useState(false);
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date().toDateString());
   const [project, setProject] = useState('Personal');
   const [priority, setPriority] = useState(3);
 
@@ -21,12 +21,12 @@ const AddTaskPrompt = () => {
     const newTask = {
       title, 
       desc, 
-      date, 
+      date: GetDateNow(), 
       project, 
       priority,
       id: Date.now(),
       status: 'pending',
-      deadline: date,
+      deadline: GetDateNow(),
       createdAt: GetTimeNow()
     }
     const taskRef = ref(db, `tasks/${newTask.id}`);
