@@ -1,21 +1,106 @@
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { push, ref, set } from "firebase/database";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  sendEmailVerification,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth } from "../../../Database/FirebaseConfig";
+import { db } from "../../../Database/FirebaseConfig";
+import { Link, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function SignUp() {
+  const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // error state
+  const [emailError, setEmailError] = useState("");
+  const [fullNameError, setFullNameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const handleSignUp = (e) => {
     e.preventDefault();
     // Handle sign up logic
-    console.log("Full Name:", fullName, "Email:", email, "Password:", password);
+    if (!fullName) {
+      setFullNameError("FullName missing");
+    } else if (!email) {
+      setFullNameError("");
+      setEmailError("Email missing");
+    } else if (!password) {
+      setEmailError("");
+      setFullNameError("");
+      setPasswordError("Password missing");
+    } else {
+      setEmailError("");
+      setPasswordError("");
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userinfo) => {
+          updateProfile(auth.currentUser, {
+            displayName: fullName,
+            photoURL:
+              "https://images.pexels.com/photos/6940512/pexels-photo-6940512.jpeg?auto=compress&cs=tinysrgb&w=600",
+          });
+        })
+        .then(() => {
+          const userdb = ref(db, "users/");
+          set(push(userdb), {
+            userid: auth.currentUser.uid,
+            username: auth.currentUser.displayName || fullName,
+            email: auth.currentUser.email || email,
+            profile_picture:
+              auth.currentUser.photoURL ||
+              `https://images.pexels.com/photos/6940512/pexels-photo-6940512.jpeg?auto=compress&cs=tinysrgb&w=600`,
+          });
+          // send email for autheicate user;
+          return sendEmailVerification(auth.currentUser);
+        })
+        .then((mailData) => {
+          // infoToast("🦄mail send sucessfulll Check your email");
+        })
+        .catch((err) => {
+          // errorToast(err.code);
+        })
+        .finally(() => {
+          setFullName("");
+          setEmail("");
+          setPassword("");
+        });
+    }
+    console.log(emailError);
   };
 
   const handleGoogleSignUp = () => {
     // Handle Google sign up
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((userInfo) => {
+        const { user } = userInfo;
+
+        const userdb = ref(db, "users/");
+        set(push(userdb), {
+          userid: user?.uid,
+          username: user?.displayName || "name missing",
+          email: user?.email || "email missing",
+          profile_picture:
+            user?.photoURL ||
+            `https://images.pexels.com/photos/6940512/pexels-photo-6940512.jpeg?auto=compress&cs=tinysrgb&w=600`,
+        });
+      })
+      .then(() => {
+        navigate("/");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     console.log("Google Sign Up");
   };
+  console.log(emailError);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 signupbg">
@@ -35,8 +120,10 @@ export default function SignUp() {
               className="w-full px-4 py-2 border border-accentMain rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E44332]"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              required
             />
+            {fullNameError && (
+              <span className="text-red-500 mt-1 block"> {fullNameError}</span>
+            )}
           </div>
 
           <div>
@@ -49,8 +136,10 @@ export default function SignUp() {
               className="w-full px-4 py-2 border border-accentMain rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E44332]"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
             />
+            {emailError && (
+              <span className="text-red-500 mt-1 block"> {emailError}</span>
+            )}
           </div>
 
           <div>
@@ -63,8 +152,10 @@ export default function SignUp() {
               className="w-full px-4 py-2 border border-accentMain rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E44332]"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
             />
+            {passwordError && (
+              <span className="text-red-500 mt-1 block"> {passwordError}</span>
+            )}
           </div>
 
           <button
@@ -78,6 +169,12 @@ export default function SignUp() {
         <div className="mt-6 flex items-center justify-center">
           <span className="text-black">or</span>
         </div>
+        <p className="mt-5 text-center  ">
+          Already Have an Account?{" "}
+          <Link to={"/signin"} className="text-red-600  ">
+            Sign In
+          </Link>
+        </p>
 
         <button
           onClick={handleGoogleSignUp}
