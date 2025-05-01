@@ -48,7 +48,7 @@ const AddTaskPrompt = () => {
 
   return (
     <div className='relative'>
-      <div className="flex items-center gap-x-2 cursor-pointer mt-10" onClick={() => setOpenPrompt(prev => !prev)}>
+      <div className="flex items-center gap-x-2 cursor-pointer mt-5" onClick={() => setOpenPrompt(prev => !prev)}>
         <span className='text-accentMain text-2xl'>
           <FaPlusCircle />
         </span>

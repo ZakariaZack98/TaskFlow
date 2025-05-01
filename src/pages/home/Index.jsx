@@ -11,6 +11,7 @@ const Inbox = () => {
     <div className='h-full w-full'>
       <div className="pendingTaskContainer w-5/10 mx-auto ">
         <h1 className='text-3xl font-bold'>Inbox</h1>
+        <AddTaskPrompt/>
         <div className="taskList flex flex-col gap-y-3 my-3">
           {
             allTaskData.length > 0 ? allTaskData.map((task, index) => (
@@ -22,7 +23,6 @@ const Inbox = () => {
             )
           }
         </div>
-        <AddTaskPrompt/>
       </div>
     </div>
   )

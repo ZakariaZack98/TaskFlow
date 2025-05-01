@@ -11,12 +11,14 @@ import CalendarPopup from './CalenderPopup'
 import TaskPage from '../../pages/TaskPage/TaskPage'
 import { ref, set } from 'firebase/database'
 import { db } from '../../../Database/FirebaseConfig'
+import EditTaskPrompt from './EditTaskPrompt'
 
 const TaskCard = ({ taskData }) => {
   const [hover, setHover] = useState(false);
   const [recheduleMode, setRecheduleMode] = useState(false);
   const [date, setDate] = useState(taskData.date);
-  const [openTaskPage, setOpenTaskpage] = useState(false)
+  const [openTaskPage, setOpenTaskpage] = useState(false);
+  const [openEditPrompt, setOpenEditPrompt] = useState(false);
 
   const handleRechedule = async (taskId, selectedDate) => {
     const dateRef = ref(db, `tasks/${taskId}/date`);
@@ -34,6 +36,9 @@ const TaskCard = ({ taskData }) => {
       {
         openTaskPage && <TaskPage taskData={taskData} setOpenTaskPage={setOpenTaskpage} />
       }
+      {
+        openEditPrompt && <EditTaskPrompt taskData={taskData} setOpenEditPrompt={setOpenEditPrompt} />
+      }
       <div className='flex justify-between items-start cursor-pointer pb-3' onMouseOver={() => setHover(true)} onMouseLeave={() => setHover(false)} >
         <div className="left flex items-start" onClick={() => setOpenTaskpage(true)}>
           <div className="flex  gap-x-1 ">
@@ -49,14 +54,14 @@ const TaskCard = ({ taskData }) => {
                 <span>
                   <SlCalender />
                 </span>
-                <p className='text-fontSecondery'>{GetDateNow() === date ? 'Today' : Number(date.split(' ')[2]) - Number(GetDateNow().split(' ')[2]) === 1 ? 'Tomorrow' : date}</p>
+                <p className='text-fontSecondery'>{GetDateNow() === taskData.date ? 'Today' : Number(taskData.date.split(' ')[2]) - Number(GetDateNow().split(' ')[2]) === 1 ? 'Tomorrow' : taskData.date}</p>
               </div>
             </div>
           </div>
         </div>
         <div className="right flex flex-col justify-center items-center">
-          <div className={`icons flex items-center gap-x-3 text-xl text-fontSecondery ${hover ? 'visible' : 'invisible'}`}>
-            <span className='text-2xl hover:text-accentMain' >
+          <div className={`relative icons flex items-center gap-x-3 text-xl text-fontSecondery ${hover ? 'visible' : 'invisible'}`}>
+            <span className='text-2xl hover:text-accentMain' onClick={() => setOpenEditPrompt(prev => !prev)}>
               <GoPencil />
             </span>
             <span className='text-2xl hover:text-accentMain relative' onClick={() => setRecheduleMode(!recheduleMode)}>
@@ -65,7 +70,7 @@ const TaskCard = ({ taskData }) => {
                 <CalendarPopup onSelect={selectedDate => {
                   console.log(selectedDate.toDateString())
                   const selectedDateStr = selectedDate.toDateString().split(' ').slice(0, 3).join(' ')
-                  setDate(selectedDateStr);
+                  setDate(selectedDateStr); //! BUG
                   handleRechedule(taskData.id, selectedDateStr)
                 }} />
               </span>
