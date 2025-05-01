@@ -48,8 +48,8 @@ export default function SignUp() {
           });
         })
         .then(() => {
-          const userdb = ref(db, "users/");
-          set(push(userdb), {
+          const userRef = ref(db, `users/${auth.currentUser.uid}`);
+          set(userRef, {
             userid: auth.currentUser.uid,
             username: auth.currentUser.displayName || fullName,
             email: auth.currentUser.email || email,

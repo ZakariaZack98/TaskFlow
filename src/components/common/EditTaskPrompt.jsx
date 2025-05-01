@@ -44,7 +44,7 @@ const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
   }
 
   return (
-    <div className='absolute bg-white w-[40%] cursor-pointer ps-3 pt-3 pe-3 rounded-xl border z-30'>
+    <div className='absolute bg-white w-[40%] cursor-pointer ps-3 pt-3 pe-3 rounded-xl border z-30' style={{boxShadow: '0 0 5px 5px rgba(0, 0, 0, 0.1)'}}>
       <span className='absolute right-4 top-4 text-accentMain text-3xl' onClick={() => setOpenEditPrompt(false)}>
         <IoMdCloseCircle />
       </span>
