@@ -5,9 +5,9 @@ import PrioritySelector from './PrioritySelector'
 import { IoMdCloseCircle } from 'react-icons/io'
 import BtnPrimary from './BtnPrimary'
 import { FaPlusCircle } from 'react-icons/fa'
-import { GetTimeNow } from '../../utils/utils'
+import { GetMilliseconds, GetTimeNow } from '../../utils/utils'
 import { ref, set } from 'firebase/database'
-import { db } from '../../../Database/FirebaseConfig'
+import { auth, db } from '../../../Database/FirebaseConfig'
 
 const AddTaskPrompt = () => {
   const [openPrompt, setOpenPrompt] = useState(false);
@@ -26,10 +26,10 @@ const AddTaskPrompt = () => {
       priority,
       id: Date.now(),
       status: 'pending',
-      deadline: date,
+      deadline: GetMilliseconds(date + ` ${new Date().toString().split(' ')[3]}`), //! Tempfix: Adding the year to complete the format
       createdAt: GetTimeNow()
     }
-    const taskRef = ref(db, `tasks/${newTask.id}`);
+    const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${newTask.id}`);
     try {
       await set(taskRef, newTask);
       setTitle('');
@@ -56,7 +56,7 @@ const AddTaskPrompt = () => {
       </div>
       {
         openPrompt && (
-          <div className='rounded-lg ps-3 pt-3 pe-3 w-full bg-white border border-fontSecondery flex flex-col gap-y-1 mt-3 relative'>
+          <div className='rounded-lg ps-3 pt-3 pe-3 w-full bg-white border border-fontSecondery flex flex-col gap-y-1 mt-3 absolute z-30 min-w-180'  style={{boxShadow: '0 0 5px 5px rgba(0, 0, 0, 0.1)'}}>
             <span className='absolute right-4 top-4 text-accentMain text-2xl cursor-pointer' onClick={() => setOpenPrompt(false)}>
               <IoMdCloseCircle />
             </span>

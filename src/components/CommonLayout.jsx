@@ -15,7 +15,6 @@ const CommonLayout = () => {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      console.log(user.emailVerified);
       setuserVerifed(user.emailVerified);
     });
   }, []);

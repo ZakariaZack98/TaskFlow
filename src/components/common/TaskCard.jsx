@@ -21,8 +21,8 @@ const TaskCard = ({ taskData }) => {
   const [openEditPrompt, setOpenEditPrompt] = useState(false);
 
   const handleRechedule = async (taskId, selectedDate) => {
-    const dateRef = ref(db, `tasks/${taskId}/date`);
-    const deadlineRef = ref(db, `tasks/${taskId}/deadline`)
+    const dateRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskId}/date`);
+    const deadlineRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskId}/deadline`)
     try {
       await Promise.all([set(dateRef, selectedDate), set(deadlineRef, selectedDate)])
       console.log('rescheduling successful')

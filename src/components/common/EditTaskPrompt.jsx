@@ -26,7 +26,7 @@ const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
       deadline: date,
       createdAt: taskData.createdAt
     }
-    const taskRef = ref(db, `tasks/${taskData.id}`);
+    const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskData.id}`);
     try {
       await set(taskRef, updatedTask);
       setTitle('');

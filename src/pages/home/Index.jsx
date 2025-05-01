@@ -9,10 +9,10 @@ const Inbox = () => {
   // const taskDataArr = _.dummyTaskArr.filter(task => task.status === 'Pending');
   return (
     <div className='h-full w-full'>
-      <div className="pendingTaskContainer w-5/10 mx-auto ">
+      <div className="pendingTaskContainer w-6/10 mx-auto ">
         <h1 className='text-3xl font-bold'>Inbox</h1>
         <AddTaskPrompt/>
-        <div className="taskList flex flex-col gap-y-3 my-3">
+        <div className="taskList flex flex-col gap-y-3 my-3 mt-10">
           {
             allTaskData.length > 0 ? allTaskData.map((task, index) => (
               <div className={index < allTaskData.length -1 ? 'border-b border-[rgba(0,0,0,0.22)]' : ''}>
