@@ -13,14 +13,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { TaskContext } from "../../contexts/TaskContext";
 import { onValue, ref } from "firebase/database";
 import { db } from "../../../Database/FirebaseConfig";
+import _ from "../../lib/lib";
+import AddTaskPrompt from "../common/AddTaskPrompt";
 
 const Sidebar = ({
   userName = "Mahmudd",
   imgUrl = "https://images.pexels.com/photos/31630076/pexels-photo-31630076/free-photo-of-historic-street-scene-in-lisbon-with-cobblestones.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load",
   category = [],
 }) => {
-
-  const {allTaskData, setAllTaskData} = useContext(TaskContext);
+  const projects = _.projects;
+  const { allTaskData, setAllTaskData } = useContext(TaskContext);
   /**
    * TODO: FETCH ALL TASKS DATA FROM THE DATABASE AFTER USER AUTHENTICATION ==============
    * @param {userId} string containing user id
@@ -30,15 +32,15 @@ const Sidebar = ({
     const taskRef = ref(db, `tasks/`);
     const unsubscribe = onValue(taskRef, (snapshot) => {
       const taskArr = [];
-      if(snapshot.exists()) {
-        snapshot.forEach(taskSnapshot => {
+      if (snapshot.exists()) {
+        snapshot.forEach((taskSnapshot) => {
           taskArr.push(taskSnapshot.val());
-        })
+        });
       }
-      setAllTaskData(taskArr.sort((a, b) => b.id - a.id)) //* ascending from latest to oldest
-    })
+      setAllTaskData(taskArr.sort((a, b) => b.id - a.id)); //* ascending from latest to oldest
+    });
     return () => unsubscribe();
-  }, [db])
+  }, [db]);
 
   const location = useLocation();
   const path = location.pathname;
@@ -140,85 +142,59 @@ const Sidebar = ({
       </div>
       {/* profile part end */}
       {/* add task part start */}
-      <div className="flex items-center gap-x-1 mt-4">
-        <span className="text-red-500 text-3xl">
-          <IoMdAddCircle />
-        </span>
-        <h2>Add task</h2>
-      </div>
+      <AddTaskPrompt />
       {/* add task part end */}
       {/* nav list part start */}
-      <div className="flex flex-col gap-y-4 mt-4">
+      <div className="flex flex-col gap-y-2 mt-4">
         {navList?.map((item, index) => (
           <div
             onClick={() => navigate(item?.path)}
             key={item?.id}
-            className={`flex group items-center justify-between ${
-              path === item?.path ? "bg-focusMain" : ""
-            }`}
+            className={`flex group items-center hover:bg-gray-200  justify-between -ml-3 px-4 p-0.5 rounded cursor-pointer
+              ${path === item?.path ? "bg-focusMain  " : ""}
+            `}
           >
             <div className="flex items-center gap-x-3  ">
-              <span className="group-hover:text-red-500 transition-all text-2xl">
+              <span className="group-hover:text-red-500 text-fontSecondery transition-all text-2xl">
                 {item?.icon}
               </span>
-              <h2 className="group-hover:text-red-500">{item?.name}</h2>
+              <h2 className="group-hover:text-red-500 text-fontSecondery">
+                {item?.name}
+              </h2>
             </div>
-            <p className="text-[12px] group-hover:text-red-500">{item?.msg}</p>
+            <p className="text-[12px] text-gray-400 group-hover:text-red-500">
+              {item?.msg}
+            </p>
           </div>
         ))}
       </div>
       {/* nav list part end */}
-      {/* favourite part start */}
-      <div className="mt-4">
-        <h1 className="text-xl ">Favourite</h1>
-        <div>
-          {favouriteList?.map((item, index) => (
-            <div key={item.name}
-              onClick={() => navigate(item?.path)}
-              className="flex items-center justify-between"
-            >
-              <div key={item?.id} className="flex items-center gap-x-3 mt-2 ">
-                <span className="hover:text-red-500 transition-all text-xl">
-                  {item?.icon}
-                </span>
-                <h2 className="hover:text-red-500">{item?.name}</h2>
-              </div>
-              <p className="text-[12px]">{item?.msg}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-      {/* favourite part end */}
+
       {/* my project part start */}
-      <div className="mt-4">
-        <h1 className="text-xl ">My Project</h1>
+      <div className="mt-8 ">
+        <h1 className="text-xl text-fontSecondery">My Project</h1>
         <div>
-          {myProject?.map((item, index) => (
+          {projects?.map((project) => (
             <div
-              onClick={() => navigate(item?.path)}
-              className="flex items-center justify-between"
+              onClick={() => navigate(project)}
+              className="flex items-center group justify-between  hover:bg-gray-200  -ml-3 px-4 p-0.5 rounded cursor-pointer"
             >
-              <div key={item?.id} className="flex items-center gap-x-3 mt-2 ">
-                <span className="hover:text-red-500 transition-all text-xl">
-                  {item?.icon}
+              <div key={project} className="flex items-center gap-x-3 mt-1 ">
+                <span className="group-hover:text-red-500 text-fontSecondery transition-all text-xl">
+                  <CiHashtag />
                 </span>
-                <h2 className="hover:text-red-500">{item?.name}</h2>
+                <h2 className="group-hover:text-red-500 text-fontSecondery">
+                  {project}
+                </h2>
               </div>
-              <p className="text-[12px]">{item?.msg}</p>
+              <p className="text-[12px] group-hover:text-red-500 text-gray-400">
+                5
+              </p>
             </div>
           ))}
         </div>
       </div>
       {/* my project part end */}
-      {/* add taeam part start */}
-      <div className="flex items-center gap-x-1 mt-20">
-        <span className="text-gray-800 text-3xl">
-          <IoMdAddCircle />
-        </span>
-        <h2>Add a team</h2>
-      </div>
-
-      {/* add taeam part end */}
     </div>
   );
 };
