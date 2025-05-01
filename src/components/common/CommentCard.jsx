@@ -21,7 +21,7 @@ const CommentCard = ({ commentData }) => {
             <div className="userSec">
               <div className="flex items-center gap-x-4">
                 <p className="font-semibold">{auth.currentUser.displayName || "Sadee MD Zakaria"}</p>
-                <span className="text-sm">{moment(createdAt).fromNow() || '02:38 PM Today'}</span>
+                <span className="text-sm text-fontSecondery">{moment(createdAt).fromNow() || '02:38 PM Today'}</span>
               </div>
             </div>
             <p className="mb-3 text-fontSecondery">{text || 'Ut ut magna aute eiusmod eiusmod aute non.'}</p>

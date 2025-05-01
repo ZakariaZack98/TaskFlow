@@ -55,10 +55,7 @@ const TaskCard = ({ taskData }) => {
         onMouseOver={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
-        <div
-          className="left flex items-start"
-          onClick={() => setOpenTaskpage(true)}
-        >
+        <div className="left flex items-start">
           <div className="flex  gap-x-1 ">
             <div className="flex items-start translate-y-1">
               <span className={`text-xl ${hover ? "visible" : "invisible"}`}>
@@ -66,7 +63,10 @@ const TaskCard = ({ taskData }) => {
               </span>
               <RoundedCheckbox />
             </div>
-            <div className="flex flex-col">
+            <div
+              className="flex flex-col"
+              onClick={() => setOpenTaskpage(true)}
+            >
               <p>{taskData.title}</p>
               <div className="flex justify-start items-center text-sm gap-x-2">
                 <span>
@@ -116,7 +116,7 @@ const TaskCard = ({ taskData }) => {
                       .split(" ")
                       .slice(0, 3)
                       .join(" ");
-                    setDate(selectedDateStr); //! BUG
+                    setDate(selectedDateStr);
                     handleRechedule(taskData.id, selectedDateStr);
                   }}
                 />
