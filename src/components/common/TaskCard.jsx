@@ -11,16 +11,23 @@ import CalendarPopup from "./CalenderPopup";
 import TaskPage from "../../pages/TaskPage/TaskPage";
 import { ref, set } from "firebase/database";
 import { db } from "../../../Database/FirebaseConfig";
+import EditTaskPrompt from "./EditTaskPrompt";
+import TaskAction from "./TaskAction";
 
 const TaskCard = ({ taskData }) => {
   const [hover, setHover] = useState(false);
   const [recheduleMode, setRecheduleMode] = useState(false);
   const [date, setDate] = useState(taskData.date);
   const [openTaskPage, setOpenTaskpage] = useState(false);
+  const [openEditPrompt, setOpenEditPrompt] = useState(false);
+  const [showTaskAction, setShowTaskAction] = useState(false);
 
   const handleRechedule = async (taskId, selectedDate) => {
-    const dateRef = ref(db, `tasks/${taskId}/date`);
-    const deadlineRef = ref(db, `tasks/${taskId}/deadline`);
+    const dateRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskId}/date`);
+    const deadlineRef = ref(
+      db,
+      `tasks/${auth.currentUser?.uid}/${taskId}/deadline`
+    );
     try {
       await Promise.all([
         set(dateRef, selectedDate),
@@ -36,6 +43,12 @@ const TaskCard = ({ taskData }) => {
     <>
       {openTaskPage && (
         <TaskPage taskData={taskData} setOpenTaskPage={setOpenTaskpage} />
+      )}
+      {openEditPrompt && (
+        <EditTaskPrompt
+          taskData={taskData}
+          setOpenEditPrompt={setOpenEditPrompt}
+        />
       )}
       <div
         className="flex justify-between items-start cursor-pointer pb-3"
@@ -60,13 +73,13 @@ const TaskCard = ({ taskData }) => {
                   <SlCalender />
                 </span>
                 <p className="text-fontSecondery">
-                  {GetDateNow() === date
+                  {GetDateNow() === taskData.date
                     ? "Today"
-                    : Number(date.split(" ")[2]) -
+                    : Number(taskData.date.split(" ")[2]) -
                         Number(GetDateNow().split(" ")[2]) ===
                       1
                     ? "Tomorrow"
-                    : date}
+                    : taskData.date}
                 </p>
               </div>
             </div>
@@ -74,11 +87,14 @@ const TaskCard = ({ taskData }) => {
         </div>
         <div className="right flex flex-col justify-center items-center">
           <div
-            className={`icons flex items-center gap-x-3 text-xl text-fontSecondery ${
+            className={`relative icons flex items-center gap-x-3 text-xl text-fontSecondery ${
               hover ? "visible" : "invisible"
             }`}
           >
-            <span className="text-2xl hover:text-accentMain">
+            <span
+              className="text-2xl hover:text-accentMain"
+              onClick={() => setOpenEditPrompt((prev) => !prev)}
+            >
               <GoPencil />
             </span>
             <span
@@ -100,7 +116,7 @@ const TaskCard = ({ taskData }) => {
                       .split(" ")
                       .slice(0, 3)
                       .join(" ");
-                    setDate(selectedDateStr);
+                    setDate(selectedDateStr); //! BUG
                     handleRechedule(taskData.id, selectedDateStr);
                   }}
                 />
@@ -109,8 +125,15 @@ const TaskCard = ({ taskData }) => {
             <span className=" hover:text-accentMain">
               <FaRegMessage />
             </span>
-            <span className=" hover:text-accentMain">
-              <PiDotsThreeOutline />
+            <span className=" hover:text-accentMain relative">
+              <PiDotsThreeOutline
+                onClick={() => setShowTaskAction((prev) => !prev)}
+              />
+              {showTaskAction && (
+                <div className="absolute top-6 -left-5">
+                  <TaskAction taskDataa={taskData} />
+                </div>
+              )}
             </span>
           </div>
         </div>

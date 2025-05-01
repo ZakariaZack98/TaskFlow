@@ -10,9 +10,9 @@ import ProjectSelector from "../../components/common/ProjectSelector";
 import DateSelector from "../../components/common/DateSelector";
 import _ from "../../lib/lib";
 import CommentCard from "../../components/common/CommentCard";
-import { GetDateNow } from "../../utils/utils";
-import { onValue, ref, update } from "firebase/database";
-import { db } from "../../../Database/FirebaseConfig";
+import { GetDateNow, GetTimeNow } from "../../utils/utils";
+import { onValue, ref, set, update } from "firebase/database";
+import { auth, db } from "../../../Database/FirebaseConfig";
 
 const TaskPage = ({ taskData, setOpenTaskPage }) => {
   const [currentTaskData, setCurrentTaskData] = useState({});
@@ -23,10 +23,10 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
   const [project, setProject] = useState(taskData?.project || 'N/A');
   const [priority, setPriority] = useState(taskData?.priority || 'N/A');
   const [date, setDate] = useState(taskData.date || GetDateNow());
-
+  const [comment, setComment] = useState('');
   // * FETCHING REAL TIME DATA & UPDATING STATES SO ANY CHANGES DONE CAN BE DISPLAYED REAL TIME ==========
   useEffect(() => {
-    const taskRef = ref(db, `tasks/${taskData.id}`)
+    const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskData.id}`)
     const unsubscribe = onValue(taskRef, (taskSnapshot) => {
       if(taskSnapshot.exists()) {
         const updatedData = taskSnapshot.val()
@@ -36,14 +36,11 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
         setProject(updatedData.project || 'Personal');
         setPriority(updatedData.priority || 3)
         setDate(updatedData.date || new Date().toDateString())
+        console.log(Object.values(comments))
       }
     })
     return () => unsubscribe();
   }, [taskData?.id])
-
-
-  const dummyComments = _.dummyComments;
-
 
   const getIconClickHandler = (name) => {
     if (name === 'closePopup') {
@@ -61,6 +58,25 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
     updatedTask.date = date,
     updatedTask.deadline = date,
     console.log(updatedTask)
+  }
+
+  const handleComment = async () => {
+    //! ADD ERROR HANDLING & EARLY RETURN LOGIC
+    const newComment = {
+      id: Date.now(),
+      text: comment,
+      imgUrl: '',
+      createdAt: GetTimeNow(),
+      commenterId: auth.currentUser?.uid
+    }
+    const commentRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskData?.id}/comments/${newComment.id}`);
+    try {
+      await set(commentRef, newComment);
+      console.log('comment added');
+      setComment('')
+    } catch (error) {
+      console.error('Error posting comment', error.message);
+    }
   }
 
   return (
@@ -144,20 +160,20 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                   <div className="addComment flex items-center">
                     <div className="flex gap-x-2 my-2">
                       <picture>
-                        <img src={`https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png`} className="w-8 h-8 rounded-full bg-cover bg-center" />
+                        <img src={auth.currentUser?.photoURL || `https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png`} className="w-8 h-8 rounded-full bg-cover bg-center" />
                       </picture>
                       <div className="inputField relative w-100">
-                        <input type="text" className="px-2 py-1 rounded-xl border-[3px] border-accentMain w-full" />
+                        <input type="text" className="px-2 py-1 rounded-xl border-[3px] border-accentMain w-full" value={comment} onChange={e => setComment(e.target.value)}/>
                         <div className="absolute right-2 top-1/2 -translate-y-[50%] opcaity-40 text-xl cursor-pointer">
                           <GrAttachment />
                         </div>
                       </div>
-                      <BtnPrimary label={'Comment'} />
+                      <BtnPrimary label={'Comment'} clickHandler={() => handleComment()}/>
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-y-1">
                     {
-                      currentTaskData?.comments?.map((comment, idx) => <CommentCard key={idx} commentData={comment} />)
+                      Object.values(comments)?.map((comment, idx) => <CommentCard key={idx} commentData={comment} />)
                     }
                   </div>
                 </div>

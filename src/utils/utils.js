@@ -1,5 +1,10 @@
 import moment from "moment";
 
+// * (HELPER) EXTRACT MILISECONDS FROM DATE STRING ===============
+export const GetMilliseconds = (dateString) => {
+  return new Date(dateString).getTime();
+}
+
 //* (HELPER) TIME FORMATTER HELPER FUNCTION ======================
 export const GetTimeNow = () => {
   return moment().format("MM DD YYYY hh:mm:ss a");

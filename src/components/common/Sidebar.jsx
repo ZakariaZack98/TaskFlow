@@ -5,31 +5,33 @@ import { BsBell } from "react-icons/bs";
 import { CiHashtag, CiSearch } from "react-icons/ci";
 import { FaAngleDown } from "react-icons/fa";
 import { GoInbox } from "react-icons/go";
-import { IoMdAddCircle } from "react-icons/io";
 import { MdOutlineCalendarToday } from "react-icons/md";
 import { SlCalender } from "react-icons/sl";
 import { VscLayoutSidebarLeftOff } from "react-icons/vsc";
 import { useLocation, useNavigate } from "react-router-dom";
 import { TaskContext } from "../../contexts/TaskContext";
 import { onValue, ref } from "firebase/database";
-import { db } from "../../../Database/FirebaseConfig";
+import { auth, db } from "../../../Database/FirebaseConfig";
 import _ from "../../lib/lib";
 import AddTaskPrompt from "../common/AddTaskPrompt";
 
 const Sidebar = ({
-  userName = "Mahmudd",
-  imgUrl = "https://images.pexels.com/photos/31630076/pexels-photo-31630076/free-photo-of-historic-street-scene-in-lisbon-with-cobblestones.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load",
+  userName = auth.currentUser?.displayName || "N/A",
+  imgUrl = auth?.currentUser?.photoURL || "https://images.pexels.com/photos/31630076/pexels-photo-31630076/free-photo-of-historic-street-scene-in-lisbon-with-cobblestones.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load",
   category = [],
 }) => {
+
   const projects = _.projects;
   const { allTaskData, setAllTaskData } = useContext(TaskContext);
+
+
   /**
    * TODO: FETCH ALL TASKS DATA FROM THE DATABASE AFTER USER AUTHENTICATION ==============
    * @param {userId} string containing user id
    * @returns {Array} containing all tasks data
    * */
   useEffect(() => {
-    const taskRef = ref(db, `tasks/`);
+    const taskRef = ref(db, `tasks/${auth.currentUser?.uid}`);
     const unsubscribe = onValue(taskRef, (snapshot) => {
       const taskArr = [];
       if (snapshot.exists()) {
@@ -37,7 +39,7 @@ const Sidebar = ({
           taskArr.push(taskSnapshot.val());
         });
       }
-      setAllTaskData(taskArr.sort((a, b) => b.id - a.id)); //* ascending from latest to oldest
+      setAllTaskData(taskArr.sort((a, b) => b.id - a.id)); //* descending from latest to oldest added task
     });
     return () => unsubscribe();
   }, [db]);
@@ -89,31 +91,6 @@ const Sidebar = ({
       msg: 9,
     },
   ];
-  const favouriteList = [
-    {
-      id: 1,
-      icon: <CiHashtag />,
-      name: "Daily Task",
-      path: "/dailyTask",
-      msg: 4,
-    },
-  ];
-  const myProject = [
-    {
-      id: 1,
-      icon: <CiHashtag />,
-      name: "Home",
-      path: "/home",
-      msg: 1,
-    },
-    {
-      id: 2,
-      icon: <CiHashtag />,
-      name: "Daily Tak",
-      path: "/dailyTask",
-      msg: 2,
-    },
-  ];
   return (
     <div className="w-1/5 h-full bg-sidebarMain p-5">
       {/* profile part start */}
@@ -150,19 +127,19 @@ const Sidebar = ({
           <div
             onClick={() => navigate(item?.path)}
             key={item?.id}
-            className={`flex group items-center hover:bg-gray-200  justify-between -ml-3 px-4 p-0.5 rounded cursor-pointer
+            className={`flex group items-center hover:bg-gray-200  justify-between -ml-3 px-4 py-1 rounded-md cursor-pointer
               ${path === item?.path ? "bg-focusMain  " : ""}
             `}
           >
             <div className="flex items-center gap-x-3  ">
-              <span className="group-hover:text-red-500 text-fontSecondery transition-all text-2xl">
+              <span className="group-hover:text-accentMain text-fontSecondery transition-all text-2xl">
                 {item?.icon}
               </span>
-              <h2 className="group-hover:text-red-500 text-fontSecondery">
+              <h2 className="group-hover:text-accentMain text-fontSecondery">
                 {item?.name}
               </h2>
             </div>
-            <p className="text-[12px] text-gray-400 group-hover:text-red-500">
+            <p className="text-[12px] text-gray-400 group-hover:text-accentMain">
               {item?.msg}
             </p>
           </div>
@@ -172,22 +149,22 @@ const Sidebar = ({
 
       {/* my project part start */}
       <div className="mt-8 ">
-        <h1 className="text-xl text-fontSecondery">My Project</h1>
-        <div>
+        <h1 className="text-xl font-semibold">My Projects</h1>
+        <div className="flex flex-col gap-y-2 mt-3">
           {projects?.map((project) => (
             <div
               onClick={() => navigate(project)}
-              className="flex items-center group justify-between  hover:bg-gray-200  -ml-3 px-4 p-0.5 rounded cursor-pointer"
+              className="flex items-center group justify-between  hover:bg-gray-200  -ml-3 px-4 py-0.5 rounded-md cursor-pointer"
             >
               <div key={project} className="flex items-center gap-x-3 mt-1 ">
-                <span className="group-hover:text-red-500 text-fontSecondery transition-all text-xl">
+                <span className={` text-fontSecondery transition-all text-xl ${project === 'Personal' ? 'text-blue-500' : project === 'Shopping' ? 'text-green-500' : project === 'Works' ? 'text-orange-500' : project === 'Errands' ? 'text-shadow-cyan-700' : 'text-gray-800'}`}>
                   <CiHashtag />
                 </span>
-                <h2 className="group-hover:text-red-500 text-fontSecondery">
+                <h2 className="group-hover:text-accentMain text-fontSecondery">
                   {project}
                 </h2>
               </div>
-              <p className="text-[12px] group-hover:text-red-500 text-gray-400">
+              <p className="text-[12px] group-hover:text-accentMain text-gray-400">
                 5
               </p>
             </div>

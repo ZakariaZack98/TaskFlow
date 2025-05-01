@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineSun } from "react-icons/ai";
 import { BsArrowsMove, BsThreeDots } from "react-icons/bs";
 import { CiCalendar, CiEdit, CiNoWaitingSign } from "react-icons/ci";
@@ -13,12 +13,29 @@ import {
   IoLink,
 } from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { ref, set } from "firebase/database";
+import { db } from "../../../Database/FirebaseConfig";
+import { auth } from "../../../Database/FirebaseConfig";
 
-const TaskAction = () => {
+const TaskAction = ({ taskDataa }) => {
   const priorities = _.priorities;
+  const [priority, setPriority] = useState([]);
+
+  // todo updatePriority function apply
+  const updatePriority = (priorityData) => {
+    console.log(priorityData);
+    setPriority(priorityData.level);
+    const taskRef = ref(
+      db,
+      `tasks/${auth.currentUser?.uid}/${taskDataa.id}/priority`
+    );
+    set(taskRef, priorityData.level);
+  };
+  console.log(priority);
+
   return (
     <div
-      className=" w-[25%] bg-gray-100 p-3 rounded-md "
+      className=" min-w-60 bg-gray-100 p-3 rounded-md text-sm "
       style={{ boxShadow: "0 0 5px 5px rgba(0,0,0,0.1)" }}
     >
       {/* edit top part */}
@@ -86,6 +103,7 @@ const TaskAction = () => {
             {/* priority  icons */}
             {priorities?.map((priority) => (
               <span
+                onClick={() => updatePriority(priority)}
                 className={`text-xl ${
                   priority.level === 1
                     ? "text-red-500"
@@ -94,6 +112,10 @@ const TaskAction = () => {
                     : priority.level === 3
                     ? "text-green-700"
                     : "text-gray-600"
+                } ${
+                  priority.level == taskDataa.priority
+                    ? "p-2 border border-gray-300 shadow-sm rounded-lg"
+                    : ""
                 }`}
               >
                 <FaFlag />
