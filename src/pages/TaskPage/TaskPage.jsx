@@ -9,7 +9,7 @@ import ProjectSelector from "../../components/common/ProjectSelector";
 import DateSelector from "../../components/common/DateSelector";
 import _ from "../../lib/lib";
 import CommentCard from "../../components/common/CommentCard";
-import { GetDateNow, GetTimeNow } from "../../utils/utils";
+import { GetDateNow, GetMilliseconds, GetTimeNow } from "../../utils/utils";
 import { onValue, ref, set, update } from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
 import { MdAddPhotoAlternate } from "react-icons/md";
@@ -121,15 +121,24 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
     }
   };
 
-  const handleUpdateTask = () => {
+  const handleUpdateTask = async () => {
     const updatedTask = { ...currentTaskData };
     updatedTask.subTasks = subTasks;
     updatedTask.comments = comments;
     updatedTask.project = project;
     updatedTask.priority = priority;
     updatedTask.date = date,
-      updatedTask.deadline = date,
-      console.log(updatedTask)
+    updatedTask.deadline = GetMilliseconds(date + ` ${new Date().toDateString().split(' ')[3]}`),
+    console.log(updatedTask)
+    const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskData.id}`);
+    try {
+      await set(taskRef, updatedTask);
+      console.log('Task updated successfully')
+    } catch (error) {
+      console.error(error.message)
+    } finally {
+      setOpenTaskPage(false);
+    }
   }
 
   const handleComment = async () => {
@@ -276,7 +285,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                 {/* ================================= DATE SELECTION ===================================== */}
                 <div className="date cursor-pointer relative" >
                   <p className="text-sm text-secondary translate-y-2" >Date</p>
-                  <DateSelector date={date} setDate={setDate} />
+                  <DateSelector date={date} setDate={setDate} deadline={taskData?.deadline}/>
                 </div>
                 {/* ================================= PRIORITY SELECTION ===================================== */}
                 <div className="priority border-b border-[rgba(0,0,0,0.16)]">
