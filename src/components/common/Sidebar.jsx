@@ -150,7 +150,10 @@ const Sidebar = ({
           {/* name part */}
           <div className="border-b border-b-fontSecondery pb-2 ">
             {/* name part */}
-            <div className="flex group items-center justify-between hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
+            <div
+              onClick={() => navigate("/profile")}
+              className="flex group items-center justify-between hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer "
+            >
               <div className="flex items-center gap-2 ">
                 <span className="text-fontSecondery text-xl">
                   <BsGraphUpArrow />
@@ -168,7 +171,10 @@ const Sidebar = ({
           </div>
 
           {/* notification */}
-          <div className="border-b border-b-fontSecondery pb-2  mt-2  ">
+          <div
+            onClick={() => navigate("/notification")}
+            className="border-b border-b-fontSecondery pb-2  mt-2  "
+          >
             <div className="flex items-center gap-2 hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
               <span className="text-fontSecondery text-xl">
                 <CiBellOn />
