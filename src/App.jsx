@@ -7,6 +7,7 @@ import Upcoming from "./pages/Upcoming/Upcoming";
 import SignUp from "./pages/SignUp/SignUp";
 import SignIn from "./pages/SignIn/SignIn";
 import TaskPage from "./pages/TaskPage/TaskPage";
+import UserNotVerified from "./components/common/UserNotVerified";
 
 const App = () => {
   return (
