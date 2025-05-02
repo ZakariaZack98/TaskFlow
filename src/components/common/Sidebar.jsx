@@ -280,7 +280,7 @@ const Sidebar = ({
             ))}
           </div>
         </div>
-        {/* my project part end */}
+        {/* my project part endd */}
       </div>
     </div>
   );
