@@ -108,7 +108,7 @@ const Sidebar = ({
       });
   };
   return (
-    <div className="w-1/5 h-full bg-sidebarMain p-5 relative">
+    <div className="w-1/5 h-full bg-sidebarMain p-5 relative shadow-xl">
       {/* profile part start */}
       <div className="flex justify-between">
         <div
@@ -174,10 +174,10 @@ const Sidebar = ({
               <span className="text-fontSecondery text-xl">
                 <CiBellOn />
               </span>
-              <p className="text-fontSecondery text-[15px]">Notification</p>
+              <p className="text-fontSecondery text-[15px]">Notifications</p>
             </div>
             {/* whats new */}
-            <div className="flex items-center gap-2 hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
+            <div className="flex items-center gap-2 hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer">
               <span className="text-fontSecondery text-xl">
                 <CiGift />
               </span>
@@ -186,7 +186,7 @@ const Sidebar = ({
           </div>
           {/* pro */}
           <div className="border-b border-b-fontSecondery  px-1 p-0.5 mt-1 hover:bg-gray-200   mb-1.5 rounded cursor-pointer ">
-            <div className="flex items-center gap-2 ">
+            <div className="flex items-center gap-2 mb-1">
               <span className=" text-yellow-400 text-xl">
                 <IoDiamondOutline />
               </span>

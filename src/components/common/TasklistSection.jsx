@@ -9,8 +9,8 @@ const TasklistSection = ({title, taskData, titleColorClass = 'text-black'}) => {
       <div className="flex flex-col my-2">
         {
           taskData?.map((task, idx, arr) => {
-            return <div className={idx < arr.length - 1 ? 'border-b border-[rgba(0,0,0,0.33)]' : ''}>
-              <TaskCard taskData={task}/>
+            return <div className={idx < arr.length - 1 ? 'border-b border-[rgba(0,0,0,0.15)]' : ''}>
+              <TaskCard key={task.id} taskData={task}/>
             </div>
           })
         }

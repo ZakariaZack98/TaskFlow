@@ -23,7 +23,7 @@ const Inbox = () => {
   }, [allTaskData]);
 
   return (
-    <div className='h-full w-full py-10 overflow-y-scroll' style={{ scrollbarWidth: 'none' }}>
+    <div className='outletPage h-full w-full py-10 overflow-y-scroll' style={{ scrollbarWidth: 'none' }}>
       <div className="pendingTaskContainer w-6/10 mx-auto ">
         <h1 className='text-3xl font-bold'>Inbox</h1>
         <AddTaskPrompt />
