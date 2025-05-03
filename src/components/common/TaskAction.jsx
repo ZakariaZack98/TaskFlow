@@ -12,11 +12,13 @@ import {
   IoExtensionPuzzleOutline,
   IoLink,
 } from "react-icons/io5";
+
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { ref, remove, set } from "firebase/database";
 import { db } from "../../../Database/FirebaseConfig";
 import { auth } from "../../../Database/FirebaseConfig";
 import EditTaskPrompt from "./EditTaskPrompt";
+import { push } from "firebase/database";
 import MyProject from "./MyProject";
 
 const TaskAction = ({ taskDataa }) => {
@@ -54,7 +56,21 @@ const TaskAction = ({ taskDataa }) => {
     remove(taskRef);
   };
 
-  console.log(taskDataa.project);
+  console.log(taskDataa);
+
+  // todo apply handleDuplicate
+
+  const handleDuplicate = () => {
+    const userTasksRef = ref(db, `tasks/${auth.currentUser?.uid}`);
+
+    const duplicatedTask = {
+      ...taskDataa,
+      id: null,
+      createdAt: new Date().toISOString(),
+    };
+
+    push(userTasksRef, duplicatedTask);
+  };
 
   return (
     <div>
@@ -188,7 +204,10 @@ const TaskAction = ({ taskDataa }) => {
             <p className="text-fontSecondery text-sm">V</p>
           </div>
           {/* icon duplicate */}
-          <div className="flex group items-center justify-between hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
+          <div
+            onClick={handleDuplicate}
+            className="flex group items-center justify-between hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer "
+          >
             <div className="flex items-center gap-2 ">
               <span className="text-fontSecondery">
                 <IoDuplicateOutline />
