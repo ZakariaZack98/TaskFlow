@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-export default function CalendarPopup({ date, onSelect }) {
-  const [currentDate, setCurrentDate] = useState(date || new Date());
+export default function CalendarPopup({ deadline, onSelect }) {
+  const [currentDate, setCurrentDate] = useState(deadline ? new Date(deadline) : new Date());
 
   const months = [
     "January", "February", "March", "April", "May", "June",
@@ -16,12 +16,20 @@ export default function CalendarPopup({ date, onSelect }) {
   const firstDayOfMonth = new Date(year, month, 1);
   const lastDayOfMonth = new Date(year, month + 1, 0);
 
-  const startDay = firstDayOfMonth.getDay(); 
+  const startDay = firstDayOfMonth.getDay();
   const totalDays = lastDayOfMonth.getDate();
+
+  const today = new Date();
+  const selectedDate = deadline ? new Date(deadline) : null;
+
+  const isSameDate = (d1, d2) =>
+    d1.getDate() === d2.getDate() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getFullYear() === d2.getFullYear();
 
   const selectDate = (day) => {
     const selected = new Date(year, month, day);
-    onSelect && onSelect(selected);
+    onSelect && onSelect(selected); // return as Date object
   };
 
   const prevMonth = () => {
@@ -52,18 +60,17 @@ export default function CalendarPopup({ date, onSelect }) {
 
       {/* Dates Grid */}
       <div className="grid grid-cols-7 text-center gap-1">
-        {/* Empty cells for previous month */}
+        {/* Empty cells before the first day */}
         {Array.from({ length: startDay }).map((_, index) => (
           <div key={`empty-${index}`}></div>
         ))}
 
-        {/* Days of this month */}
+        {/* Days */}
         {Array.from({ length: totalDays }).map((_, dayIndex) => {
           const day = dayIndex + 1;
-          const isToday =
-            day === new Date().getDate() &&
-            month === new Date().getMonth() &&
-            year === new Date().getFullYear();
+          const thisDate = new Date(year, month, day);
+          const isToday = isSameDate(thisDate, today);
+          const isSelected = selectedDate && isSameDate(thisDate, selectedDate);
 
           return (
             <button
@@ -71,8 +78,10 @@ export default function CalendarPopup({ date, onSelect }) {
               onClick={() => selectDate(day)}
               className={`w-8 h-8 text-sm flex items-center justify-center rounded-full transition cursor-pointer
                 ${
-                  isToday
+                  isSelected
                     ? "bg-[#E44332] text-white"
+                    : isToday
+                    ? "bg-gray-300 text-black"
                     : "hover:bg-[#E44332]/20 text-gray-700"
                 }`}
             >

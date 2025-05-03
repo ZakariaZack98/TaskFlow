@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import CalendarPopup from './CalenderPopup';
 import { CiCalendarDate } from 'react-icons/ci';
 
-const DateSelector = ({date = new Date().toDateString() , setDate, border}) => {
+const DateSelector = ({date = new Date().toDateString() , setDate, border, deadline}) => {
   const [openDate, setOpenDate] = useState(false);
   return (
     <div className='relative'>
@@ -15,7 +15,7 @@ const DateSelector = ({date = new Date().toDateString() , setDate, border}) => {
       {
         openDate && (
           <div className="absolute top-18 left-0 w-full">
-            <CalendarPopup onSelect={(date) => {
+            <CalendarPopup deadline={deadline} onSelect={(date) => {
               console.log(date)
               setDate(date.toDateString().split(' ').slice(0, 3).join(' ')); //Making format like (Sunday 15 Apr)
               setOpenDate(false);

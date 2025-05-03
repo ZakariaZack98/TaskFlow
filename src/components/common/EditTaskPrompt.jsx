@@ -5,7 +5,7 @@ import DateSelector from "./DateSelector";
 import ProjectSelector from "./ProjectSelector";
 import PrioritySelector from "./PrioritySelector";
 import { ref, set } from "firebase/database";
-import { db } from "../../../Database/FirebaseConfig";
+import { auth, db } from "../../../Database/FirebaseConfig";
 
 const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
   const [title, setTitle] = useState(taskData?.title || "");

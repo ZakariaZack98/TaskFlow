@@ -24,9 +24,9 @@ const CommonLayout = () => {
   if (userVerified) {
     content = (
       <TaskProvider>
-        <div className="flex h-screen w-full">
+        <div className="flex h-screen w-full commonlayout overflow-hidden">
           <Sidebar />
-          <div className="flex flex-col w-4/5 p-5">
+          <div className="flex flex-col w-4/5 p-5 bg-[rgba(255,255,255,0.77)]">
             <div className="w-full flex justify-end ">
               <div className="flex items-center gap-x-1 px-4 py-1.5 rounded cursor-pointer hover:bg-focusMain duration-300">
                 <span>

@@ -6,7 +6,8 @@ import Today from "./pages/Today/Today";
 import Upcoming from "./pages/Upcoming/Upcoming";
 import SignUp from "./pages/SignUp/SignUp";
 import SignIn from "./pages/SignIn/SignIn";
-import TaskPage from "./pages/TaskPage/TaskPage";
+import UserNotVerified from "./components/common/UserNotVerified";
+import ProjectPage from "./pages/ProjectPage/ProjectPage";
 
 const App = () => {
   return (
@@ -15,12 +16,12 @@ const App = () => {
         <Route path="/" element={<CommonLayout />}>
           <Route index element={<Inbox />} />
           <Route path="/today" element={<Today />} />
-
           <Route path="/upcoming" element={<Upcoming />} />
+          <Route path="/projects/:name" element={<ProjectPage/>}/>
         </Route>
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
-        <Route path="*" element={<TaskPage />} />
+        <Route path="*" element={<UserNotVerified />} />
       </Routes>
     </BrowserRouter>
   );

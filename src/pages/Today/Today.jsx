@@ -1,10 +1,34 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+import { TaskContext } from '../../contexts/TaskContext'
+import { GetMilliseconds } from '../../utils/utils';
+import TaskCard from '../../components/common/TaskCard';
+import AddTaskPrompt from '../../components/common/AddTaskPrompt';
 
 const Today = () => {
+  const { allTaskData } = useContext(TaskContext);
+  const [todaysTaskData, setTodaysTaskData] = useState([])
+
+  useEffect(() => {
+    setTodaysTaskData(allTaskData.filter(task => task.deadline === GetMilliseconds(new Date().toDateString())))
+  }, [allTaskData])
+
   return (
-    <div>
-      <p>Today</p>
-    </div>
+    <>
+      <div className="heading w-6/10 mx-auto pb-5">
+        <h1 className='text-3xl font-bold'>Today</h1>
+        <AddTaskPrompt />
+      </div>
+      <div className='h-full w-full overflow-y-scroll' style={{ scrollbarWidth: 'none' }}>
+        <div className="pendingTaskContainer w-6/10 mx-auto ">
+
+          <div className="taskList flex flex-col gap-y-3 my-3 ">
+            {
+              todaysTaskData?.map(task => <TaskCard key={task.id} taskData={task}/>)
+            }
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
 
