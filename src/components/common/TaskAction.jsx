@@ -44,7 +44,7 @@ const TaskAction = ({ taskDataa }) => {
 
   return (
     <div>
-      {/* common part */}
+      {/* edit task part */}
       <div>
         {openEditPrompt && (
           <EditTaskPrompt
