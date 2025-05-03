@@ -22,6 +22,7 @@ import {
   IoSettingsOutline,
 } from "react-icons/io5";
 import { signOut } from "firebase/auth";
+import { GetMilliseconds } from "../../utils/utils";
 
 const Sidebar = ({
   userName = auth.currentUser?.displayName || "N/A",
@@ -29,6 +30,7 @@ const Sidebar = ({
     "https://images.pexels.com/photos/31630076/pexels-photo-31630076/free-photo-of-historic-street-scene-in-lisbon-with-cobblestones.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load",
   category = [],
 }) => {
+  const todayMs = GetMilliseconds(new Date().toDateString());
   const projects = _.projects;
   const { allTaskData, setAllTaskData } = useContext(TaskContext);
   const [openProfilePopUp, setOpenProfilePopUp] = useState(false);
@@ -61,42 +63,35 @@ const Sidebar = ({
       name: "Search",
       icon: <CiSearch />,
       path: "/search",
-      msg: 9,
+      msg: '',
     },
     {
       id: 2,
       name: "Inbox",
       icon: <GoInbox />,
       path: "/",
-      msg: 9,
+      msg: allTaskData.length,
     },
     {
       id: 3,
       name: "Today",
       icon: <MdOutlineCalendarToday />,
       path: "/today",
-      msg: 9,
+      msg: allTaskData.filter(task => task.deadline === todayMs).length,
     },
     {
       id: 4,
       name: "Upcoming",
       icon: <SlCalender />,
       path: "/upcoming",
-      msg: 9,
+      msg: allTaskData.filter(task => task.deadline > todayMs).length,
     },
     {
       id: 5,
       name: "Filters & Labels",
       icon: <AiOutlineAppstoreAdd />,
       path: "/filters&labels",
-      msg: 9,
-    },
-    {
-      id: 6,
-      name: "Completed",
-      icon: <BiCheckboxChecked />,
-      path: "/completed",
-      msg: 9,
+      msg: 4,
     },
   ];
   // todo handleLogOut function apply
@@ -273,9 +268,7 @@ const Sidebar = ({
                     {project}
                   </h2>
                 </div>
-                <p className="text-[12px] group-hover:text-accentMain text-gray-400">
-                  5
-                </p>
+                
               </div>
             ))}
           </div>
