@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineSun } from "react-icons/ai";
 import { BsArrowsMove, BsThreeDots } from "react-icons/bs";
-import { CiCalendar, CiEdit, CiNoWaitingSign } from "react-icons/ci";
+import { CiCalendar, CiEdit, CiHashtag, CiNoWaitingSign } from "react-icons/ci";
 import { GoProjectSymlink } from "react-icons/go";
 import { MdOutlineNextWeek, MdOutlineWeekend } from "react-icons/md";
 import _ from "../../lib/lib";
@@ -17,11 +17,15 @@ import { ref, remove, set } from "firebase/database";
 import { db } from "../../../Database/FirebaseConfig";
 import { auth } from "../../../Database/FirebaseConfig";
 import EditTaskPrompt from "./EditTaskPrompt";
+import MyProject from "./MyProject";
 
 const TaskAction = ({ taskDataa }) => {
+  const projects = _.projects;
   const priorities = _.priorities;
   const [priority, setPriority] = useState([]);
+  const [project, setProject] = useState([]);
   const [openEditPrompt, setOpenEditPrompt] = useState(false);
+  const [openProjectPopUp, setOpenProjectPopUp] = useState(false);
 
   // todo updatePriority function apply
   const updatePriority = (priorityData) => {
@@ -32,6 +36,17 @@ const TaskAction = ({ taskDataa }) => {
     );
     set(taskRef, priorityData.level);
   };
+  // todo updateProject function apply
+  const updateProject = (projectData) => {
+    console.log(projectData);
+
+    setProject(projectData);
+    const projectRef = ref(
+      db,
+      `tasks/${auth.currentUser?.uid}/${taskDataa.id}/project`
+    );
+    set(projectRef, projectData);
+  };
 
   // todo removeTask function apply
   const removeTask = () => {
@@ -39,20 +54,21 @@ const TaskAction = ({ taskDataa }) => {
     remove(taskRef);
   };
 
-  // todo handleEdit function apply
-  const handleEdit = () => {};
+  console.log(taskDataa.project);
 
   return (
     <div>
-      {/* edit task part */}
-      <div>
+      <div className="relative">
         {openEditPrompt && (
-          <EditTaskPrompt
-            taskData={taskDataa}
-            setOpenEditPrompt={setOpenEditPrompt}
-          />
+          <div className="absolute top-0 left-0 z-50 w-full">
+            <EditTaskPrompt
+              taskData={taskDataa}
+              setOpenEditPrompt={setOpenEditPrompt}
+            />
+          </div>
         )}
       </div>
+
       {/* main */}
       <div
         className=" min-w-60 bg-gray-100 p-3 rounded-md text-sm "
@@ -159,7 +175,10 @@ const TaskAction = ({ taskDataa }) => {
         {/* icons part */}
         <div className=" border-b-fontSecondery  mt-1.5 ">
           {/* icon move */}
-          <div className="flex group items-center justify-between hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
+          <div
+            onClick={() => setOpenProjectPopUp((prev) => !prev)}
+            className="flex relative group items-center justify-between hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer "
+          >
             <div className="flex items-center gap-2 ">
               <span className="text-fontSecondery">
                 <BsArrowsMove />
@@ -219,6 +238,47 @@ const TaskAction = ({ taskDataa }) => {
           <p className="text-fontSecondery text-sm">Delete</p>
         </div>
       </div>
+      {/* my project part */}
+      {openProjectPopUp && (
+        <div className="min-w-[90%] bg-gray-100 -left-54 p-3 bottom-30 rounded-md text-sm absolute z-20 ">
+          <h1 className="text-xl font-semibold">My Projects</h1>
+          <div className="flex flex-col gap-y-2 mt-3">
+            {projects?.map((project, key) => (
+              <div
+                onClick={() => updateProject(project)}
+                className={`flex items-center group justify-between  hover:bg-gray-200  -ml-3 px-4 py-0.5 rounded-md cursor-pointer ${
+                  project == taskDataa.project ? "bg-red-100" : ""
+                }`}
+              >
+                <div
+                  onClick={() => updateProject(project)}
+                  key={project}
+                  className={`flex items-center gap-x-3 mt-1 `}
+                >
+                  <span
+                    className={` text-fontSecondery transition-all text-xl ${
+                      project === "Personal"
+                        ? "text-blue-500"
+                        : project === "Shopping"
+                        ? "text-green-500"
+                        : project === "Works"
+                        ? "text-orange-500"
+                        : project === "Errands"
+                        ? "text-shadow-cyan-700"
+                        : "text-gray-800"
+                    } `}
+                  >
+                    <CiHashtag />
+                  </span>
+                  <h2 className="group-hover:text-accentMain text-fontSecondery">
+                    {project}
+                  </h2>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
