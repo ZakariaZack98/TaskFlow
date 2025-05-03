@@ -23,29 +23,34 @@ const Inbox = () => {
   }, [allTaskData]);
 
   return (
-    <div className='outletPage h-full w-full py-10 overflow-y-scroll' style={{ scrollbarWidth: 'none' }}>
-      <div className="pendingTaskContainer w-6/10 mx-auto ">
+    <>
+      <div className="heading w-6/10 mx-auto pb-5">
         <h1 className='text-3xl font-bold'>Inbox</h1>
         <AddTaskPrompt />
-        <div className="taskList flex flex-col gap-y-3 my-3 mt-10">
-          {
-            overdueData?.length > 0 && (
-              <TasklistSection title={'Overdue'} titleColorClass={'text-accentMain'} taskData={overdueData} />
-            )
-          }
-          {
-            todaysTaskData?.length > 0 && (
-              <TasklistSection title={'Today'} taskData={todaysTaskData} />
-            )
-          }
-          {
-            getUpcomingTaskData?.length > 0 && (
-              <TasklistSection title={'Upcoming'} taskData={getUpcomingTaskData} />
-            )
-          }
+      </div>
+      <div className='h-full w-full overflow-y-scroll' style={{ scrollbarWidth: 'none' }}>
+        <div className="pendingTaskContainer w-6/10 mx-auto ">
+
+          <div className="taskList flex flex-col gap-y-3 my-3 ">
+            {
+              overdueData?.length > 0 && (
+                <TasklistSection title={'Overdue'} titleColorClass={'text-accentMain'} taskData={overdueData} />
+              )
+            }
+            {
+              todaysTaskData?.length > 0 && (
+                <TasklistSection title={'Today'} taskData={todaysTaskData} />
+              )
+            }
+            {
+              getUpcomingTaskData?.length > 0 && (
+                <TasklistSection title={'Upcoming'} taskData={getUpcomingTaskData} />
+              )
+            }
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

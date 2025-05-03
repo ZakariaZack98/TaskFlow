@@ -59,13 +59,6 @@ const Sidebar = ({
   const navigate = useNavigate();
   const navList = [
     {
-      id: 1,
-      name: "Search",
-      icon: <CiSearch />,
-      path: "/search",
-      msg: '',
-    },
-    {
       id: 2,
       name: "Inbox",
       icon: <GoInbox />,
@@ -245,7 +238,7 @@ const Sidebar = ({
           <div className="flex flex-col gap-y-2 mt-3">
             {projects?.map((project) => (
               <div
-                onClick={() => navigate(project)}
+                onClick={() => navigate(`/projects/${project}`)}
                 className="flex items-center group justify-between  hover:bg-gray-200  -ml-3 px-4 py-0.5 rounded-md cursor-pointer"
               >
                 <div key={project} className="flex items-center gap-x-3 mt-1 ">
