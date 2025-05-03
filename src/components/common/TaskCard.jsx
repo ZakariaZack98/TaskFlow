@@ -6,11 +6,11 @@ import { SlCalender } from "react-icons/sl";
 import { GoPencil } from "react-icons/go";
 import { MdOutlineDateRange } from "react-icons/md";
 import { FaRegMessage } from "react-icons/fa6";
-import { GetDateNow } from "../../utils/utils";
+import { GetDateNow, GetMilliseconds } from "../../utils/utils";
 import CalendarPopup from "./CalenderPopup";
 import TaskPage from "../../pages/TaskPage/TaskPage";
 import { ref, set } from "firebase/database";
-import { db } from "../../../Database/FirebaseConfig";
+import { auth, db } from "../../../Database/FirebaseConfig";
 import EditTaskPrompt from "./EditTaskPrompt";
 import TaskAction from "./TaskAction";
 
@@ -31,7 +31,7 @@ const TaskCard = ({ taskData }) => {
     try {
       await Promise.all([
         set(dateRef, selectedDate),
-        set(deadlineRef, selectedDate),
+        set(deadlineRef, GetMilliseconds(selectedDate + ` ${new Date().toDateString().split(' ')[3]}`)),
       ]);
       console.log("rescheduling successful");
     } catch (error) {
@@ -40,7 +40,7 @@ const TaskCard = ({ taskData }) => {
   };
 
   return (
-    <>
+    <div className="mt-2">
       {openTaskPage && (
         <TaskPage taskData={taskData} setOpenTaskPage={setOpenTaskpage} />
       )}
@@ -67,7 +67,15 @@ const TaskCard = ({ taskData }) => {
               className="flex flex-col"
               onClick={() => setOpenTaskpage(true)}
             >
+              <div className="flex items-center gap-x-2">
               <p>{taskData.title}</p>
+              {
+                //? OVERDUE TAG IF DEADLINE HAVE CROSSED ===
+                taskData.deadline < GetMilliseconds(new Date().toDateString()) && (
+                  <span className="text-sm px-1 rounded border-2 border-red-600 text-red-600 font-semibold">overdue</span>
+                )
+              }
+              </div>
               <div className="flex justify-start items-center text-sm gap-x-2">
                 <span>
                   <SlCalender />
@@ -109,13 +117,14 @@ const TaskCard = ({ taskData }) => {
                 }
               >
                 <CalendarPopup
+                  deadline={taskData?.deadline}
                   onSelect={(selectedDate) => {
                     console.log(selectedDate.toDateString());
                     const selectedDateStr = selectedDate
                       .toDateString()
                       .split(" ")
                       .slice(0, 3)
-                      .join(" ");
+                      .join(" "); //FORMATTING FOR DATABASE
                     setDate(selectedDateStr);
                     handleRechedule(taskData.id, selectedDateStr);
                   }}
@@ -138,7 +147,7 @@ const TaskCard = ({ taskData }) => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

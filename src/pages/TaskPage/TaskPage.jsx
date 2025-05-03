@@ -128,8 +128,8 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
     updatedTask.project = project;
     updatedTask.priority = priority;
     updatedTask.date = date,
-    updatedTask.deadline = GetMilliseconds(date + ` ${new Date().toDateString().split(' ')[3]}`),
-    console.log(updatedTask)
+      updatedTask.deadline = GetMilliseconds(date + ` ${new Date().toDateString().split(' ')[3]}`),
+      console.log(updatedTask)
     const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskData.id}`);
     try {
       await set(taskRef, updatedTask);
@@ -194,7 +194,15 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
               {/* ===================================== LEFT SIDE MARKUP ================================================= */}
               {/* =========================== HEADING PART ================================ */}
               <div className="main h-full w-7/10 p-3 overflow-y-scroll ">
-                <h3 className="text-2xl font-semibold text-accentMain">{currentTaskData?.title || "Take my cat to the vet"}</h3>
+                <div className="flex items-center gap-x-2">
+                  <h3 className="text-2xl font-semibold text-accentMain">{currentTaskData?.title || "Take my cat to the vet"}</h3>
+                  {
+                    //? OVERDUE TAG IF DEADLINE HAVE CROSSED ===
+                    taskData.deadline < GetMilliseconds(new Date().toDateString()) && (
+                      <span className="text-sm px-1 rounded border-2 border-red-600 text-red-600 font-semibold">overdue</span>
+                    )
+                  }
+                </div>
                 <div className="flex items-center gap-x-1">
                   <span className="text-xl">
                     <HiOutlineBars3BottomLeft />
@@ -227,7 +235,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                         task: {currentTaskData?.subTasks?.filter((task) => task.status === "complete") || 0} / {subTasks.length}
                       </span>
                     )}
-                    <FaLock className="text-accentMain"/>
+                    <FaLock className="text-accentMain" />
                   </div>
                 </div>
                 {/* ============================ COMMENT SECTION ================================= */}
@@ -285,7 +293,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                 {/* ================================= DATE SELECTION ===================================== */}
                 <div className="date cursor-pointer relative" >
                   <p className="text-sm text-secondary translate-y-2" >Date</p>
-                  <DateSelector date={date} setDate={setDate} deadline={taskData?.deadline}/>
+                  <DateSelector date={date} setDate={setDate} deadline={taskData?.deadline} />
                 </div>
                 {/* ================================= PRIORITY SELECTION ===================================== */}
                 <div className="priority border-b border-[rgba(0,0,0,0.16)]">

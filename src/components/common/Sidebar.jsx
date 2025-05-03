@@ -113,7 +113,7 @@ const Sidebar = ({
       });
   };
   return (
-    <div className="w-1/5 h-full bg-sidebarMain p-5">
+    <div className="w-1/5 h-full bg-sidebarMain p-5 relative">
       {/* profile part start */}
       <div className="flex justify-between">
         <div
@@ -144,7 +144,7 @@ const Sidebar = ({
       {/* profile popup */}
       {openProfilePopUp && (
         <div
-          className=" min-w-60 bg-gray-100 p-3 rounded-md text-sm "
+          className=" min-w-[90%] bg-gray-100 p-3 rounded-md text-sm absolute z-20 "
           style={{ boxShadow: "0 0 5px 5px rgba(0,0,0,0.1)" }}
         >
           {/* name part */}
@@ -160,7 +160,7 @@ const Sidebar = ({
                 </span>
                 <div>
                   <h2 className="text-fontSecondery font-medium text-[14px]">
-                    Mahmudul Hasan
+                    {auth.currentUser.displayName}
                   </h2>
                   <p className="text-fontSecondery">0/5 Tasks</p>
                 </div>
