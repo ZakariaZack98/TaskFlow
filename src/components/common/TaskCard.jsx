@@ -31,7 +31,12 @@ const TaskCard = ({ taskData }) => {
     try {
       await Promise.all([
         set(dateRef, selectedDate),
-        set(deadlineRef, GetMilliseconds(selectedDate + ` ${new Date().toDateString().split(' ')[3]}`)),
+        set(
+          deadlineRef,
+          GetMilliseconds(
+            selectedDate + ` ${new Date().toDateString().split(" ")[3]}`
+          )
+        ),
       ]);
       console.log("rescheduling successful");
     } catch (error) {
@@ -68,13 +73,16 @@ const TaskCard = ({ taskData }) => {
               onClick={() => setOpenTaskpage(true)}
             >
               <div className="flex items-center gap-x-2">
-              <p>{taskData.title}</p>
-              {
-                //? OVERDUE TAG IF DEADLINE HAVE CROSSED ===
-                taskData.deadline < GetMilliseconds(new Date().toDateString()) && (
-                  <span className="text-sm px-1 rounded border-2 border-red-600 text-red-600 font-semibold">overdue</span>
-                )
-              }
+                <p>{taskData.title}</p>
+                {
+                  //? OVERDUE TAG IF DEADLINE HAVE CROSSED ===
+                  taskData.deadline <
+                    GetMilliseconds(new Date().toDateString()) && (
+                    <span className="text-sm px-1 rounded border-2 border-red-600 text-red-600 font-semibold">
+                      overdue
+                    </span>
+                  )
+                }
               </div>
               <div className="flex justify-start items-center text-sm gap-x-2">
                 <span>
@@ -140,7 +148,10 @@ const TaskCard = ({ taskData }) => {
               />
               {showTaskAction && (
                 <div className="absolute top-6 -left-5">
-                  <TaskAction taskDataa={taskData} />
+                  <TaskAction
+                    taskDataa={taskData}
+                    showTaskAction={setShowTaskAction}
+                  />
                 </div>
               )}
             </span>
