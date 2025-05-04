@@ -20,8 +20,10 @@ import { auth } from "../../../Database/FirebaseConfig";
 import EditTaskPrompt from "./EditTaskPrompt";
 import { push } from "firebase/database";
 import MyProject from "./MyProject";
+import { useNavigate } from "react-router-dom";
 
 const TaskAction = ({ taskDataa }) => {
+  const navigate = useNavigate();
   const projects = _.projects;
   const priorities = _.priorities;
   const [priority, setPriority] = useState([]);
@@ -37,6 +39,8 @@ const TaskAction = ({ taskDataa }) => {
       `tasks/${auth.currentUser?.uid}/${taskDataa.id}/priority`
     );
     set(taskRef, priorityData.level);
+    setOpenProjectPopUp(false);
+    setOpenEditPrompt(false);
   };
   // todo updateProject function apply
   const updateProject = (projectData) => {
@@ -48,6 +52,8 @@ const TaskAction = ({ taskDataa }) => {
       `tasks/${auth.currentUser?.uid}/${taskDataa.id}/project`
     );
     set(projectRef, projectData);
+    setOpenProjectPopUp(false);
+    setOpenEditPrompt(false);
   };
 
   // todo removeTask function apply
@@ -62,14 +68,15 @@ const TaskAction = ({ taskDataa }) => {
 
   const handleDuplicate = () => {
     const userTasksRef = ref(db, `tasks/${auth.currentUser?.uid}`);
+    const newTaskRef = push(userTasksRef);
 
     const duplicatedTask = {
       ...taskDataa,
-      id: null,
+      id: newTaskRef.key,
       createdAt: new Date().toISOString(),
     };
 
-    push(userTasksRef, duplicatedTask);
+    set(newTaskRef, duplicatedTask);
   };
 
   return (
@@ -106,7 +113,10 @@ const TaskAction = ({ taskDataa }) => {
             <p className="text-fontSecondery text-sm">CntlE</p>
           </div>
           {/* go to project part */}
-          <div className="flex group items-center justify-between  hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
+          <div
+            onClick={() => navigate("/project")}
+            className="flex group items-center justify-between  hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer "
+          >
             <div className="flex items-center gap-2 ">
               <span className="text-fontSecondery">
                 <GoProjectSymlink />
@@ -180,7 +190,7 @@ const TaskAction = ({ taskDataa }) => {
           </div>
         </div>
         {/* reminders */}
-        <div className="border-b border-b-fontSecondery pb-2 pt-2 mt-4 border-t border-t-fontSecondery ">
+        <div className="border-b border-b-fontSecondery pb-2 pt-2 mt-4 border-t border-t-fontSecondery hover:bg-gray-200   px-1  rounded cursor-pointer">
           <div className="flex items-center gap-2 ">
             <span className="text-fontSecondery">
               <LuAlarmClock />
