@@ -148,7 +148,10 @@ const TaskCard = ({ taskData }) => {
               />
               {showTaskAction && (
                 <div className="absolute top-6 -left-5">
-                  <TaskAction taskDataa={taskData} />
+                  <TaskAction
+                    taskDataa={taskData}
+                    showTaskAction={setShowTaskAction}
+                  />
                 </div>
               )}
             </span>

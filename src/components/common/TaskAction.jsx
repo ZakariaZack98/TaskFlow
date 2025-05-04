@@ -22,7 +22,7 @@ import { push } from "firebase/database";
 import MyProject from "./MyProject";
 import { useNavigate } from "react-router-dom";
 
-const TaskAction = ({ taskDataa }) => {
+const TaskAction = ({ taskDataa, showTaskAction }) => {
   const navigate = useNavigate();
   const projects = _.projects;
   const priorities = _.priorities;
@@ -40,7 +40,7 @@ const TaskAction = ({ taskDataa }) => {
     );
     set(taskRef, priorityData.level);
     setOpenProjectPopUp(false);
-    setOpenEditPrompt(false);
+    showTaskAction(false);
   };
   // todo updateProject function apply
   const updateProject = (projectData) => {
@@ -53,7 +53,7 @@ const TaskAction = ({ taskDataa }) => {
     );
     set(projectRef, projectData);
     setOpenProjectPopUp(false);
-    setOpenEditPrompt(false);
+    showTaskAction(false);
   };
 
   // todo removeTask function apply
@@ -257,7 +257,7 @@ const TaskAction = ({ taskDataa }) => {
           </div>
         </div>
         {/* delete */}
-        <div className="flex mt-1.5 group items-center justify-between  cursor-pointer ">
+        <div className="flex mt-1.5 group items-center justify-between   hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
           <div onClick={removeTask} className="flex items-center gap-2 ">
             <span className="text-accentMain">
               <RiDeleteBin6Line />
@@ -269,7 +269,10 @@ const TaskAction = ({ taskDataa }) => {
       </div>
       {/* my project part */}
       {openProjectPopUp && (
-        <div className="min-w-[90%] bg-gray-100 -left-54 p-3 bottom-30 rounded-md text-sm absolute z-20 ">
+        <div
+          style={{ boxShadow: "0 0 5px 5px rgba(0,0,0,0.1)" }}
+          className="min-w-[90%] bg-gray-100 -left-54 p-3 bottom-30 rounded-md text-sm absolute z-20 "
+        >
           <h1 className="text-xl font-semibold">My Projects</h1>
           <div className="flex flex-col gap-y-2 mt-3">
             {projects?.map((project, key) => (
