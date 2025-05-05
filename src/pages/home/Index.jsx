@@ -4,6 +4,7 @@ import AddTaskPrompt from '../../components/common/AddTaskPrompt';
 import { TaskContext } from '../../contexts/TaskContext';
 import { GetMilliseconds } from '../../utils/utils';
 import TasklistSection from '../../components/common/TasklistSection';
+import Boardview from '../../components/HomeComponent/Boardview';
 
 const Inbox = () => {
   const { allTaskData } = useContext(TaskContext);
@@ -11,6 +12,7 @@ const Inbox = () => {
   const [todaysTaskData, setTodaysTaskData] = useState([]);
   const [overdueData, setOverdueTaskData] = useState([]);
   const [getUpcomingTaskData, setUpcomingTaskData] = useState([]);
+  const [boardview, setBoardview] = useState(false)
 
   useEffect(() => {
     if (!allTaskData) return;
@@ -24,10 +26,11 @@ const Inbox = () => {
 
   return (
     <>
-      <div className="heading w-6/10 mx-auto pb-5">
+      <div className={boardview?"heading w-6/10 mx-auto pb-5":"heading w-[90%] mx-auto pb-5"}>
         <h1 className='text-3xl font-bold'>Inbox</h1>
         <AddTaskPrompt />
       </div>
+      {boardview?
       <div className='h-full w-full overflow-y-scroll' style={{ scrollbarWidth: 'none' }}>
         <div className="pendingTaskContainer w-6/10 mx-auto ">
 
@@ -50,6 +53,9 @@ const Inbox = () => {
           </div>
         </div>
       </div>
+      :
+      <Boardview  taskData = {[overdueData,todaysTaskData,getUpcomingTaskData]}/>
+      }
     </>
   );
 };
