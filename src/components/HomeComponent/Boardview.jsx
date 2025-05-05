@@ -1,7 +1,6 @@
 import React from 'react'
 import TasklistSection from '../common/TasklistSection';
 import { GetMilliseconds } from '../../utils/utils';
-
 const Boardview = ({ taskData }) => {
     console.log(taskData);
     // const todayMs = GetMilliseconds(new Date().toDateString());
