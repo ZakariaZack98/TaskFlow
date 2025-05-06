@@ -49,7 +49,7 @@ const Sidebar = ({
           taskArr.push(taskSnapshot.val());
         });
       }
-      setAllTaskData(taskArr.sort((a, b) => b.id - a.id)); //* descending from latest to oldest added task
+      setAllTaskData(taskArr.sort((a, b) => b.id - a.id).filter(task => task.status === 'pending')); //* descending pending tasks from latest to oldest added task
     });
     return () => unsubscribe();
   }, [db]);

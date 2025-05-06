@@ -31,6 +31,23 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
   const [openEditPrompt, setOpenEditPrompt] = useState(false);
   const [openProjectPopUp, setOpenProjectPopUp] = useState(false);
 
+  // TODO: HANDLE RESCHEDULE BY CLICKING DATE ICONS
+  const updateSchedule = e => {
+    e.stopPropagation();
+    if(e.target.textContent === 'tooay') {
+      // set the tasks date (text format) & tasks deadline (milisecond format) to today
+    } else if (e.target.textContent === 'tomorrow') {
+      // set the tasks date (text format) & tasks deadline (milisecond format) to tomorrow
+    } else if (e.target.textContent === 'weekend') {
+      // set the tasks date (text format) & tasks deadline (milisecond format) to next friday
+    } else if (e.target.textContent === 'next week') {
+      // set the tasks date (text format) & tasks deadline (milisecond format) to 7 days later from today
+    }
+    /**
+     * ? NOTE: if you call GetMiliSeconds('Tuesday 6 May 2025') you will get miliseconds of 6th May. The arg's date format should be same as New Date().toDateString()'s format
+     * */ 
+  }
+
   // todo updatePriority function apply
   const updatePriority = (priorityData) => {
     setPriority(priorityData.level);
@@ -44,7 +61,6 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
   };
   // todo updateProject function apply
   const updateProject = (projectData) => {
-    console.log(projectData);
 
     setProject(projectData);
     const projectRef = ref(
@@ -61,8 +77,6 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
     const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskDataa.id}`);
     remove(taskRef);
   };
-
-  console.log(taskDataa);
 
   // todo apply handleDuplicate
 
@@ -83,7 +97,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
     <div>
       <div className="relative">
         {openEditPrompt && (
-          <div className="absolute top-0 left-0 z-50 w-full">
+          <div className="absolute top-0 -left-[230%] z-50 min-w-450 text-fontSecondery">
             <EditTaskPrompt
               taskData={taskDataa}
               setOpenEditPrompt={setOpenEditPrompt}
@@ -94,7 +108,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
 
       {/* main */}
       <div
-        className=" min-w-60 bg-gray-100 p-3 rounded-md text-sm "
+        className=" min-w-60 bg-gray-100 p-3 rounded-md text-sm"
         style={{ boxShadow: "0 0 5px 5px rgba(0,0,0,0.1)" }}
       >
         {/* edit top part */}
@@ -127,9 +141,9 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
           </div>
         </div>
         {/* date and priority */}
-        <div className=" mt-3 ">
+        <div className=" mt-3 flex flex-col gap-y-2">
           {/* date part */}
-          <div className="mt-2 flex flex-col gap-2">
+          <div className="mt-2 flex flex-col gap-y-2">
             {/* date text */}
             <div className="flex items-center justify-between ">
               <p className="text-black opacity-80">Date</p>
@@ -137,23 +151,17 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
             </div>
             {/* date icons */}
             <div className="flex items-center justify-between">
-              <span className="text-2xl text-green-500">
-                <CiCalendar />
+              <span className="text-2xl text-green-500" >
+                <CiCalendar className="text-3xl"  title="today" onClick={e => updateSchedule(e)}/>
               </span>
-              <span className="text-2xl text-yellow-500">
-                <AiOutlineSun />
+              <span className="text-2xl text-yellow-500"  >
+                <AiOutlineSun className="text-3xl" title="tomorrow"  onClick={e => updateSchedule(e)}/>
               </span>
-              <span className="text-2xl text-blue-500">
-                <MdOutlineWeekend />
+              <span className="text-2xl text-blue-500"  >
+                <MdOutlineWeekend className="text-3xl" title="weekend" onClick={e => updateSchedule(e)}/>
               </span>
-              <span className="text-2xl text-purple-500">
-                <MdOutlineNextWeek />
-              </span>
-              <span className="text-2xl text-fontSecondery">
-                <CiNoWaitingSign />
-              </span>
-              <span className="text-2xl text-fontSecondery">
-                <BsThreeDots />
+              <span className="text-2xl text-purple-500"  >
+                <MdOutlineNextWeek className="text-3xl" title="next week" onClick={e => updateSchedule(e)}/>
               </span>
             </div>
           </div>

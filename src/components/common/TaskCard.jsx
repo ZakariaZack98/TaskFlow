@@ -6,7 +6,7 @@ import { SlCalender } from "react-icons/sl";
 import { GoPencil } from "react-icons/go";
 import { MdOutlineDateRange } from "react-icons/md";
 import { FaRegMessage } from "react-icons/fa6";
-import { GetDateNow, GetMilliseconds } from "../../utils/utils";
+import { GetDateNow, GetMilliseconds, MarkAsComplete } from "../../utils/utils";
 import CalendarPopup from "./CalenderPopup";
 import TaskPage from "../../pages/TaskPage/TaskPage";
 import { ref, set } from "firebase/database";
@@ -66,7 +66,9 @@ const TaskCard = ({ taskData }) => {
               <span className={`text-xl ${hover ? "visible" : "invisible"}`}>
                 <PiDotsSixVerticalBold />
               </span>
-              <RoundedCheckbox />
+              <span onClick={() => MarkAsComplete(taskData.id)}>
+                <RoundedCheckbox />
+              </span>
             </div>
             <div
               className="flex flex-col"
@@ -77,7 +79,7 @@ const TaskCard = ({ taskData }) => {
                 {
                   //? OVERDUE TAG IF DEADLINE HAVE CROSSED ===
                   taskData.deadline <
-                    GetMilliseconds(new Date().toDateString()) && (
+                  GetMilliseconds(new Date().toDateString()) && (
                     <span className="text-sm px-1 rounded border-2 border-red-600 text-red-600 font-semibold">
                       overdue
                     </span>
@@ -92,10 +94,10 @@ const TaskCard = ({ taskData }) => {
                   {GetDateNow() === taskData.date
                     ? "Today"
                     : Number(taskData.date.split(" ")[2]) -
-                        Number(GetDateNow().split(" ")[2]) ===
+                      Number(GetDateNow().split(" ")[2]) ===
                       1
-                    ? "Tomorrow"
-                    : taskData.date}
+                      ? "Tomorrow"
+                      : taskData.date}
                 </p>
               </div>
             </div>
@@ -103,9 +105,8 @@ const TaskCard = ({ taskData }) => {
         </div>
         <div className="right flex flex-col justify-center items-center">
           <div
-            className={`relative icons flex items-center gap-x-3 text-xl text-fontSecondery ${
-              hover ? "visible" : "invisible"
-            }`}
+            className={`relative icons flex items-center gap-x-3 text-xl text-fontSecondery ${hover ? "visible" : "invisible"
+              }`}
           >
             <span
               className="text-2xl hover:text-accentMain"

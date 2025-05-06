@@ -6,6 +6,7 @@ import ProjectSelector from "./ProjectSelector";
 import PrioritySelector from "./PrioritySelector";
 import { ref, set } from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
+import { GetMilliseconds } from "../../utils/utils";
 
 const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
   const [title, setTitle] = useState(taskData?.title || "");
@@ -23,7 +24,7 @@ const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
       priority,
       id: taskData.id,
       status: "pending",
-      deadline: date,
+      deadline: GetMilliseconds(date + ` ${new Date().toString().split(' ')[3]}`),
       createdAt: taskData.createdAt,
     };
     const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskData.id}`);

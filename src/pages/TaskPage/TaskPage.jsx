@@ -9,7 +9,7 @@ import ProjectSelector from "../../components/common/ProjectSelector";
 import DateSelector from "../../components/common/DateSelector";
 import _ from "../../lib/lib";
 import CommentCard from "../../components/common/CommentCard";
-import { GetDateNow, GetMilliseconds, GetTimeNow } from "../../utils/utils";
+import { GetDateNow, GetMilliseconds, GetTimeNow, MarkAsComplete } from "../../utils/utils";
 import { onValue, ref, set, update } from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
 import { MdAddPhotoAlternate } from "react-icons/md";
@@ -173,7 +173,15 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
           <div className="w-[96%] h-[94%]">
             <div className="heading flex justify-between border-b-2 border-accentMain pb-2">
               <div className="left flex items-center">
-                <RoundedCheckbox />
+                <span onClick={() => {
+                  MarkAsComplete(taskData.id);
+                  setTimeout(() => {
+                    setOpenTaskPage(false);
+                    console.log('toastup: task completed');
+                  }, 1000);
+                  }}>
+                  <RoundedCheckbox />
+                </span>
                 <div className="taskName flex flex-col">
                   <p className="font-semibold text-sm">{currentTaskData?.title || "Take my cat to the vet"}</p>
                   <div className="text-[12px] text-fontSecondery">in {currentTaskData?.category || "Personal"}</div>
