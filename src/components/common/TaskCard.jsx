@@ -3,41 +3,46 @@ import { PiDotsSixVerticalBold, PiDotsThreeOutline } from "react-icons/pi";
 import RoundedCheckbox from "./RoundedCheckbox";
 import _ from "../../lib/lib";
 import { SlCalender } from "react-icons/sl";
-import { GoPencil } from "react-icons/go";
+import { GoPencil} from "react-icons/go";
 import { MdOutlineDateRange } from "react-icons/md";
-import { FaRegMessage } from "react-icons/fa6";
-import { GetDateNow, GetMilliseconds } from "../../utils/utils";
+import { GetDateNow, GetMilliseconds, GetTimeNow, MarkAsComplete, RemoveTask } from "../../utils/utils";
 import CalendarPopup from "./CalenderPopup";
 import TaskPage from "../../pages/TaskPage/TaskPage";
-import { ref, set } from "firebase/database";
+import { push, ref, set } from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
 import EditTaskPrompt from "./EditTaskPrompt";
 import TaskAction from "./TaskAction";
+import { toast } from "react-toastify";
+import { BsFillTrash3Fill } from "react-icons/bs";
 
 const TaskCard = ({ taskData }) => {
   const [hover, setHover] = useState(false);
   const [recheduleMode, setRecheduleMode] = useState(false);
-  const [date, setDate] = useState(taskData.date);
+  const [_, setDate] = useState(taskData.date);
   const [openTaskPage, setOpenTaskpage] = useState(false);
   const [openEditPrompt, setOpenEditPrompt] = useState(false);
   const [showTaskAction, setShowTaskAction] = useState(false);
 
   const handleRechedule = async (taskId, selectedDate) => {
     const dateRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskId}/date`);
-    const deadlineRef = ref(
-      db,
-      `tasks/${auth.currentUser?.uid}/${taskId}/deadline`
-    );
+    const deadlineRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskId}/deadline`);
+    const activityRef = ref(db, `activity/${auth.currentUser?.uid}`);
+    const NewActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'reschedule',
+      taskId: taskData.id,
+      taskTitle: taskData.title,
+      taskDate: selectedDate,
+      message: `You have rescheduled a task- `
+    }
     try {
       await Promise.all([
         set(dateRef, selectedDate),
-        set(
-          deadlineRef,
-          GetMilliseconds(
-            selectedDate + ` ${new Date().toDateString().split(" ")[3]}`
-          )
-        ),
+        set(deadlineRef, GetMilliseconds(selectedDate + ` ${new Date().toDateString().split(" ")[3]}`)),
+        push(activityRef, NewActivity)
       ]);
+      toast.success(`Task has been recheduled to ${selectedDate}`)
       console.log("rescheduling successful");
     } catch (error) {
       console.error("Task recheduling failed ", error);
@@ -66,7 +71,9 @@ const TaskCard = ({ taskData }) => {
               <span className={`text-xl ${hover ? "visible" : "invisible"}`}>
                 <PiDotsSixVerticalBold />
               </span>
-              <RoundedCheckbox />
+              <span onClick={() => MarkAsComplete(taskData)}>
+                <RoundedCheckbox />
+              </span>
             </div>
             <div
               className="flex flex-col"
@@ -77,7 +84,7 @@ const TaskCard = ({ taskData }) => {
                 {
                   //? OVERDUE TAG IF DEADLINE HAVE CROSSED ===
                   taskData.deadline <
-                    GetMilliseconds(new Date().toDateString()) && (
+                  GetMilliseconds(new Date().toDateString()) && (
                     <span className="text-sm px-1 rounded border-2 border-red-600 text-red-600 font-semibold">
                       overdue
                     </span>
@@ -92,10 +99,10 @@ const TaskCard = ({ taskData }) => {
                   {GetDateNow() === taskData.date
                     ? "Today"
                     : Number(taskData.date.split(" ")[2]) -
-                        Number(GetDateNow().split(" ")[2]) ===
+                      Number(GetDateNow().split(" ")[2]) ===
                       1
-                    ? "Tomorrow"
-                    : taskData.date}
+                      ? "Tomorrow"
+                      : taskData.date}
                 </p>
               </div>
             </div>
@@ -103,9 +110,8 @@ const TaskCard = ({ taskData }) => {
         </div>
         <div className="right flex flex-col justify-center items-center">
           <div
-            className={`relative icons flex items-center gap-x-3 text-xl text-fontSecondery ${
-              hover ? "visible" : "invisible"
-            }`}
+            className={`relative icons flex items-center gap-x-3 text-xl text-fontSecondery ${hover ? "visible" : "invisible"
+              }`}
           >
             <span
               className="text-2xl hover:text-accentMain"
@@ -140,7 +146,7 @@ const TaskCard = ({ taskData }) => {
               </span>
             </span>
             <span className=" hover:text-accentMain">
-              <FaRegMessage />
+            <BsFillTrash3Fill onClick={() => RemoveTask(taskData)}/>
             </span>
             <span className=" hover:text-accentMain relative">
               <PiDotsThreeOutline

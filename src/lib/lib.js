@@ -1,7 +1,9 @@
 import { AiOutlineClose } from "react-icons/ai";
-import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
+import { FaAngleDown, FaAngleUp, FaPen } from "react-icons/fa6";
 import { PiDotsThreeOutline } from "react-icons/pi";
 import { GetDateNow } from "../utils/utils";
+import { FaPlus } from "react-icons/fa";
+import { BsFillTrash3Fill } from "react-icons/bs";
 
 const _ = {};
 _.projects = ['Personal', 'Shopping', 'Works', 'Errands'];
@@ -166,6 +168,8 @@ _.taskPageIcons = [
       ],
     },
   ];
+
+
   
 
   export default _;

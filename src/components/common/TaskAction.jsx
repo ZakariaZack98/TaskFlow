@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AiOutlineSun } from "react-icons/ai";
-import { BsArrowsMove, BsThreeDots } from "react-icons/bs";
-import { CiCalendar, CiEdit, CiHashtag, CiNoWaitingSign } from "react-icons/ci";
+import { BsArrowsMove} from "react-icons/bs";
+import { CiCalendar, CiEdit, CiHashtag} from "react-icons/ci";
 import { GoProjectSymlink } from "react-icons/go";
 import { MdOutlineNextWeek, MdOutlineWeekend } from "react-icons/md";
 import _ from "../../lib/lib";
@@ -19,8 +19,9 @@ import { db } from "../../../Database/FirebaseConfig";
 import { auth } from "../../../Database/FirebaseConfig";
 import EditTaskPrompt from "./EditTaskPrompt";
 import { push } from "firebase/database";
-import MyProject from "./MyProject";
 import { useNavigate } from "react-router-dom";
+import { GetTimeNow, RemoveTask } from "../../utils/utils";
+import { toast } from "react-toastify";
 
 const TaskAction = ({ taskDataa, showTaskAction }) => {
   const navigate = useNavigate();
@@ -31,38 +32,73 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
   const [openEditPrompt, setOpenEditPrompt] = useState(false);
   const [openProjectPopUp, setOpenProjectPopUp] = useState(false);
 
+  // TODO: HANDLE RESCHEDULE BY CLICKING DATE ICONS
+  const updateSchedule = e => {
+    e.stopPropagation();
+    if (e.target.textContent === 'today') {
+      // set the tasks date (text format) & tasks deadline (milisecond format) to today
+    } else if (e.target.textContent === 'tomorrow') {
+      // set the tasks date (text format) & tasks deadline (milisecond format) to tomorrow
+    } else if (e.target.textContent === 'weekend') {
+      // set the tasks date (text format) & tasks deadline (milisecond format) to next friday
+    } else if (e.target.textContent === 'next week') {
+      // set the tasks date (text format) & tasks deadline (milisecond format) to 7 days later from today
+    }
+    /**
+     * ? NOTE: if you call GetMiliSeconds('Tuesday 6 May 2025') you will get miliseconds of 6th May. The arg's date format should be same as New Date().toDateString()'s formatt
+     * */
+  }
+
   // todo updatePriority function apply
   const updatePriority = (priorityData) => {
+    const newActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'update',
+      taskId: taskDataa.id,
+      taskTitle: taskDataa.title,
+      taskPriority: priorityData.level,
+      message: `You have updated priority of a task- `
+    }
     setPriority(priorityData.level);
     const taskRef = ref(
       db,
       `tasks/${auth.currentUser?.uid}/${taskDataa.id}/priority`
     );
-    set(taskRef, priorityData.level);
-    setOpenProjectPopUp(false);
-    showTaskAction(false);
+    const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
+    Promise.all([set(taskRef, priorityData.level), push(activityRef, newActivity)])
+      .then(() => {
+        setOpenProjectPopUp(false);
+        showTaskAction(false);
+        toast.success(`Priority changed to priority ${priorityData.level}`)
+      })
   };
   // todo updateProject function apply
   const updateProject = (projectData) => {
-    console.log(projectData);
-
+    const newActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'update',
+      taskId: taskDataa.id,
+      taskTitle: taskDataa.title,
+      taskProject: projectData,
+      message: `You have re-assigned project of a task- `
+    }
     setProject(projectData);
     const projectRef = ref(
       db,
       `tasks/${auth.currentUser?.uid}/${taskDataa.id}/project`
     );
-    set(projectRef, projectData);
-    setOpenProjectPopUp(false);
-    showTaskAction(false);
+    const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
+    Promise.all([set(projectRef, projectData), push(activityRef, newActivity)])
+      .then(() => {
+        setOpenProjectPopUp(false);
+        showTaskAction(false);
+        toast.success(`task re-assigned to ${projectData}`)
+      })
   };
 
-  // todo removeTask function apply
-  const removeTask = () => {
-    const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskDataa.id}`);
-    remove(taskRef);
-  };
-
-  console.log(taskDataa);
+  
 
   // todo apply handleDuplicate
 
@@ -83,7 +119,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
     <div>
       <div className="relative">
         {openEditPrompt && (
-          <div className="absolute top-0 left-0 z-50 w-full">
+          <div className="absolute top-0 -left-[230%] z-50 min-w-450 text-fontSecondery">
             <EditTaskPrompt
               taskData={taskDataa}
               setOpenEditPrompt={setOpenEditPrompt}
@@ -94,7 +130,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
 
       {/* main */}
       <div
-        className=" min-w-60 bg-gray-100 p-3 rounded-md text-sm "
+        className=" min-w-60 bg-gray-100 p-3 rounded-md text-sm"
         style={{ boxShadow: "0 0 5px 5px rgba(0,0,0,0.1)" }}
       >
         {/* edit top part */}
@@ -127,9 +163,9 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
           </div>
         </div>
         {/* date and priority */}
-        <div className=" mt-3 ">
+        <div className=" mt-3 flex flex-col gap-y-2">
           {/* date part */}
-          <div className="mt-2 flex flex-col gap-2">
+          <div className="mt-2 flex flex-col gap-y-2">
             {/* date text */}
             <div className="flex items-center justify-between ">
               <p className="text-black opacity-80">Date</p>
@@ -137,23 +173,17 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
             </div>
             {/* date icons */}
             <div className="flex items-center justify-between">
-              <span className="text-2xl text-green-500">
-                <CiCalendar />
+              <span className="text-2xl text-green-500" >
+                <CiCalendar className="text-3xl" title="today" onClick={e => updateSchedule(e)} />
               </span>
-              <span className="text-2xl text-yellow-500">
-                <AiOutlineSun />
+              <span className="text-2xl text-yellow-500"  >
+                <AiOutlineSun className="text-3xl" title="tomorrow" onClick={e => updateSchedule(e)} />
               </span>
-              <span className="text-2xl text-blue-500">
-                <MdOutlineWeekend />
+              <span className="text-2xl text-blue-500"  >
+                <MdOutlineWeekend className="text-3xl" title="weekend" onClick={e => updateSchedule(e)} />
               </span>
-              <span className="text-2xl text-purple-500">
-                <MdOutlineNextWeek />
-              </span>
-              <span className="text-2xl text-fontSecondery">
-                <CiNoWaitingSign />
-              </span>
-              <span className="text-2xl text-fontSecondery">
-                <BsThreeDots />
+              <span className="text-2xl text-purple-500"  >
+                <MdOutlineNextWeek className="text-3xl" title="next week" onClick={e => updateSchedule(e)} />
               </span>
             </div>
           </div>
@@ -169,19 +199,17 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
               {priorities?.map((priority) => (
                 <span
                   onClick={() => updatePriority(priority)}
-                  className={`text-xl ${
-                    priority.level === 1
-                      ? "text-red-500"
-                      : priority.level === 2
+                  className={`text-xl ${priority.level === 1
+                    ? "text-red-500"
+                    : priority.level === 2
                       ? "text-orange-500"
                       : priority.level === 3
-                      ? "text-green-700"
-                      : "text-gray-600"
-                  } ${
-                    priority.level == taskDataa.priority
+                        ? "text-green-700"
+                        : "text-gray-600"
+                    } ${priority.level == taskDataa.priority
                       ? "p-2 border border-gray-300 shadow-sm rounded-lg"
                       : ""
-                  }`}
+                    }`}
                 >
                   <FaFlag />
                 </span>
@@ -258,7 +286,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
         </div>
         {/* delete */}
         <div className="flex mt-1.5 group items-center justify-between   hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
-          <div onClick={removeTask} className="flex items-center gap-2 ">
+          <div onClick={() => RemoveTask(taskDataa)} className="flex items-center gap-2 ">
             <span className="text-accentMain">
               <RiDeleteBin6Line />
             </span>
@@ -278,9 +306,8 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
             {projects?.map((project, key) => (
               <div
                 onClick={() => updateProject(project)}
-                className={`flex items-center group justify-between  hover:bg-gray-200  -ml-3 px-4 py-0.5 rounded-md cursor-pointer ${
-                  project == taskDataa.project ? "bg-red-100" : ""
-                }`}
+                className={`flex items-center group justify-between  hover:bg-gray-200  -ml-3 px-4 py-0.5 rounded-md cursor-pointer ${project == taskDataa.project ? "bg-red-100" : ""
+                  }`}
               >
                 <div
                   onClick={() => updateProject(project)}
@@ -288,17 +315,16 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
                   className={`flex items-center gap-x-3 mt-1 `}
                 >
                   <span
-                    className={` text-fontSecondery transition-all text-xl ${
-                      project === "Personal"
-                        ? "text-blue-500"
-                        : project === "Shopping"
+                    className={` text-fontSecondery transition-all text-xl ${project === "Personal"
+                      ? "text-blue-500"
+                      : project === "Shopping"
                         ? "text-green-500"
                         : project === "Works"
-                        ? "text-orange-500"
-                        : project === "Errands"
-                        ? "text-shadow-cyan-700"
-                        : "text-gray-800"
-                    } `}
+                          ? "text-orange-500"
+                          : project === "Errands"
+                            ? "text-shadow-cyan-700"
+                            : "text-gray-800"
+                      } `}
                   >
                     <CiHashtag />
                   </span>

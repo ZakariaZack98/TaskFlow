@@ -9,10 +9,11 @@ import ProjectSelector from "../../components/common/ProjectSelector";
 import DateSelector from "../../components/common/DateSelector";
 import _ from "../../lib/lib";
 import CommentCard from "../../components/common/CommentCard";
-import { GetDateNow, GetMilliseconds, GetTimeNow } from "../../utils/utils";
-import { onValue, ref, set, update } from "firebase/database";
+import { GetDateNow, GetMilliseconds, GetTimeNow, MarkAsComplete } from "../../utils/utils";
+import { onValue, push, ref, set} from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
 import { MdAddPhotoAlternate } from "react-icons/md";
+import { toast } from "react-toastify";
 
 const TaskPage = ({ taskData, setOpenTaskPage }) => {
   const [currentTaskData, setCurrentTaskData] = useState({});
@@ -142,7 +143,10 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
   }
 
   const handleComment = async () => {
-    //! ADD ERROR HANDLING & EARLY RETURN LOGIC
+    if(comment.length === 0) {
+      toast.error(`Cannot post empty comment`);
+      return;
+    }
     const newComment = {
       id: Date.now(),
       text: comment,
@@ -150,15 +154,24 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
       createdAt: GetTimeNow(),
       commenterId: auth.currentUser?.uid
     }
-
     const commentRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskData?.id}/comments/${newComment.id}`);
+    const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
+    const newActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'comment',
+      taskId: taskData.id,
+      taskTitle: taskData.title,
+      comment,
+      message: `You have added a comment to- `
+    }
     try {
-      await set(commentRef, newComment);
-      console.log('comment added');
-      setComment('')
-      setCommentImgUrl('')
+      await Promise.all([set(commentRef, newComment), push(activityRef, newActivity)]);
     } catch (error) {
-      console.error('Error posting comment', error.message);
+      toast.error('Error posting comment', error.message);
+    } finally {
+      setComment('');
+      setCommentImgUrl('');
     }
   }
 
@@ -173,10 +186,18 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
           <div className="w-[96%] h-[94%]">
             <div className="heading flex justify-between border-b-2 border-accentMain pb-2">
               <div className="left flex items-center">
-                <RoundedCheckbox />
+                <span onClick={() => {
+                  MarkAsComplete(taskData);
+                  setTimeout(() => {
+                    setOpenTaskPage(false);
+                    console.log('toastup: task completed');
+                  }, 1000);
+                  }}>
+                  <RoundedCheckbox />
+                </span>
                 <div className="taskName flex flex-col">
-                  <p className="font-semibold text-sm">{currentTaskData?.title || "Take my cat to the vet"}</p>
-                  <div className="text-[12px] text-fontSecondery">in {currentTaskData?.category || "Personal"}</div>
+                  <p className="font-semibold text-sm">{currentTaskData?.title || "No title"}</p>
+                  <div className="text-[12px] text-fontSecondery">in {currentTaskData?.category || "N/A"}</div>
                 </div>
               </div>
               <div className="iconSec flex items-center gap-x-3">
@@ -195,7 +216,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
               {/* =========================== HEADING PART ================================ */}
               <div className="main h-full w-7/10 p-3 overflow-y-scroll ">
                 <div className="flex items-center gap-x-2">
-                  <h3 className="text-2xl font-semibold text-accentMain">{currentTaskData?.title || "Take my cat to the vet"}</h3>
+                  <h3 className="text-2xl font-semibold text-accentMain">{currentTaskData?.title || "No title"}</h3>
                   {
                     //? OVERDUE TAG IF DEADLINE HAVE CROSSED ===
                     taskData.deadline < GetMilliseconds(new Date().toDateString()) && (
@@ -208,7 +229,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                     <HiOutlineBars3BottomLeft />
                   </span>
                   <p className=" text-fontSecondery my-5">
-                    {currentTaskData?.desc || "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo temporea velit."}
+                    {currentTaskData?.desc || "No description"}
                   </p>
                 </div>
                 {/* ========================== SUB TASKS SECTION ============================= */}

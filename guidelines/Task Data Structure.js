@@ -17,12 +17,6 @@
   subtasks: [ //? if any subtask is assigned to the main task (similiar structure as the main task)
     {id, title, desc, ...same}
   ]
-  activity: [ //* USED FOR NOTIFICATIONS
-    {
-      time: '04 28 2025 08:33:32 am', //? when the activity happened
-      activity: 'added a comment to the task' //? what happened
-    }, {...more}
-  ]
 }
 
 //** NOTE: ALL THE PROPERTIES OF THE OBJECTS WILL BE USED AS PROPS INSIDE THE COMPONENTS OF THE TASKFLOW APP, SO KEEP THE PROPS NAME SAME AS THIS OBJECT PROPERTY NAMES **/

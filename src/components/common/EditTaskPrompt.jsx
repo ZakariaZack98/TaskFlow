@@ -4,8 +4,10 @@ import BtnPrimary from "./BtnPrimary";
 import DateSelector from "./DateSelector";
 import ProjectSelector from "./ProjectSelector";
 import PrioritySelector from "./PrioritySelector";
-import { ref, set } from "firebase/database";
+import { push, ref, set } from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
+import { GetMilliseconds, GetTimeNow } from "../../utils/utils";
+import { toast } from "react-toastify";
 
 const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
   const [title, setTitle] = useState(taskData?.title || "");
@@ -15,6 +17,10 @@ const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
   const [priority, setPriority] = useState(taskData.priority);
 
   const updateTask = async () => {
+    if (title.length === 0) {
+      toast.error(`Task with empty title can't be added`);
+      return;
+    }
     const updatedTask = {
       title,
       desc,
@@ -23,22 +29,31 @@ const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
       priority,
       id: taskData.id,
       status: "pending",
-      deadline: date,
+      deadline: GetMilliseconds(date + ` ${new Date().toString().split(' ')[3]}`),
       createdAt: taskData.createdAt,
     };
+    const newActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'update',
+      taskId: taskData.id,
+      taskTitle: title,
+      message: 'You have updated task- '
+    };
     const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskData.id}`);
+    const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
+    const promises = [set(taskRef, updatedTask), push(activityRef, newActivity)]
     try {
-      await set(taskRef, updatedTask);
+      await Promise.all(promises);
+      toast.success('Task has been updated successfully')
+    } catch (err) {
+      toast.error("Error updating task:", err.message);
+    } finally {
       setTitle("");
       setDesc("");
       setPriority(3);
       setDate(new Date().toDateString().split(" ").slice(0, 3).join(" "));
       setProject("Personal");
-      setOpenEditPrompt(false);
-      console.log("Task updated successfully");
-    } catch (err) {
-      console.error("Error updating task:", err.message);
-    } finally {
       setOpenEditPrompt(false);
     }
   };
@@ -55,14 +70,14 @@ const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
         <IoMdCloseCircle />
       </span>
       <input
-        type="text-2xl"
+        type="text"
         placeholder="Task name"
         className="font-semibold w-full focus:outline-0"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
       <input
-        type="text-sm"
+        type="text"
         placeholder="Description"
         className="text-sm w-full focus:outline-0"
         value={desc}

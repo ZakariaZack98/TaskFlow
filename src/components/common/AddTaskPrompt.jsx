@@ -6,8 +6,10 @@ import { IoMdCloseCircle } from 'react-icons/io'
 import BtnPrimary from './BtnPrimary'
 import { FaPlusCircle } from 'react-icons/fa'
 import { GetMilliseconds, GetTimeNow } from '../../utils/utils'
-import { ref, set } from 'firebase/database'
+import { push, ref, set } from 'firebase/database'
 import { auth, db } from '../../../Database/FirebaseConfig'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 const AddTaskPrompt = () => {
   const [openPrompt, setOpenPrompt] = useState(false);
@@ -16,8 +18,13 @@ const AddTaskPrompt = () => {
   const [date, setDate] = useState(new Date().toDateString().split(' ').slice(0,3).join(' '));
   const [project, setProject] = useState('Personal');
   const [priority, setPriority] = useState(3);
+  const navigate = useNavigate();
 
   const handleAddTask = async () => {
+    if(title.length === 0) {
+      toast.error(`Task with empty title can't be added`);
+      return;
+    }
     const newTask = {
       title, 
       desc, 
@@ -29,20 +36,31 @@ const AddTaskPrompt = () => {
       deadline: GetMilliseconds(date + ` ${new Date().toString().split(' ')[3]}`), //! Tempfix: Adding the year to complete the format
       createdAt: GetTimeNow()
     }
+    const NewActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'add',
+      taskId: newTask.id,
+      taskTitle: title,
+      message: `You have added a new task- `
+    }
     const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${newTask.id}`);
+    const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
+    const promises = [set(taskRef, newTask), push(activityRef, NewActivity)]
     try {
-      await set(taskRef, newTask);
+      await Promise.all(promises);
+      toast.success('Task Added')
+      navigate('/'); //? switching to inbox afer adding a task
+      console.log('Task added successfully');
+    } catch(err) {
+      console.error('Error adding task:', err.message)
+    } finally {
       setTitle('');
       setDesc('');
       setPriority(3);
       setDate(new Date().toDateString().split(' ').slice(0,3).join(' '));
       setProject('Personal');
       setOpenPrompt(false);
-      console.log('Task added successfully');
-    } catch(err) {
-      console.error('Error adding task:', err.message)
-    } finally {
-      setOpenPrompt(false)
     }
   }
 
