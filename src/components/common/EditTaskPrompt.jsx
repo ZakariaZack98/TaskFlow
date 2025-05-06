@@ -7,6 +7,7 @@ import PrioritySelector from "./PrioritySelector";
 import { push, ref, set } from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
 import { GetMilliseconds, GetTimeNow } from "../../utils/utils";
+import { toast } from "react-toastify";
 
 const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
   const [title, setTitle] = useState(taskData?.title || "");
@@ -16,6 +17,10 @@ const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
   const [priority, setPriority] = useState(taskData.priority);
 
   const updateTask = async () => {
+    if (title.length === 0) {
+      toast.error(`Task with empty title can't be added`);
+      return;
+    }
     const updatedTask = {
       title,
       desc,
@@ -40,16 +45,15 @@ const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
     const promises = [set(taskRef, updatedTask), push(activityRef, newActivity)]
     try {
       await Promise.all(promises);
+      toast.success('Task has been updated successfully')
+    } catch (err) {
+      toast.error("Error updating task:", err.message);
+    } finally {
       setTitle("");
       setDesc("");
       setPriority(3);
       setDate(new Date().toDateString().split(" ").slice(0, 3).join(" "));
       setProject("Personal");
-      setOpenEditPrompt(false);
-      console.log("Task updated successfully");
-    } catch (err) {
-      console.error("Error updating task:", err.message);
-    } finally {
       setOpenEditPrompt(false);
     }
   };
@@ -66,14 +70,14 @@ const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
         <IoMdCloseCircle />
       </span>
       <input
-        type="text-2xl"
+        type="text"
         placeholder="Task name"
         className="font-semibold w-full focus:outline-0"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
       <input
-        type="text-sm"
+        type="text"
         placeholder="Description"
         className="text-sm w-full focus:outline-0"
         value={desc}

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AiOutlineSun } from "react-icons/ai";
-import { BsArrowsMove, BsThreeDots } from "react-icons/bs";
-import { CiCalendar, CiEdit, CiHashtag, CiNoWaitingSign } from "react-icons/ci";
+import { BsArrowsMove} from "react-icons/bs";
+import { CiCalendar, CiEdit, CiHashtag} from "react-icons/ci";
 import { GoProjectSymlink } from "react-icons/go";
 import { MdOutlineNextWeek, MdOutlineWeekend } from "react-icons/md";
 import _ from "../../lib/lib";
@@ -20,6 +20,8 @@ import { auth } from "../../../Database/FirebaseConfig";
 import EditTaskPrompt from "./EditTaskPrompt";
 import { push } from "firebase/database";
 import { useNavigate } from "react-router-dom";
+import { GetTimeNow, RemoveTask } from "../../utils/utils";
+import { toast } from "react-toastify";
 
 const TaskAction = ({ taskDataa, showTaskAction }) => {
   const navigate = useNavigate();
@@ -33,7 +35,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
   // TODO: HANDLE RESCHEDULE BY CLICKING DATE ICONS
   const updateSchedule = e => {
     e.stopPropagation();
-    if(e.target.textContent === 'today') {
+    if (e.target.textContent === 'today') {
       // set the tasks date (text format) & tasks deadline (milisecond format) to today
     } else if (e.target.textContent === 'tomorrow') {
       // set the tasks date (text format) & tasks deadline (milisecond format) to tomorrow
@@ -44,38 +46,59 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
     }
     /**
      * ? NOTE: if you call GetMiliSeconds('Tuesday 6 May 2025') you will get miliseconds of 6th May. The arg's date format should be same as New Date().toDateString()'s formatt
-     * */ 
+     * */
   }
 
   // todo updatePriority function apply
   const updatePriority = (priorityData) => {
+    const newActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'update',
+      taskId: taskDataa.id,
+      taskTitle: taskDataa.title,
+      taskPriority: priorityData.level,
+      message: `You have updated priority of a task- `
+    }
     setPriority(priorityData.level);
     const taskRef = ref(
       db,
       `tasks/${auth.currentUser?.uid}/${taskDataa.id}/priority`
     );
-    set(taskRef, priorityData.level);
-    setOpenProjectPopUp(false);
-    showTaskAction(false);
+    const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
+    Promise.all([set(taskRef, priorityData.level), push(activityRef, newActivity)])
+      .then(() => {
+        setOpenProjectPopUp(false);
+        showTaskAction(false);
+        toast.success(`Priority changed to priority ${priorityData.level}`)
+      })
   };
   // todo updateProject function apply
   const updateProject = (projectData) => {
-
+    const newActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'update',
+      taskId: taskDataa.id,
+      taskTitle: taskDataa.title,
+      taskProject: projectData,
+      message: `You have re-assigned project of a task- `
+    }
     setProject(projectData);
     const projectRef = ref(
       db,
       `tasks/${auth.currentUser?.uid}/${taskDataa.id}/project`
     );
-    set(projectRef, projectData);
-    setOpenProjectPopUp(false);
-    showTaskAction(false);
+    const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
+    Promise.all([set(projectRef, projectData), push(activityRef, newActivity)])
+      .then(() => {
+        setOpenProjectPopUp(false);
+        showTaskAction(false);
+        toast.success(`task re-assigned to ${projectData}`)
+      })
   };
 
-  // todo removeTask function apply
-  const removeTask = () => {
-    const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskDataa.id}`);
-    remove(taskRef);
-  };
+  
 
   // todo apply handleDuplicate
 
@@ -151,16 +174,16 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
             {/* date icons */}
             <div className="flex items-center justify-between">
               <span className="text-2xl text-green-500" >
-                <CiCalendar className="text-3xl"  title="today" onClick={e => updateSchedule(e)}/>
+                <CiCalendar className="text-3xl" title="today" onClick={e => updateSchedule(e)} />
               </span>
               <span className="text-2xl text-yellow-500"  >
-                <AiOutlineSun className="text-3xl" title="tomorrow"  onClick={e => updateSchedule(e)}/>
+                <AiOutlineSun className="text-3xl" title="tomorrow" onClick={e => updateSchedule(e)} />
               </span>
               <span className="text-2xl text-blue-500"  >
-                <MdOutlineWeekend className="text-3xl" title="weekend" onClick={e => updateSchedule(e)}/>
+                <MdOutlineWeekend className="text-3xl" title="weekend" onClick={e => updateSchedule(e)} />
               </span>
               <span className="text-2xl text-purple-500"  >
-                <MdOutlineNextWeek className="text-3xl" title="next week" onClick={e => updateSchedule(e)}/>
+                <MdOutlineNextWeek className="text-3xl" title="next week" onClick={e => updateSchedule(e)} />
               </span>
             </div>
           </div>
@@ -176,19 +199,17 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
               {priorities?.map((priority) => (
                 <span
                   onClick={() => updatePriority(priority)}
-                  className={`text-xl ${
-                    priority.level === 1
-                      ? "text-red-500"
-                      : priority.level === 2
+                  className={`text-xl ${priority.level === 1
+                    ? "text-red-500"
+                    : priority.level === 2
                       ? "text-orange-500"
                       : priority.level === 3
-                      ? "text-green-700"
-                      : "text-gray-600"
-                  } ${
-                    priority.level == taskDataa.priority
+                        ? "text-green-700"
+                        : "text-gray-600"
+                    } ${priority.level == taskDataa.priority
                       ? "p-2 border border-gray-300 shadow-sm rounded-lg"
                       : ""
-                  }`}
+                    }`}
                 >
                   <FaFlag />
                 </span>
@@ -265,7 +286,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
         </div>
         {/* delete */}
         <div className="flex mt-1.5 group items-center justify-between   hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
-          <div onClick={removeTask} className="flex items-center gap-2 ">
+          <div onClick={() => RemoveTask(taskDataa)} className="flex items-center gap-2 ">
             <span className="text-accentMain">
               <RiDeleteBin6Line />
             </span>
@@ -285,9 +306,8 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
             {projects?.map((project, key) => (
               <div
                 onClick={() => updateProject(project)}
-                className={`flex items-center group justify-between  hover:bg-gray-200  -ml-3 px-4 py-0.5 rounded-md cursor-pointer ${
-                  project == taskDataa.project ? "bg-red-100" : ""
-                }`}
+                className={`flex items-center group justify-between  hover:bg-gray-200  -ml-3 px-4 py-0.5 rounded-md cursor-pointer ${project == taskDataa.project ? "bg-red-100" : ""
+                  }`}
               >
                 <div
                   onClick={() => updateProject(project)}
@@ -295,17 +315,16 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
                   className={`flex items-center gap-x-3 mt-1 `}
                 >
                   <span
-                    className={` text-fontSecondery transition-all text-xl ${
-                      project === "Personal"
-                        ? "text-blue-500"
-                        : project === "Shopping"
+                    className={` text-fontSecondery transition-all text-xl ${project === "Personal"
+                      ? "text-blue-500"
+                      : project === "Shopping"
                         ? "text-green-500"
                         : project === "Works"
-                        ? "text-orange-500"
-                        : project === "Errands"
-                        ? "text-shadow-cyan-700"
-                        : "text-gray-800"
-                    } `}
+                          ? "text-orange-500"
+                          : project === "Errands"
+                            ? "text-shadow-cyan-700"
+                            : "text-gray-800"
+                      } `}
                   >
                     <CiHashtag />
                   </span>

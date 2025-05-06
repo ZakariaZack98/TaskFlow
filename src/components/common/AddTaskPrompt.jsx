@@ -9,6 +9,7 @@ import { GetMilliseconds, GetTimeNow } from '../../utils/utils'
 import { push, ref, set } from 'firebase/database'
 import { auth, db } from '../../../Database/FirebaseConfig'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 const AddTaskPrompt = () => {
   const [openPrompt, setOpenPrompt] = useState(false);
@@ -20,6 +21,10 @@ const AddTaskPrompt = () => {
   const navigate = useNavigate();
 
   const handleAddTask = async () => {
+    if(title.length === 0) {
+      toast.error(`Task with empty title can't be added`);
+      return;
+    }
     const newTask = {
       title, 
       desc, 
@@ -44,18 +49,18 @@ const AddTaskPrompt = () => {
     const promises = [set(taskRef, newTask), push(activityRef, NewActivity)]
     try {
       await Promise.all(promises);
+      toast.success('Task Added')
+      navigate('/'); //? switching to inbox afer adding a task
+      console.log('Task added successfully');
+    } catch(err) {
+      console.error('Error adding task:', err.message)
+    } finally {
       setTitle('');
       setDesc('');
       setPriority(3);
       setDate(new Date().toDateString().split(' ').slice(0,3).join(' '));
       setProject('Personal');
       setOpenPrompt(false);
-      navigate('/'); //? switching to inbox afer adding a task
-      console.log('Task added successfully');
-    } catch(err) {
-      console.error('Error adding task:', err.message)
-    } finally {
-      setOpenPrompt(false)
     }
   }
 

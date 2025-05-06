@@ -1,6 +1,7 @@
-import { ref, set } from "firebase/database";
+import { push, ref, remove, set } from "firebase/database";
 import moment from "moment";
 import { auth, db } from "../../Database/FirebaseConfig";
+import { toast } from "react-toastify";
 
 // * (HELPER) EXTRACT MILISECONDS FROM DATE STRING ===============
 export const GetMilliseconds = (dateString) => {
@@ -18,14 +19,44 @@ export const GetDateNow = () => {
 
 /**
  * TODO: MARK A TASK AS COMPLETED, REMOVE FROM UI, UPDATE ON DATABASE ================================
- * @param {taskId} string containing the completed task's id
+ * @param {task} object defining the task
  * @return void
  * */ 
-export const MarkAsComplete = taskId => {
-  const taskStatusRef = ref(db, `tasks/${auth.currentUser.uid}/${taskId}/status`);
+export const MarkAsComplete = task => {
+  const taskStatusRef = ref(db, `tasks/${auth.currentUser.uid}/${task.id}/status`);
+  const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
+  const newActivity = {
+    createdAt: GetTimeNow(),
+    timeStamp: Date.now(),
+    type: 'completion',
+    taskId: task.id,
+    taskTitle: task.title,
+    message: `You have completed a task- `
+  }
   setTimeout(() => {
-    set(taskStatusRef, 'completed')
-    .then(console.log('Task completed'))
+    Promise.all([set(taskStatusRef, 'completed'), push(activityRef, newActivity)])
     .catch(console.error)
   }, 700);
 }
+
+/**
+ * TODO: DELETE A TASK FROM DATABASE ===================================================================
+ * @param {task} object defining the task
+ * @return void
+ * */ 
+  export const RemoveTask = task => {
+    const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
+    const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${task.id}`);
+    const newActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'delete',
+      taskId: task.id,
+      taskTitle: task.title,
+      message: `You have deleted a task- `
+    }
+    Promise.all([remove(taskRef), push(activityRef, newActivity)])
+    .then(() => {
+      toast.warning('Task has been deleted')
+    })
+  };

@@ -3,21 +3,22 @@ import { PiDotsSixVerticalBold, PiDotsThreeOutline } from "react-icons/pi";
 import RoundedCheckbox from "./RoundedCheckbox";
 import _ from "../../lib/lib";
 import { SlCalender } from "react-icons/sl";
-import { GoPencil } from "react-icons/go";
+import { GoPencil} from "react-icons/go";
 import { MdOutlineDateRange } from "react-icons/md";
-import { FaRegMessage } from "react-icons/fa6";
-import { GetDateNow, GetMilliseconds, GetTimeNow, MarkAsComplete } from "../../utils/utils";
+import { GetDateNow, GetMilliseconds, GetTimeNow, MarkAsComplete, RemoveTask } from "../../utils/utils";
 import CalendarPopup from "./CalenderPopup";
 import TaskPage from "../../pages/TaskPage/TaskPage";
 import { push, ref, set } from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
 import EditTaskPrompt from "./EditTaskPrompt";
 import TaskAction from "./TaskAction";
+import { toast } from "react-toastify";
+import { BsFillTrash3Fill } from "react-icons/bs";
 
 const TaskCard = ({ taskData }) => {
   const [hover, setHover] = useState(false);
   const [recheduleMode, setRecheduleMode] = useState(false);
-  const [date, setDate] = useState(taskData.date);
+  const [_, setDate] = useState(taskData.date);
   const [openTaskPage, setOpenTaskpage] = useState(false);
   const [openEditPrompt, setOpenEditPrompt] = useState(false);
   const [showTaskAction, setShowTaskAction] = useState(false);
@@ -41,6 +42,7 @@ const TaskCard = ({ taskData }) => {
         set(deadlineRef, GetMilliseconds(selectedDate + ` ${new Date().toDateString().split(" ")[3]}`)),
         push(activityRef, NewActivity)
       ]);
+      toast.success(`Task has been recheduled to ${selectedDate}`)
       console.log("rescheduling successful");
     } catch (error) {
       console.error("Task recheduling failed ", error);
@@ -69,7 +71,7 @@ const TaskCard = ({ taskData }) => {
               <span className={`text-xl ${hover ? "visible" : "invisible"}`}>
                 <PiDotsSixVerticalBold />
               </span>
-              <span onClick={() => MarkAsComplete(taskData.id)}>
+              <span onClick={() => MarkAsComplete(taskData)}>
                 <RoundedCheckbox />
               </span>
             </div>
@@ -144,7 +146,7 @@ const TaskCard = ({ taskData }) => {
               </span>
             </span>
             <span className=" hover:text-accentMain">
-              <FaRegMessage />
+            <BsFillTrash3Fill onClick={() => RemoveTask(taskData)}/>
             </span>
             <span className=" hover:text-accentMain relative">
               <PiDotsThreeOutline
