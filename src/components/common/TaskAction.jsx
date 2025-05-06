@@ -43,7 +43,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
       // set the tasks date (text format) & tasks deadline (milisecond format) to 7 days later from today
     }
     /**
-     * ? NOTE: if you call GetMiliSeconds('Tuesday 6 May 2025') you will get miliseconds of 6th May. The arg's date format should be same as New Date().toDateString()'s format
+     * ? NOTE: if you call GetMiliSeconds('Tuesday 6 May 2025') you will get miliseconds of 6th May. The arg's date format should be same as New Date().toDateString()'s formatt
      * */ 
   }
 
