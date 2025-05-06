@@ -19,7 +19,6 @@ import { db } from "../../../Database/FirebaseConfig";
 import { auth } from "../../../Database/FirebaseConfig";
 import EditTaskPrompt from "./EditTaskPrompt";
 import { push } from "firebase/database";
-import MyProject from "./MyProject";
 import { useNavigate } from "react-router-dom";
 
 const TaskAction = ({ taskDataa, showTaskAction }) => {
@@ -34,7 +33,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
   // TODO: HANDLE RESCHEDULE BY CLICKING DATE ICONS
   const updateSchedule = e => {
     e.stopPropagation();
-    if(e.target.textContent === 'tooay') {
+    if(e.target.textContent === 'today') {
       // set the tasks date (text format) & tasks deadline (milisecond format) to today
     } else if (e.target.textContent === 'tomorrow') {
       // set the tasks date (text format) & tasks deadline (milisecond format) to tomorrow

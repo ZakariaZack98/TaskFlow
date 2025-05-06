@@ -4,9 +4,9 @@ import BtnPrimary from "./BtnPrimary";
 import DateSelector from "./DateSelector";
 import ProjectSelector from "./ProjectSelector";
 import PrioritySelector from "./PrioritySelector";
-import { ref, set } from "firebase/database";
+import { push, ref, set } from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
-import { GetMilliseconds } from "../../utils/utils";
+import { GetMilliseconds, GetTimeNow } from "../../utils/utils";
 
 const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
   const [title, setTitle] = useState(taskData?.title || "");
@@ -27,9 +27,19 @@ const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
       deadline: GetMilliseconds(date + ` ${new Date().toString().split(' ')[3]}`),
       createdAt: taskData.createdAt,
     };
+    const newActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'update',
+      taskId: taskData.id,
+      taskTitle: title,
+      message: 'You have updated task- '
+    };
     const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskData.id}`);
+    const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
+    const promises = [set(taskRef, updatedTask), push(activityRef, newActivity)]
     try {
-      await set(taskRef, updatedTask);
+      await Promise.all(promises);
       setTitle("");
       setDesc("");
       setPriority(3);

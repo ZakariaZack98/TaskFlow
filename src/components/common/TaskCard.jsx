@@ -6,10 +6,10 @@ import { SlCalender } from "react-icons/sl";
 import { GoPencil } from "react-icons/go";
 import { MdOutlineDateRange } from "react-icons/md";
 import { FaRegMessage } from "react-icons/fa6";
-import { GetDateNow, GetMilliseconds, MarkAsComplete } from "../../utils/utils";
+import { GetDateNow, GetMilliseconds, GetTimeNow, MarkAsComplete } from "../../utils/utils";
 import CalendarPopup from "./CalenderPopup";
 import TaskPage from "../../pages/TaskPage/TaskPage";
-import { ref, set } from "firebase/database";
+import { push, ref, set } from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
 import EditTaskPrompt from "./EditTaskPrompt";
 import TaskAction from "./TaskAction";
@@ -24,19 +24,22 @@ const TaskCard = ({ taskData }) => {
 
   const handleRechedule = async (taskId, selectedDate) => {
     const dateRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskId}/date`);
-    const deadlineRef = ref(
-      db,
-      `tasks/${auth.currentUser?.uid}/${taskId}/deadline`
-    );
+    const deadlineRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskId}/deadline`);
+    const activityRef = ref(db, `activity/${auth.currentUser?.uid}`);
+    const NewActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'reschedule',
+      taskId: taskData.id,
+      taskTitle: taskData.title,
+      taskDate: selectedDate,
+      message: `You have rescheduled a task- `
+    }
     try {
       await Promise.all([
         set(dateRef, selectedDate),
-        set(
-          deadlineRef,
-          GetMilliseconds(
-            selectedDate + ` ${new Date().toDateString().split(" ")[3]}`
-          )
-        ),
+        set(deadlineRef, GetMilliseconds(selectedDate + ` ${new Date().toDateString().split(" ")[3]}`)),
+        push(activityRef, NewActivity)
       ]);
       console.log("rescheduling successful");
     } catch (error) {
