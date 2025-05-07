@@ -13,7 +13,7 @@ const Inbox = () => {
   const [overdueData, setOverdueTaskData] = useState([]);
   const [getUpcomingTaskData, setUpcomingTaskData] = useState([]);
   const [boardviewdata, setBoardviewdata] = useState([])
-  const [boardview, setBoardview] = useState(false)
+  const [boardview, setBoardview] = useState(true)
 
   useEffect(() => {
     if (!allTaskData) return;
