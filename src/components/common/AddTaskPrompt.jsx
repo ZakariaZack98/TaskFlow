@@ -13,7 +13,6 @@ import { toast } from 'react-toastify'
 import { TaskContext } from '../../contexts/TaskContext'
 
 const AddTaskPrompt = ({ isSubTask, motherTaskId }) => {
-  console.log(isSubTask, motherTaskId)
   const { allTaskData } = useContext(TaskContext);
   const [openPrompt, setOpenPrompt] = useState(false);
   const [title, setTitle] = useState('');
@@ -112,7 +111,7 @@ const AddTaskPrompt = ({ isSubTask, motherTaskId }) => {
       </div>
       {
         openPrompt && (
-          <div className={`rounded-lg ps-3 pt-3 pe-3 ${isSubTask ? 'pb-3' : ''} w-full bg-white border border-fontSecondery flex flex-col gap-y-1 mt-3 absolute z-30 min-w-180`} style={{ boxShadow: '0 0 5px 5px rgba(0, 0, 0, 0.1)' }}>
+          <div className={`rounded-lg ps-3 pt-3 pe-3 ${isSubTask ? 'pb-3 -translate-y-10 min-w-[35dvw]' : 'min-w-180'} w-full bg-white border border-fontSecondery flex flex-col gap-y-1 mt-3 absolute z-50 `} style={{ boxShadow: '0 0 5px 5px rgba(0, 0, 0, 0.1)' }}>
             <span className='absolute right-4 top-4 text-accentMain text-2xl cursor-pointer' onClick={() => setOpenPrompt(false)}>
               <IoMdCloseCircle />
             </span>

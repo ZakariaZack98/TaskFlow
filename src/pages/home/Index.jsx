@@ -45,11 +45,11 @@ const Inbox = () => {
 
   return (
     <>
-      <div className={boardview ? "heading w-6/10 mx-auto pb-5" : "heading w-[90%] mx-auto pb-5"}>
+      <div className={!boardview ? "heading w-6/10 mx-auto pb-5" : "heading w-[90%] mx-auto pb-5"}>
         <h1 className='text-3xl font-bold'>Inbox</h1>
         <AddTaskPrompt />
       </div>
-      {boardview ?
+      {!boardview ?
         <div className='h-full w-full overflow-y-scroll' style={{ scrollbarWidth: 'none' }}>
           <div className="pendingTaskContainer w-6/10 mx-auto ">
             <div className="taskList flex flex-col gap-y-3 my-3 ">
