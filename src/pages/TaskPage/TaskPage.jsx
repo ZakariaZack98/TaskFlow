@@ -10,10 +10,13 @@ import DateSelector from "../../components/common/DateSelector";
 import _ from "../../lib/lib";
 import CommentCard from "../../components/common/CommentCard";
 import { GetDateNow, GetMilliseconds, GetTimeNow, MarkAsComplete } from "../../utils/utils";
-import { onValue, push, ref, set} from "firebase/database";
+import { onValue, push, ref, set } from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import { toast } from "react-toastify";
+import AddTaskPrompt from "../../components/common/AddTaskPrompt";
+import TaskCard from "../../components/common/TaskCard";
+import SubTaskCard from "../../components/common/SubTaskCard";
 
 const TaskPage = ({ taskData, setOpenTaskPage }) => {
   const [currentTaskData, setCurrentTaskData] = useState({});
@@ -38,7 +41,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
       if (taskSnapshot.exists()) {
         const updatedData = taskSnapshot.val()
         setCurrentTaskData(updatedData);
-        setSubTasks(updatedData.subTasks || []);
+        setSubTasks(Object.values(updatedData?.subTasks)?.sort((a, b) => b.id - a.id) || []);
         setComments(Object.values(updatedData?.comments)?.sort((a, b) => b.id - a.id) || []);
         setProject(updatedData.project || 'Personal');
         setPriority(updatedData.priority || 3)
@@ -143,7 +146,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
   }
 
   const handleComment = async () => {
-    if(comment.length === 0) {
+    if (comment.length === 0) {
       toast.error(`Cannot post empty comment`);
       return;
     }
@@ -192,12 +195,12 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                     setOpenTaskPage(false);
                     console.log('toastup: task completed');
                   }, 1000);
-                  }}>
+                }}>
                   <RoundedCheckbox />
                 </span>
                 <div className="taskName flex flex-col">
                   <p className="font-semibold text-sm">{currentTaskData?.title || "No title"}</p>
-                  <div className="text-[12px] text-fontSecondery">in {currentTaskData?.category || "N/A"}</div>
+                  <div className="text-[12px] text-fontSecondery">in {currentTaskData?.project || "N/A"}</div>
                 </div>
               </div>
               <div className="iconSec flex items-center gap-x-3">
@@ -233,7 +236,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                   </p>
                 </div>
                 {/* ========================== SUB TASKS SECTION ============================= */}
-                <div className="subTaskSec mt-3 flex items-center gap-x-1 px-2 text-lg" >
+                <div className="subTaskSec mt-3  flex items-center gap-x-1 px-2 text-lg" >
                   <span className="text-xl cursor-pointer text-fontSecondery" onClick={() => setShowSubTasks((prev) => !prev)}>
                     {showSubTasks ? (
                       <FaAngleDown className="rotate-0 duration-200" />
@@ -243,7 +246,23 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                   </span>
                   <p className="font-semibold  text-fontSecondery">Sub tasks:</p>
                 </div>
-                <div
+                <div className="ms-3 mb-5">
+                  <AddTaskPrompt isSubTask={true} motherTaskId={taskData.id} />
+                </div>
+                {
+                  subTasks && subTasks.length > 0 && (
+                    <div className="flex flex-col gap-y-2 w-8/10 mx-auto">
+                      {
+                        subTasks?.map((subTask, idx, arr) => (
+                          <div className={idx < arr.length - 1 ? 'border-b border-[rgba(0,0,0,0.27)]' : ''}>
+                            <SubTaskCard subTaskData={subTask} motherTaskId={taskData.id}/>
+                          </div>
+                        ))
+                      }
+                    </div>
+                  )
+                }
+                {/* <div
                   className={`${showSubTasks ? "h-fit" : "h-0 opacity-0"
                     } subTaskList mx-3 duration-300 `}>
                   <div className="flex items-center gap-x-1 p-4">
@@ -258,7 +277,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                     )}
                     <FaLock className="text-accentMain" />
                   </div>
-                </div>
+                </div> */}
                 {/* ============================ COMMENT SECTION ================================= */}
                 <div className="commentSec flex items-center gap-x-1 px-2">
                   <span className="text-xl cursor-pointer text-fontSecondery" onClick={() => setShowComments((prev) => !prev)}>
