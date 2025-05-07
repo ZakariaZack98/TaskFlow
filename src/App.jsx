@@ -9,6 +9,7 @@ import SignIn from "./pages/SignIn/SignIn";
 import UserNotVerified from "./components/common/UserNotVerified";
 import ProjectPage from "./pages/ProjectPage/ProjectPage";
 import Activity from "./pages/Activity/Activity";
+import FiltersANDlabels from "./pages/FiltersANDlabels/FiltersANDlabels";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/today" element={<Today />} />
           <Route path="/upcoming" element={<Upcoming />} />
           <Route path="/activity" element={<Activity />} />
+          <Route path="/filters&labels" element={<FiltersANDlabels />} />
           <Route path="/projects/:name" element={<ProjectPage/>}/>
         </Route>
         <Route path="/signup" element={<SignUp />} />
