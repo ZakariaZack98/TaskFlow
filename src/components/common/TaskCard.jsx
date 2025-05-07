@@ -24,7 +24,7 @@ const TaskCard = ({ taskData, boardviewMode }) => {
   const [openEditPrompt, setOpenEditPrompt] = useState(false);
   const [showTaskAction, setShowTaskAction] = useState(false);
 
-  const handleRechedule = async (taskId, selectedDate, boardviewMode) => {
+  const handleRechedule = async (taskId, selectedDate) => {
     const dateRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskId}/date`);
     const deadlineRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskId}/deadline`);
     const activityRef = ref(db, `activity/${auth.currentUser?.uid}`);

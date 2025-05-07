@@ -1,16 +1,14 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "./common/Sidebar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { auth } from "../../Database/FirebaseConfig";
-import { LiaSlidersHSolid } from "react-icons/lia";
-
-import { onValue, ref } from "firebase/database";
-import { db } from "../../Database/FirebaseConfig";
 import { TaskContext, TaskProvider } from "../contexts/TaskContext";
 import { onAuthStateChanged } from "firebase/auth";
 import UserNotVerified from "./common/UserNotVerified";
 
 const CommonLayout = () => {
+  const location = useLocation();
+  const path = location.pathname;
   const [userVerified, setuserVerifed] = useState(false);
 
   useEffect(() => {
@@ -26,15 +24,7 @@ const CommonLayout = () => {
       <TaskProvider>
         <div className="flex h-screen w-full commonlayout overflow-hidden">
           <Sidebar />
-          <div className="flex flex-col w-4/5 p-5 bg-[rgba(255,255,255,0.77)]">
-            <div className="w-full flex justify-end ">
-              <div className="flex items-center gap-x-1 px-4 py-1.5 rounded cursor-pointer hover:bg-focusMain duration-300">
-                <span>
-                  <LiaSlidersHSolid />
-                </span>
-                <p>View</p>
-              </div>
-            </div>
+          <div className="flex flex-col w-4/5 p-5 bg-[rgba(255,255,255,0.77)] pt-10">
             <Outlet />
           </div>
         </div>
