@@ -14,8 +14,8 @@ const Boardview = ({ taskData }) => {
                         <div className='flex flex-col gap-2 h-[88%] overflow-y-scroll overflow-x-hidden ' style={{scrollbarWidth:"none"}}>
                             {
                                 data?.map((task, idx, arr) => {
-                                    return <div className='border rounded-lg border-[rgba(0,0,0,0.15)] '>
-                                        <TaskCard key={task.id} taskData={task} />
+                                    return <div className='border rounded-lg border-[rgba(0,0,0,0.2)] bg-[#ffffff36]'>
+                                        <TaskCard key={task.id} taskData={task} boardviewMode={true}/>
                                     </div>
                                 })
                             }

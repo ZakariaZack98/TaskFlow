@@ -3,7 +3,7 @@ import { PiDotsSixVerticalBold, PiDotsThreeOutline } from "react-icons/pi";
 import RoundedCheckbox from "./RoundedCheckbox";
 import _ from "../../lib/lib";
 import { SlCalender } from "react-icons/sl";
-import { GoPencil} from "react-icons/go";
+import { GoPencil } from "react-icons/go";
 import { MdOutlineDateRange } from "react-icons/md";
 import { GetDateNow, GetMilliseconds, GetTimeNow, MarkAsComplete, RemoveTask } from "../../utils/utils";
 import CalendarPopup from "./CalenderPopup";
@@ -14,8 +14,9 @@ import EditTaskPrompt from "./EditTaskPrompt";
 import TaskAction from "./TaskAction";
 import { toast } from "react-toastify";
 import { BsFillTrash3Fill } from "react-icons/bs";
+import { IoMdCloseCircleOutline } from "react-icons/io";
 
-const TaskCard = ({ taskData }) => {
+const TaskCard = ({ taskData, boardviewMode }) => {
   const [hover, setHover] = useState(false);
   const [recheduleMode, setRecheduleMode] = useState(false);
   const [_, setDate] = useState(taskData.date);
@@ -23,7 +24,7 @@ const TaskCard = ({ taskData }) => {
   const [openEditPrompt, setOpenEditPrompt] = useState(false);
   const [showTaskAction, setShowTaskAction] = useState(false);
 
-  const handleRechedule = async (taskId, selectedDate) => {
+  const handleRechedule = async (taskId, selectedDate, boardviewMode) => {
     const dateRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskId}/date`);
     const deadlineRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskId}/deadline`);
     const activityRef = ref(db, `activity/${auth.currentUser?.uid}`);
@@ -120,13 +121,13 @@ const TaskCard = ({ taskData }) => {
               <GoPencil />
             </span>
             <span
-              className="text-2xl hover:text-accentMain relative"
+              className={`text-2xl hover:text-accentMain relative `}
               onClick={() => setRecheduleMode(!recheduleMode)}
             >
               <MdOutlineDateRange />
               <span
                 className={
-                  `absolute top-10` +
+                  `absolute top-10 -left-50` +
                   (recheduleMode ? " visible" : " invisible")
                 }
               >
@@ -146,14 +147,22 @@ const TaskCard = ({ taskData }) => {
               </span>
             </span>
             <span className=" hover:text-accentMain">
-            <BsFillTrash3Fill onClick={() => RemoveTask(taskData)}/>
+              <BsFillTrash3Fill onClick={() => RemoveTask(taskData)} />
             </span>
             <span className=" hover:text-accentMain relative">
-              <PiDotsThreeOutline
-                onClick={() => setShowTaskAction((prev) => !prev)}
-              />
+              {
+                showTaskAction ? (
+                  <IoMdCloseCircleOutline
+                    onClick={() => setShowTaskAction((prev) => !prev)}
+                  />
+                ) : (
+                  <PiDotsThreeOutline
+                    onClick={() => setShowTaskAction((prev) => !prev)}
+                  />
+                )
+              }
               {showTaskAction && (
-                <div className="absolute top-6 -left-5">
+                <div className={`absolute top-6 -left-55`}>
                   <TaskAction
                     taskDataa={taskData}
                     showTaskAction={setShowTaskAction}
