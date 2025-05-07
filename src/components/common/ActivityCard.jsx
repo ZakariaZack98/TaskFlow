@@ -9,7 +9,7 @@ import { TaskContext } from '../../contexts/TaskContext';
 import { toast } from 'react-toastify';
 
 const ActivityCard = ({ activityData }) => {
-  const {allTaskData} = useContext(TaskContext);
+  const { allTaskData } = useContext(TaskContext);
   const [openTaskPage, setOpenTaskPage] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const activityIcons = {
@@ -22,15 +22,24 @@ const ActivityCard = ({ activityData }) => {
   }
   return (
     <>
-    {
-      openTaskPage && <TaskPage taskData={selectedTask} setOpenTaskPage={setOpenTaskPage}/>
-    }
+      {
+        openTaskPage && <TaskPage taskData={selectedTask} setOpenTaskPage={setOpenTaskPage} />
+      }
       <div className="w-full flex py-3 cursor-pointer" onClick={() => {
-        if(allTaskData.find(task => task.id === activityData.taskId)) {
-          setSelectedTask(allTaskData.find(task => task.id === activityData.taskId));
-          setOpenTaskPage(true);
+        if (activityData.motherTaskId) {
+          if (allTaskData.find(task => task.id === activityData.motherTaskId)) {
+            setSelectedTask(allTaskData.find(task => task.id === activityData.motherTaskId));
+            setOpenTaskPage(true);
+          } else {
+            toast.error(`This task doesn't exist anymore.`);
+          }
         } else {
-          toast.error(`This task doesn't exist anymore.`);
+          if (allTaskData.find(task => task.id === activityData.taskId)) {
+            setSelectedTask(allTaskData.find(task => task.id === activityData.taskId));
+            setOpenTaskPage(true);
+          } else {
+            toast.error(`This task doesn't exist anymore.`);
+          }
         }
       }}>
         <picture className="relative w-15 h-15">
@@ -50,8 +59,8 @@ const ActivityCard = ({ activityData }) => {
         <div className="flex flex-col ms-2">
           <p className="font-medium">
             {activityData.message} <strong>{activityData.taskTitle}</strong>
-            {(activityData.taskDate || activityData.taskPriority || activityData.taskProject || activityData.comment) && (
-              <span className="conditional"> {activityData.comment ? ':' : 'to'} <span className="font-bold">{activityData.taskDate || activityData.taskPriority || activityData.taskProject || activityData.comment}</span></span>
+            {(activityData.taskDate || activityData.taskPriority || activityData.taskProject || activityData.comment || activityData.motherTaskTitle) && (
+              <span className="conditional"> {activityData.comment ? ':' : activityData.motherTaskTitle ? 'under' : 'to'} <span className="font-bold">{activityData.taskDate || activityData.taskPriority || activityData.taskProject || activityData.comment || activityData.motherTaskTitle}</span></span>
             )}
           </p>
           <p className="text-sm text-fontSecondery">
