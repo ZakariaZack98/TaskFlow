@@ -3,7 +3,6 @@ import TasklistSection from '../common/TasklistSection';
 import { GetMilliseconds } from '../../utils/utils';
 import TaskCard from '../common/TaskCard';
 const Boardview = ({ taskData }) => {
-    console.log(taskData);
     // const todayMs = GetMilliseconds(new Date().toDateString());
     return (
         <div className='bg-red-70 flex justify-center  items-center gap-2'>
