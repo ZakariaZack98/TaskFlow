@@ -11,7 +11,7 @@ const Boardview = ({ taskData }) => {
                 {taskData?.map(({ name, data }) => (
                     <div className='w-1/3 h-[70%] overflow-hidden '>
                         <h1 className={`text-2xl font-semibold border-b-2 pb-4 mb-2 border-[rgba(0,0,0,0.27)] py-1 text-black`}>{name}</h1>
-                        <div className='flex flex-col gap-2 h-[88%] overflow-y-scroll overflow-x-hidden his'>
+                        <div className='flex flex-col gap-2 h-[88%] overflow-y-scroll overflow-x-hidden ' style={{scrollbarWidth:"none"}}>
                             {
                                 data?.map((task, idx, arr) => {
                                     return <div className='border rounded-lg border-[rgba(0,0,0,0.15)] '>
