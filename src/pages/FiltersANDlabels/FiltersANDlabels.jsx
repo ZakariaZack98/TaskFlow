@@ -7,7 +7,7 @@ const FiltersANDlabels = () => {
     
   return (
     <div>
-      from FiltersANDlabels sabbirhit 
+      from FiltersANDlabels sabbirhit .
     </div>
   )
 }
