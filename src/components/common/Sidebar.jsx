@@ -19,6 +19,7 @@ import {
 } from "react-icons/io5";
 import { signOut } from "firebase/auth";
 import { GetMilliseconds } from "../../utils/utils";
+import { FaRegCircleCheck } from "react-icons/fa6";
 
 const Sidebar = ({
   userName = auth.currentUser?.displayName || "N/A",
@@ -28,7 +29,7 @@ const Sidebar = ({
 }) => {
   const todayMs = GetMilliseconds(new Date().toDateString());
   const projects = _.projects;
-  const { allTaskData, setAllTaskData } = useContext(TaskContext);
+  const { allTaskData, setAllTaskData, allCompletedTask, setAllCompletedTask } = useContext(TaskContext);
   const [openProfilePopUp, setOpenProfilePopUp] = useState(false);
 
   /**
@@ -45,7 +46,9 @@ const Sidebar = ({
           taskArr.push(taskSnapshot.val());
         });
       }
+      console.log('filter', taskArr.sort((a, b) => b.id - a.id).filter(task => task.status === 'completed'))
       setAllTaskData(taskArr.sort((a, b) => b.id - a.id).filter(task => task.status === 'pending')); //* descending pending tasks from latest to oldest added task
+      setAllCompletedTask(taskArr.sort((a, b) => b.id - a.id).filter(task => task.status === 'completed')); //* descending completed tasks from latest to oldest added task
     });
     return () => unsubscribe();
   }, [db]);
@@ -81,6 +84,13 @@ const Sidebar = ({
       icon: <AiOutlineAppstoreAdd />,
       path: "/filters&labels",
       msg: 4,
+    },
+    {
+      id: 7,
+      name: "Complete",
+      icon: <FaRegCircleCheck />,
+      path: "/completed",
+      msg: allCompletedTask.length,
     },
     {
       id: 6,

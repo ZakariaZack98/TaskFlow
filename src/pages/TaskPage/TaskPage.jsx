@@ -236,7 +236,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                   <h3 className="text-2xl font-semibold text-accentMain">{currentTaskData?.title || "Take my cat to the vet"}</h3>
                   {
                     //? OVERDUE TAG IF DEADLINE HAVE CROSSED ===
-                    taskData.deadline < GetMilliseconds(new Date().toDateString()) && (
+                    taskData.deadline < GetMilliseconds(new Date().toDateString()) && taskData.status !== 'completed' && (
                       <span className="text-sm px-1 rounded border-2 border-red-600 text-red-600 font-semibold">overdue</span>
                     )
                   }
@@ -246,7 +246,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                     <HiOutlineBars3BottomLeft />
                   </span>
                   <p className=" text-fontSecondery my-5">
-                    {currentTaskData?.desc || "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo temporea velit."}
+                    {currentTaskData?.desc || "No Description"}
                   </p>
                 </div>
                 {/* ========================== SUB TASKS SECTION ============================= */}
@@ -269,9 +269,13 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                   className={`${showSubTasks ? "h-fit" : "h-0 opacity-0"
                     } subTaskList mx-3 duration-300 `}>
                   <div className="flex items-center gap-x-1 px-4">
-                    <span className="-translate-y-2 relative z-50">
-                      <AddTaskPrompt isSubTask={true} motherTaskId={taskData.id} />
-                    </span>
+                    {
+                      taskData.status !== 'completed' && (
+                        <span className="-translate-y-2 relative z-50">
+                          <AddTaskPrompt isSubTask={true} motherTaskId={taskData.id} />
+                        </span>
+                      )
+                    }
                   </div>
                   {Array.isArray(subTasks) && subTasks.length > 0 && (
                     <div className="subtasks-container pl-2 w-9/10 mx-auto">
@@ -307,7 +311,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                       <div className="inputField relative w-100 z-40">
                         <input
                           type="text"
-                          className="px-2 py-1 rounded-xl border-[3px] border-accentMain w-full "
+                          className="px-2 py-1 rounded-md border-[3px] border-accentMain w-full "
                           value={comment}
                           onChange={e => setComment(e.target.value)}
                           onKeyPress={(e) => e.key === 'Enter' && handleComment()}
@@ -339,7 +343,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
               </div>
               {/* ===================================== LEFT SIDE MARKUP ENDS ================================================= */}
               {/* ======================================== SIDEBAR MARKUP STARTS ========================================== */}
-              <div className="sidebar h-full w-3/10 bg-sidebarMain p-5 relative overflow-y-scroll" style={{ scrollbarWidth: 'none' }}>
+              <div className={`sidebar h-full w-3/10 bg-sidebarMain p-5 relative overflow-y-scroll ${taskData.status === 'completed' ? ' pointer-events-none cursor-not-allowed opacity-50' : ''}`} style={{ scrollbarWidth: 'none' }}>
                 <div className="project border-b border-[rgba(0,0,0,0.14)] pb-2">
                   {/* ================================= PROJECT SELECTION ===================================== */}
                   <p className="font-semibold text-sm">Projects</p>
@@ -408,7 +412,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                 </div>
               </div>
               <div className="absolute -bottom-5 right-5">
-                <BtnPrimary label={'Update Task'} clickHandler={() => handleUpdateTask()} />
+                {taskData.status !== 'completed' && <BtnPrimary label={'Update Task'} clickHandler={() => handleUpdateTask()} />}
               </div>
             </div>
             {/* ======================================== SIDEBAR MARKUP ENDS================================================= */}

@@ -10,6 +10,7 @@ import UserNotVerified from "./components/common/UserNotVerified";
 import ProjectPage from "./pages/ProjectPage/ProjectPage";
 import Activity from "./pages/Activity/Activity";
 import FiltersANDlabels from "./pages/FiltersANDlabels/FiltersANDlabels";
+import Completed from "./pages/Completed/Completed";
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
           <Route path="/upcoming" element={<Upcoming />} />
           <Route path="/activity" element={<Activity />} />
           <Route path="/filters&labels" element={<FiltersANDlabels />} />
+          <Route path="/completed" element={<Completed />} />
           <Route path="/projects/:name" element={<ProjectPage/>}/>
         </Route>
         <Route path="/signup" element={<SignUp />} />

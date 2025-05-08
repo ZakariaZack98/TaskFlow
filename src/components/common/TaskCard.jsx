@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 import { BsFillTrash3Fill } from "react-icons/bs";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 
-const TaskCard = ({ taskData, boardviewMode }) => {
+const TaskCard = ({ taskData, boardviewMode, complete }) => {
   const [hover, setHover] = useState(false);
   const [recheduleMode, setRecheduleMode] = useState(false);
   const [_, setDate] = useState(taskData.date);
@@ -77,7 +77,7 @@ const TaskCard = ({ taskData, boardviewMode }) => {
                   <PiDotsSixVerticalBold />
                 </span>
                 <span onClick={() => MarkAsComplete(taskData)}>
-                  <RoundedCheckbox />
+                  {!complete && <RoundedCheckbox />}
                 </span>
               </div>
               <div
@@ -89,7 +89,7 @@ const TaskCard = ({ taskData, boardviewMode }) => {
                   {
                     //? OVERDUE TAG IF DEADLINE HAVE CROSSED ===
                     taskData.deadline <
-                    GetMilliseconds(new Date().toDateString()) && (
+                    GetMilliseconds(new Date().toDateString()) && !complete && (
                       <span className="text-sm px-1 rounded border-2 border-red-600 text-red-600 font-semibold">
                         overdue
                       </span>
@@ -113,69 +113,73 @@ const TaskCard = ({ taskData, boardviewMode }) => {
               </div>
             </div>
           </div>
-          <div className="right flex flex-col justify-center items-center">
-            <div
-              className={`relative icons flex items-center gap-x-3 text-xl text-fontSecondery ${hover ? "visible" : "invisible"
-                }`}
-            >
-              <span
-                className="text-2xl hover:text-accentMain"
-                onClick={() => setOpenEditPrompt((prev) => !prev)}
-              >
-                <GoPencil />
-              </span>
-              <span
-                className={`text-2xl hover:text-accentMain relative `}
-                onClick={() => setRecheduleMode(!recheduleMode)}
-              >
-                <MdOutlineDateRange />
-                <span
-                  className={
-                    `absolute top-10 -left-50` +
-                    (recheduleMode ? " visible" : " invisible")
-                  }
+          {
+            !complete && (
+              <div className="right flex flex-col justify-center items-center">
+                <div
+                  className={`relative icons flex items-center gap-x-3 text-xl text-fontSecondery ${hover ? "visible" : "invisible"
+                    }`}
                 >
-                  <CalendarPopup
-                    deadline={taskData?.deadline}
-                    onSelect={(selectedDate) => {
-                      console.log(selectedDate.toDateString());
-                      const selectedDateStr = selectedDate
-                        .toDateString()
-                        .split(" ")
-                        .slice(0, 3)
-                        .join(" "); //FORMATTING FOR DATABASE
-                      setDate(selectedDateStr);
-                      handleRechedule(taskData.id, selectedDateStr);
-                    }}
-                  />
-                </span>
-              </span>
-              <span className=" hover:text-accentMain">
-                <BsFillTrash3Fill onClick={() => RemoveTask(taskData)} />
-              </span>
-              <span className=" hover:text-accentMain relative">
-                {
-                  showTaskAction ? (
-                    <IoMdCloseCircleOutline
-                      onClick={() => setShowTaskAction((prev) => !prev)}
-                    />
-                  ) : (
-                    <PiDotsThreeOutline
-                      onClick={() => setShowTaskAction((prev) => !prev)}
-                    />
-                  )
-                }
-                {showTaskAction && (
-                  <div className={`absolute top-6 -left-55`}>
-                    <TaskAction
-                      taskDataa={taskData}
-                      showTaskAction={setShowTaskAction}
-                    />
-                  </div>
-                )}
-              </span>
-            </div>
-          </div>
+                  <span
+                    className="text-2xl hover:text-accentMain"
+                    onClick={() => setOpenEditPrompt((prev) => !prev)}
+                  >
+                    <GoPencil />
+                  </span>
+                  <span
+                    className={`text-2xl hover:text-accentMain relative `}
+                    onClick={() => setRecheduleMode(!recheduleMode)}
+                  >
+                    <MdOutlineDateRange />
+                    <span
+                      className={
+                        `absolute top-10 -left-50` +
+                        (recheduleMode ? " visible" : " invisible")
+                      }
+                    >
+                      <CalendarPopup
+                        deadline={taskData?.deadline}
+                        onSelect={(selectedDate) => {
+                          console.log(selectedDate.toDateString());
+                          const selectedDateStr = selectedDate
+                            .toDateString()
+                            .split(" ")
+                            .slice(0, 3)
+                            .join(" "); //FORMATTING FOR DATABASE
+                          setDate(selectedDateStr);
+                          handleRechedule(taskData.id, selectedDateStr);
+                        }}
+                      />
+                    </span>
+                  </span>
+                  <span className=" hover:text-accentMain">
+                    <BsFillTrash3Fill onClick={() => RemoveTask(taskData)} />
+                  </span>
+                  <span className=" hover:text-accentMain relative">
+                    {
+                      showTaskAction ? (
+                        <IoMdCloseCircleOutline
+                          onClick={() => setShowTaskAction((prev) => !prev)}
+                        />
+                      ) : (
+                        <PiDotsThreeOutline
+                          onClick={() => setShowTaskAction((prev) => !prev)}
+                        />
+                      )
+                    }
+                    {showTaskAction && (
+                      <div className={`absolute top-6 -left-55`}>
+                        <TaskAction
+                          taskDataa={taskData}
+                          showTaskAction={setShowTaskAction}
+                        />
+                      </div>
+                    )}
+                  </span>
+                </div>
+              </div>
+            )
+          }
         </div>
       </div>
     </>
