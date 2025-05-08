@@ -32,8 +32,12 @@ const ProjectPage = () => {
         <div className="pendingTaskContainer w-6/10 mx-auto ">
 
           <div className="taskList flex flex-col gap-y-3 my-3 ">
-            {
-              projectTaskData?.map(task => <TaskCard key={task.id} taskData={task}/>)
+          {
+              projectTaskData?.map((task, idx, arr) => (
+                <div key={task.id} className={idx < arr.length - 1 ? 'border-b border-[rgba(0,0,0,0.19)]' : ''}>
+                  <TaskCard taskData={task}/>
+                </div>
+              ))
             }
           </div>
         </div>

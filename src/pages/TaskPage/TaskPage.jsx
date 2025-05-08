@@ -9,10 +9,12 @@ import ProjectSelector from "../../components/common/ProjectSelector";
 import DateSelector from "../../components/common/DateSelector";
 import _ from "../../lib/lib";
 import CommentCard from "../../components/common/CommentCard";
-import { GetDateNow, GetMilliseconds, GetTimeNow, MarkAsComplete } from "../../utils/utils";
-import { onValue, ref, set, update } from "firebase/database";
+import SubTaskCard from "../../components/common/SubTaskCard"; // Make sure this import exists
+import { GetDateNow, GetMilliseconds, GetTimeNow } from "../../utils/utils";
+import { onValue, ref, set} from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
 import { MdAddPhotoAlternate } from "react-icons/md";
+import AddTaskPrompt from "../../components/common/AddTaskPrompt";
 
 const TaskPage = ({ taskData, setOpenTaskPage }) => {
   const [currentTaskData, setCurrentTaskData] = useState({});
@@ -37,8 +39,21 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
       if (taskSnapshot.exists()) {
         const updatedData = taskSnapshot.val()
         setCurrentTaskData(updatedData);
-        setSubTasks(updatedData.subTasks || []);
-        setComments(Object.values(updatedData?.comments)?.sort((a, b) => b.id - a.id) || []);
+        if (updatedData.subTasks) {
+          if (typeof updatedData.subTasks === 'object' && !Array.isArray(updatedData.subTasks)) {
+            setSubTasks(Object.values(updatedData.subTasks));
+          } else {
+            setSubTasks(updatedData.subTasks || []);
+          }
+        } else {
+          setSubTasks([]);
+        }
+        if (updatedData.comments) {
+          setComments(Object.values(updatedData.comments).sort((a, b) => b.id - a.id) || []);
+        } else {
+          setComments([]);
+        }
+        
         setProject(updatedData.project || 'Personal');
         setPriority(updatedData.priority || 3)
         setDate(updatedData.date || new Date().toDateString())
@@ -142,7 +157,8 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
   }
 
   const handleComment = async () => {
-    //! ADD ERROR HANDLING & EARLY RETURN LOGIC
+    if (!comment.trim()) return;
+    
     const newComment = {
       id: Date.now(),
       text: comment,
@@ -164,7 +180,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
 
 
   return (
-    <div className={`absolute top-0 left-0 w-svw h-svh ${''} z-50 text-[16px]`}>
+    <div className={`absolute top-0 left-0 w-svw h-svh z-10 text-[16px]`}>
       <div className="backdrop absolute w-svw h-svh bg-[rgba(0,0,0,0.47)]"></div>
       <div className="absolute w-full h-full flex justify-center items-center">
         <div
@@ -173,15 +189,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
           <div className="w-[96%] h-[94%]">
             <div className="heading flex justify-between border-b-2 border-accentMain pb-2">
               <div className="left flex items-center">
-                <span onClick={() => {
-                  MarkAsComplete(taskData.id);
-                  setTimeout(() => {
-                    setOpenTaskPage(false);
-                    console.log('toastup: task completed');
-                  }, 1000);
-                  }}>
-                  <RoundedCheckbox />
-                </span>
+                <RoundedCheckbox />
                 <div className="taskName flex flex-col">
                   <p className="font-semibold text-sm">{currentTaskData?.title || "Take my cat to the vet"}</p>
                   <div className="text-[12px] text-fontSecondery">in {currentTaskData?.category || "Personal"}</div>
@@ -229,22 +237,33 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                     )}
                   </span>
                   <p className="font-semibold  text-fontSecondery">Sub tasks:</p>
+                  {/* {subTasks?.length > 0 && (
+                      <span>
+                        task: {subTasks?.filter((task) => task.status === "complete").length || 0} / {subTasks.length}
+                      </span>
+                    )} */}
                 </div>
                 <div
                   className={`${showSubTasks ? "h-fit" : "h-0 opacity-0"
                     } subTaskList mx-3 duration-300 `}>
-                  <div className="flex items-center gap-x-1 p-4">
-                    <span className="text-xl text-accentMain cursor-pointer" title="Premium feature">
-                      <CiCirclePlus />
+                  <div className="flex items-center gap-x-1 px-4">
+                    <span className="-translate-y-2 relative z-50">
+                    <AddTaskPrompt isSubTask={true} motherTaskId={taskData.id}/>
                     </span>
-                    <p className="text-fontSecondery ">Add sub-task</p>
-                    {currentTaskData?.subTasks?.length > 0 && (
-                      <span>
-                        task: {currentTaskData?.subTasks?.filter((task) => task.status === "complete") || 0} / {subTasks.length}
-                      </span>
-                    )}
-                    <FaLock className="text-accentMain" />
                   </div>
+                  {Array.isArray(subTasks) && subTasks.length > 0 && (
+                    <div className="subtasks-container pl-2 w-9/10 mx-auto">
+                      {subTasks.map((subtask, idx, arr) => (
+                        <div className={idx < arr.length - 1 ? 'border-b border-[rgba(0,0,0,0.25)]' : ''}>
+                          <SubTaskCard 
+                          key={subtask.id} 
+                          subTaskData={subtask} 
+                          motherTaskId={taskData.id} 
+                        />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 {/* ============================ COMMENT SECTION ================================= */}
                 <div className="commentSec flex items-center gap-x-1 px-2">
@@ -261,10 +280,16 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                   <div className="addComment flex items-center">
                     <div className="flex gap-x-2 my-2  w-full">
                       <picture>
-                        <img src={auth.currentUser?.photoURL || `https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png`} className="w-8 h-8 rounded-full bg-cover bg-center" />
+                        <img src={auth.currentUser?.photoURL || `https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png`} className="w-8 h-8 rounded-full bg-cover bg-center" alt="User" />
                       </picture>
-                      <div className="inputField relative w-100">
-                        <input type="text" className="px-2 py-1 rounded-xl border-[3px] border-accentMain w-full" value={comment} onChange={e => setComment(e.target.value)} />
+                      <div className="inputField relative w-100 z-40">
+                        <input 
+                          type="text" 
+                          className="px-2 py-1 rounded-xl border-[3px] border-accentMain w-full " 
+                          value={comment} 
+                          onChange={e => setComment(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && handleComment()}
+                        />
                         {
                           commentImgUrl.length === 0 && (
                             <div className="absolute right-2 top-1/2 -translate-y-[50%] text-fontSecondery text-xl cursor-pointer" onClick={() => handleCommentPhotoUpload()}>
@@ -276,7 +301,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                       {
                         commentImgUrl && commentImgUrl.length !== 0 && (
                           <picture>
-                            <img src={commentImgUrl} alt="" className="rounded-md h-10" />
+                            <img src={commentImgUrl} alt="Comment attachment" className="rounded-md h-10" />
                           </picture>
                         )
                       }
@@ -285,7 +310,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                   </div>
                   <div className="flex flex-col items-center gap-y-1">
                     {
-                      comments?.map((comment, idx) => <CommentCard key={idx} commentData={comment} />)
+                      comments?.map((comment, idx) => <CommentCard key={comment.id || idx} commentData={comment} />)
                     }
                   </div>
                 </div>

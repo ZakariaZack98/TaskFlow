@@ -5,39 +5,45 @@ import _ from "../../lib/lib";
 import { SlCalender } from "react-icons/sl";
 import { GoPencil } from "react-icons/go";
 import { MdOutlineDateRange } from "react-icons/md";
-import { FaRegMessage } from "react-icons/fa6";
-import { GetDateNow, GetMilliseconds, MarkAsComplete } from "../../utils/utils";
+import { GetDateNow, GetMilliseconds, GetTimeNow, MarkAsComplete, RemoveTask } from "../../utils/utils";
 import CalendarPopup from "./CalenderPopup";
 import TaskPage from "../../pages/TaskPage/TaskPage";
-import { ref, set } from "firebase/database";
+import { push, ref, set } from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
 import EditTaskPrompt from "./EditTaskPrompt";
 import TaskAction from "./TaskAction";
+import { toast } from "react-toastify";
+import { BsFillTrash3Fill } from "react-icons/bs";
+import { IoMdCloseCircleOutline } from "react-icons/io";
 
-const TaskCard = ({ taskData }) => {
+const TaskCard = ({ taskData, boardviewMode }) => {
   const [hover, setHover] = useState(false);
   const [recheduleMode, setRecheduleMode] = useState(false);
-  const [date, setDate] = useState(taskData.date);
+  const [_, setDate] = useState(taskData.date);
   const [openTaskPage, setOpenTaskpage] = useState(false);
   const [openEditPrompt, setOpenEditPrompt] = useState(false);
   const [showTaskAction, setShowTaskAction] = useState(false);
 
   const handleRechedule = async (taskId, selectedDate) => {
     const dateRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskId}/date`);
-    const deadlineRef = ref(
-      db,
-      `tasks/${auth.currentUser?.uid}/${taskId}/deadline`
-    );
+    const deadlineRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskId}/deadline`);
+    const activityRef = ref(db, `activity/${auth.currentUser?.uid}`);
+    const NewActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'reschedule',
+      taskId: taskData.id,
+      taskTitle: taskData.title,
+      taskDate: selectedDate,
+      message: `You have rescheduled a task- `
+    }
     try {
       await Promise.all([
         set(dateRef, selectedDate),
-        set(
-          deadlineRef,
-          GetMilliseconds(
-            selectedDate + ` ${new Date().toDateString().split(" ")[3]}`
-          )
-        ),
+        set(deadlineRef, GetMilliseconds(selectedDate + ` ${new Date().toDateString().split(" ")[3]}`)),
+        push(activityRef, NewActivity)
       ]);
+      toast.success(`Task has been recheduled to ${selectedDate}`)
       console.log("rescheduling successful");
     } catch (error) {
       console.error("Task recheduling failed ", error);
@@ -66,7 +72,7 @@ const TaskCard = ({ taskData }) => {
               <span className={`text-xl ${hover ? "visible" : "invisible"}`}>
                 <PiDotsSixVerticalBold />
               </span>
-              <span onClick={() => MarkAsComplete(taskData.id)}>
+              <span onClick={() => MarkAsComplete(taskData)}>
                 <RoundedCheckbox />
               </span>
             </div>
@@ -115,13 +121,13 @@ const TaskCard = ({ taskData }) => {
               <GoPencil />
             </span>
             <span
-              className="text-2xl hover:text-accentMain relative"
+              className={`text-2xl hover:text-accentMain relative `}
               onClick={() => setRecheduleMode(!recheduleMode)}
             >
               <MdOutlineDateRange />
               <span
                 className={
-                  `absolute top-10` +
+                  `absolute top-10 -left-50` +
                   (recheduleMode ? " visible" : " invisible")
                 }
               >
@@ -141,14 +147,22 @@ const TaskCard = ({ taskData }) => {
               </span>
             </span>
             <span className=" hover:text-accentMain">
-              <FaRegMessage />
+              <BsFillTrash3Fill onClick={() => RemoveTask(taskData)} />
             </span>
             <span className=" hover:text-accentMain relative">
-              <PiDotsThreeOutline
-                onClick={() => setShowTaskAction((prev) => !prev)}
-              />
+              {
+                showTaskAction ? (
+                  <IoMdCloseCircleOutline
+                    onClick={() => setShowTaskAction((prev) => !prev)}
+                  />
+                ) : (
+                  <PiDotsThreeOutline
+                    onClick={() => setShowTaskAction((prev) => !prev)}
+                  />
+                )
+              }
               {showTaskAction && (
-                <div className="absolute top-6 -left-5">
+                <div className={`absolute top-6 -left-55`}>
                   <TaskAction
                     taskDataa={taskData}
                     showTaskAction={setShowTaskAction}

@@ -5,7 +5,7 @@ import { BsBell, BsGraphUpArrow } from "react-icons/bs";
 import { CiBellOn, CiEdit, CiGift, CiHashtag, CiSearch } from "react-icons/ci";
 import { FaAngleDown } from "react-icons/fa";
 import { GoInbox } from "react-icons/go";
-import { MdOutlineCalendarToday } from "react-icons/md";
+import { MdAutoGraph, MdOutlineCalendarToday } from "react-icons/md";
 import { SlCalender, SlLogout } from "react-icons/sl";
 import { VscLayoutSidebarLeftOff } from "react-icons/vsc";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -85,6 +85,13 @@ const Sidebar = ({
       icon: <AiOutlineAppstoreAdd />,
       path: "/filters&labels",
       msg: 4,
+    },
+    {
+      id: 6,
+      name: "Activity Log",
+      icon: <MdAutoGraph />,
+      path: "/activity",
+      msg: '',
     },
   ];
   // todo handleLogOut function apply

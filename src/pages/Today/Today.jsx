@@ -23,7 +23,11 @@ const Today = () => {
 
           <div className="taskList flex flex-col gap-y-3 my-3 ">
             {
-              todaysTaskData?.map(task => <TaskCard key={task.id} taskData={task}/>)
+              todaysTaskData?.map((task, idx, arr) => (
+                <div key={task.id} className={idx < arr.length - 1 ? 'border-b border-[rgba(0,0,0,0.19)]' : ''}>
+                  <TaskCard taskData={task}/>
+                </div>
+              ))
             }
           </div>
         </div>

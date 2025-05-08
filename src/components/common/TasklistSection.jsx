@@ -2,7 +2,6 @@ import React from 'react'
 import TaskCard from './TaskCard'
 
 const TasklistSection = ({title, taskData, titleColorClass = 'text-black'}) => {
-  console.log(taskData)
   return (
     <div>
       <h1 className={`text-2xl font-semibold border-b-2 border-[rgba(0,0,0,0.27)] py-1 ${titleColorClass}`}>{title}</h1>
