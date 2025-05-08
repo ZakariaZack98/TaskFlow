@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { AiOutlineSun } from "react-icons/ai";
-import { BsArrowsMove} from "react-icons/bs";
-import { CiCalendar, CiEdit, CiHashtag} from "react-icons/ci";
+import { BsArrowsMove } from "react-icons/bs";
+import { CiCalendar, CiEdit, CiHashtag } from "react-icons/ci";
 import { GoProjectSymlink } from "react-icons/go";
 import { MdOutlineNextWeek, MdOutlineWeekend } from "react-icons/md";
 import _ from "../../lib/lib";
@@ -14,7 +14,7 @@ import {
 } from "react-icons/io5";
 
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { ref, remove, set } from "firebase/database";
+import { ref, remove, set, update } from "firebase/database";
 import { db } from "../../../Database/FirebaseConfig";
 import { auth } from "../../../Database/FirebaseConfig";
 import EditTaskPrompt from "./EditTaskPrompt";
@@ -33,72 +33,206 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
   const [openProjectPopUp, setOpenProjectPopUp] = useState(false);
 
   // TODO: HANDLE RESCHEDULE BY CLICKING DATE ICONS
-  const updateSchedule = e => {
+  const updateSchedule = (e) => {
     e.stopPropagation();
-    if (e.target.textContent === 'today') {
+    const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskDataa.id}`);
+    const activityRef = ref(db, `activity/${auth.currentUser?.uid}`);
+    if (e.target.textContent === "today") {
       // set the tasks date (text format) & tasks deadline (milisecond format) to today
-    } else if (e.target.textContent === 'tomorrow') {
+
+      const todayStr = new Date()
+        .toDateString()
+        .split(" ")
+        .slice(0, 3)
+        .join(" ");
+
+      const today = new Date();
+      const todayMilliseconds = today.getTime();
+      const NewActivity = {
+        createdAt: GetTimeNow(),
+        timeStamp: Date.now(),
+        type: "reschedule",
+        taskId: taskDataa.id,
+        taskTitle: taskDataa.title,
+        taskDate: todayStr,
+        message: `You have rescheduled a task Today `,
+      };
+      Promise.all([
+        update(taskRef, { date: todayStr, deadline: todayMilliseconds }),
+        push(activityRef, NewActivity),
+      ])
+        .then(() => {
+          toast.success(`Task has been recheduled to Today`);
+        })
+        .catch((err) => {
+          toast.error(`Task  rechedule Failed, ${err.message} `);
+        });
+      update(taskRef, { date: todayStr, deadline: todayMilliseconds });
+    } else if (e.target.textContent === "tomorrow") {
       // set the tasks date (text format) & tasks deadline (milisecond format) to tomorrow
-    } else if (e.target.textContent === 'weekend') {
-      // set the tasks date (text format) & tasks deadline (milisecond format) to next friday
-    } else if (e.target.textContent === 'next week') {
+
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      const tomorrowStr = tomorrow
+        .toDateString()
+        .split(" ")
+        .slice(0, 3)
+        .join(" ");
+      const tomorrowMilliseconds = tomorrow.getTime();
+      const NewActivity = {
+        createdAt: GetTimeNow(),
+        timeStamp: Date.now(),
+        type: "reschedule",
+        taskId: taskDataa.id,
+        taskTitle: taskDataa.title,
+        taskDate: tomorrowStr,
+        message: `You have rescheduled a task Tomorrow `,
+      };
+      Promise.all([
+        update(taskRef, { date: tomorrowStr, deadline: tomorrowMilliseconds }),
+        push(activityRef, NewActivity),
+      ])
+        .then(() => {
+          toast.success(`Task has been recheduled to Tomorrow`);
+        })
+        .catch((err) => {
+          toast.error(`Task  rechedule Failed, ${err.message} `);
+        });
+    } else if (e.target.textContent === "weekend") {
+      // set the tasks date (text format) & tasks deadline (milisecond format) to next fridayconst
+
+      const today = new Date();
+
+      const weekend = new Date(today);
+      const day = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 5 = Friday
+      const daysToFriday = (5 - day + 7) % 7 || 7; //how many days to  friday
+      weekend.setDate(today.getDate() + daysToFriday); //to add today and days left for weekend
+
+      const weekendStr = weekend
+        .toDateString()
+        .split(" ")
+        .slice(0, 3)
+        .join(" ");
+      const weekendMilliseconds = weekend.getTime();
+      const NewActivity = {
+        createdAt: GetTimeNow(),
+        timeStamp: Date.now(),
+        type: "reschedule",
+        taskId: taskDataa.id,
+        taskTitle: taskDataa.title,
+        taskDate: weekendStr,
+        message: `You have rescheduled a task ${weekendStr} `,
+      };
+      Promise.all([
+        update(taskRef, {
+          date: weekendStr,
+          deadline: weekendMilliseconds,
+        }),
+        push(activityRef, NewActivity),
+      ])
+        .then(() => {
+          toast.success(`Task has been recheduled to ${weekendStr}`);
+        })
+        .catch((err) => {
+          toast.error(`Task  rechedule Failed, ${err.message} `);
+        });
+    } else if (e.target.textContent === "next week") {
       // set the tasks date (text format) & tasks deadline (milisecond format) to 7 days later from today
+
+      const today = new Date();
+      const nextWeekend = new Date(today);
+
+      const day = today.getDay();
+
+      nextWeekend.setDate(today.getDate() + 7);
+
+      const nextWeekendStr = nextWeekend
+        .toDateString()
+        .split(" ")
+        .slice(0, 3)
+        .join(" ");
+      const nextWeekendMilliseconds = nextWeekend.getTime();
+      const NewActivity = {
+        createdAt: GetTimeNow(),
+        timeStamp: Date.now(),
+        type: "reschedule",
+        taskId: taskDataa.id,
+        taskTitle: taskDataa.title,
+        taskDate: nextWeekendStr,
+        message: `You have rescheduled a task ${nextWeekendStr} `,
+      };
+      Promise.all([
+        update(taskRef, {
+          date: nextWeekendStr,
+          deadline: nextWeekendMilliseconds,
+        }),
+        push(activityRef, NewActivity),
+      ])
+        .then(() => {
+          toast.success(`Task has been recheduled to ${nextWeekendStr}`);
+        })
+        .catch((err) => {
+          toast.error(`Task  rechedule Failed, ${err.message} `);
+        });
     }
     /**
      * ? NOTE: if you call GetMiliSeconds('Tuesday 6 May 2025') you will get miliseconds of 6th May. The arg's date format should be same as New Date().toDateString()'s formatt
      * */
-  }
+  };
 
   // todo updatePriority function apply
   const updatePriority = (priorityData) => {
     const newActivity = {
       createdAt: GetTimeNow(),
       timeStamp: Date.now(),
-      type: 'update',
+      type: "update",
       taskId: taskDataa.id,
       taskTitle: taskDataa.title,
       taskPriority: priorityData.level,
-      message: `You have updated priority of a task- `
-    }
+      message: `You have updated priority of a task- `,
+    };
     setPriority(priorityData.level);
     const taskRef = ref(
       db,
       `tasks/${auth.currentUser?.uid}/${taskDataa.id}/priority`
     );
     const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
-    Promise.all([set(taskRef, priorityData.level), push(activityRef, newActivity)])
-      .then(() => {
-        setOpenProjectPopUp(false);
-        showTaskAction(false);
-        toast.success(`Priority changed to priority ${priorityData.level}`)
-      })
+    Promise.all([
+      set(taskRef, priorityData.level),
+      push(activityRef, newActivity),
+    ]).then(() => {
+      setOpenProjectPopUp(false);
+      showTaskAction(false);
+      toast.success(`Priority changed to priority ${priorityData.level}`);
+    });
   };
   // todo updateProject function apply
   const updateProject = (projectData) => {
     const newActivity = {
       createdAt: GetTimeNow(),
       timeStamp: Date.now(),
-      type: 'update',
+      type: "update",
       taskId: taskDataa.id,
       taskTitle: taskDataa.title,
       taskProject: projectData,
-      message: `You have re-assigned project of a task- `
-    }
+      message: `You have re-assigned project of a task- `,
+    };
     setProject(projectData);
     const projectRef = ref(
       db,
       `tasks/${auth.currentUser?.uid}/${taskDataa.id}/project`
     );
     const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
-    Promise.all([set(projectRef, projectData), push(activityRef, newActivity)])
-      .then(() => {
-        setOpenProjectPopUp(false);
-        showTaskAction(false);
-        toast.success(`task re-assigned to ${projectData}`)
-      })
+    Promise.all([
+      set(projectRef, projectData),
+      push(activityRef, newActivity),
+    ]).then(() => {
+      setOpenProjectPopUp(false);
+      showTaskAction(false);
+      toast.success(`task re-assigned to ${projectData}`);
+    });
   };
-
-  
 
   // todo apply handleDuplicate
 
@@ -173,17 +307,33 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
             </div>
             {/* date icons */}
             <div className="flex items-center justify-between">
-              <span className="text-2xl text-green-500" >
-                <CiCalendar className="text-3xl" title="today" onClick={e => updateSchedule(e)} />
+              <span className="text-2xl text-green-500">
+                <CiCalendar
+                  className="text-3xl"
+                  title="today"
+                  onClick={(e) => updateSchedule(e)}
+                />
               </span>
-              <span className="text-2xl text-yellow-500"  >
-                <AiOutlineSun className="text-3xl" title="tomorrow" onClick={e => updateSchedule(e)} />
+              <span className="text-2xl text-yellow-500">
+                <AiOutlineSun
+                  className="text-3xl"
+                  title="tomorrow"
+                  onClick={(e) => updateSchedule(e)}
+                />
               </span>
-              <span className="text-2xl text-blue-500"  >
-                <MdOutlineWeekend className="text-3xl" title="weekend" onClick={e => updateSchedule(e)} />
+              <span className="text-2xl text-blue-500">
+                <MdOutlineWeekend
+                  className="text-3xl"
+                  title="weekend"
+                  onClick={(e) => updateSchedule(e)}
+                />
               </span>
-              <span className="text-2xl text-purple-500"  >
-                <MdOutlineNextWeek className="text-3xl" title="next week" onClick={e => updateSchedule(e)} />
+              <span className="text-2xl text-purple-500">
+                <MdOutlineNextWeek
+                  className="text-3xl"
+                  title="next week"
+                  onClick={(e) => updateSchedule(e)}
+                />
               </span>
             </div>
           </div>
@@ -199,17 +349,19 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
               {priorities?.map((priority) => (
                 <span
                   onClick={() => updatePriority(priority)}
-                  className={`text-xl ${priority.level === 1
-                    ? "text-red-500"
-                    : priority.level === 2
+                  className={`text-xl ${
+                    priority.level === 1
+                      ? "text-red-500"
+                      : priority.level === 2
                       ? "text-orange-500"
                       : priority.level === 3
-                        ? "text-green-700"
-                        : "text-gray-600"
-                    } ${priority.level == taskDataa.priority
+                      ? "text-green-700"
+                      : "text-gray-600"
+                  } ${
+                    priority.level == taskDataa.priority
                       ? "p-2 border border-gray-300 shadow-sm rounded-lg"
                       : ""
-                    }`}
+                  }`}
                 >
                   <FaFlag />
                 </span>
@@ -286,7 +438,10 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
         </div>
         {/* delete */}
         <div className="flex mt-1.5 group items-center justify-between   hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
-          <div onClick={() => RemoveTask(taskDataa)} className="flex items-center gap-2 ">
+          <div
+            onClick={() => RemoveTask(taskDataa)}
+            className="flex items-center gap-2 "
+          >
             <span className="text-accentMain">
               <RiDeleteBin6Line />
             </span>
@@ -306,8 +461,9 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
             {projects?.map((project, key) => (
               <div
                 onClick={() => updateProject(project)}
-                className={`flex items-center group justify-between  hover:bg-gray-200  -ml-3 px-4 py-0.5 rounded-md cursor-pointer ${project == taskDataa.project ? "bg-red-100" : ""
-                  }`}
+                className={`flex items-center group justify-between  hover:bg-gray-200  -ml-3 px-4 py-0.5 rounded-md cursor-pointer ${
+                  project == taskDataa.project ? "bg-red-100" : ""
+                }`}
               >
                 <div
                   onClick={() => updateProject(project)}
@@ -315,16 +471,17 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
                   className={`flex items-center gap-x-3 mt-1 `}
                 >
                   <span
-                    className={` text-fontSecondery transition-all text-xl ${project === "Personal"
-                      ? "text-blue-500"
-                      : project === "Shopping"
+                    className={` text-fontSecondery transition-all text-xl ${
+                      project === "Personal"
+                        ? "text-blue-500"
+                        : project === "Shopping"
                         ? "text-green-500"
                         : project === "Works"
-                          ? "text-orange-500"
-                          : project === "Errands"
-                            ? "text-shadow-cyan-700"
-                            : "text-gray-800"
-                      } `}
+                        ? "text-orange-500"
+                        : project === "Errands"
+                        ? "text-shadow-cyan-700"
+                        : "text-gray-800"
+                    } `}
                   >
                     <CiHashtag />
                   </span>
