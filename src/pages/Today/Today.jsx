@@ -3,6 +3,7 @@ import { TaskContext } from '../../contexts/TaskContext'
 import { GetMilliseconds } from '../../utils/utils';
 import TaskCard from '../../components/common/TaskCard';
 import AddTaskPrompt from '../../components/common/AddTaskPrompt';
+import NoTaskToDisplay from '../../components/common/NoTaskToDisplay';
 
 const Today = () => {
   const { allTaskData } = useContext(TaskContext);
@@ -19,17 +20,24 @@ const Today = () => {
         <AddTaskPrompt />
       </div>
       <div className='h-full w-full overflow-y-scroll' style={{ scrollbarWidth: 'none' }}>
-        <div className="pendingTaskContainer w-6/10 mx-auto ">
-
-          <div className="taskList flex flex-col gap-y-3 my-3 ">
-            {
-              todaysTaskData?.map((task, idx, arr) => (
-                <div key={task.id} className={idx < arr.length - 1 ? 'border-b border-[rgba(0,0,0,0.19)]' : ''}>
-                  <TaskCard taskData={task}/>
-                </div>
-              ))
-            }
-          </div>
+        <div className="pendingTaskContainer w-6/10 mx-auto h-full">
+          {
+            todaysTaskData && todaysTaskData.length > 0 ? (
+              <div className="taskList flex flex-col gap-y-3 my-3 ">
+                {
+                  todaysTaskData?.map((task, idx, arr) => (
+                    <div key={task.id} className={idx < arr.length - 1 ? 'border-b border-[rgba(0,0,0,0.19)]' : ''}>
+                      <TaskCard taskData={task} />
+                    </div>
+                  ))
+                }
+              </div>
+            ) : (
+              <div className='h-full w-full flex justify-center items-center'>
+                <NoTaskToDisplay />
+              </div>
+            )
+          }
         </div>
       </div>
     </>

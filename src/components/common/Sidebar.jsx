@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AiOutlineAppstoreAdd } from "react-icons/ai";
-import { BiCheckboxChecked } from "react-icons/bi";
 import { BsBell, BsGraphUpArrow } from "react-icons/bs";
-import { CiBellOn, CiEdit, CiGift, CiHashtag, CiSearch } from "react-icons/ci";
+import { CiGift, CiHashtag} from "react-icons/ci";
 import { FaAngleDown } from "react-icons/fa";
 import { GoInbox } from "react-icons/go";
 import { MdAutoGraph, MdOutlineCalendarToday } from "react-icons/md";
@@ -15,11 +14,8 @@ import { auth, db } from "../../../Database/FirebaseConfig";
 
 import _ from "../../lib/lib";
 import AddTaskPrompt from "../common/AddTaskPrompt";
-import { LuAlarmClock } from "react-icons/lu";
 import {
   IoDiamondOutline,
-  IoExtensionPuzzleOutline,
-  IoSettingsOutline,
 } from "react-icons/io5";
 import { signOut } from "firebase/auth";
 import { GetMilliseconds } from "../../utils/utils";
@@ -127,9 +123,9 @@ const Sidebar = ({
             <FaAngleDown />
           </span>
         </div>
-        <div className="right flex items-center gap-x-3">
-          <span>
-            <BsBell />
+        <div className="right flex items-center gap-x-3 text-xl">
+          <span className="cursor-pointer">
+            <BsBell onClick={() => navigate('/activity')}/>
           </span>
           <span>
             <VscLayoutSidebarLeftOff />
@@ -147,24 +143,22 @@ const Sidebar = ({
             {/* name part */}
             <div
               onClick={() => navigate("/profile")}
-              className="flex group items-center justify-between hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer "
+              className="flex group items-center hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer "
             >
               <div className="flex items-center gap-2 ">
-                <span className="text-fontSecondery text-xl">
-                  <BsGraphUpArrow />
-                </span>
+                <picture>
+                  <img src={auth.currentUser.photoURL} className="w-10 h-10 object-fit object-center rounded-full" alt="" />
+                </picture>
                 <div>
-                  <h2 className="text-fontSecondery font-medium text-[14px]">
+                  <h2 className=" text-black text-[14px] font-semibold">
                     {auth.currentUser.displayName}
                   </h2>
-                  <p className="text-fontSecondery">0/5 Tasks</p>
+                  <p className="text-fontSecondery">{auth.currentUser.email}</p>
                 </div>
               </div>
-              <p className="text-fontSecondery text-sm">O then P</p>
             </div>
             {/* notification part */}
           </div>
-
           {/* notification */}
           <div
             onClick={() => navigate("/notification")}
@@ -172,9 +166,9 @@ const Sidebar = ({
           >
             <div className="flex items-center gap-2 hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
               <span className="text-fontSecondery text-xl">
-                <CiBellOn />
+              <BsGraphUpArrow />
               </span>
-              <p className="text-fontSecondery text-[15px]">Notifications</p>
+              <p className="text-fontSecondery text-[15px]">Activities</p>
             </div>
             {/* whats new */}
             <div className="flex items-center gap-2 hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer">
@@ -195,12 +189,12 @@ const Sidebar = ({
           </div>
 
           {/* log out */}
-          <div className=" mt-2 hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer  ">
+          <div className=" mt-2 hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer text-accentMain ">
             <div onClick={handleLogOut} className="flex items-center gap-2 ">
-              <span className="text-fontSecondery text-xl">
+              <span className="text-xl">
                 <SlLogout />
               </span>
-              <p className="text-fontSecondery text-[15px]">Log Out</p>
+              <p className="text-[15px]">Log Out</p>
             </div>
           </div>
         </div>

@@ -8,6 +8,7 @@ import Boardview from '../../components/HomeComponent/Boardview';
 import { LiaSlidersHSolid } from 'react-icons/lia';
 import { RiKeyboardBoxLine } from 'react-icons/ri';
 import { MdFormatListBulleted } from 'react-icons/md';
+import NoTaskToDisplay from '../../components/common/NoTaskToDisplay';
 
 const Inbox = () => {
   const { allTaskData, boardView, setBoardView } = useContext(TaskContext);
@@ -61,7 +62,7 @@ const Inbox = () => {
               <div className="flex flex-col justify-center items-center gap-y-1" onClick={() => {
                 setBoardView(true);
                 setOpenViewSelector(false);
-                }}>
+              }}>
                 <div className={`flex justify-center items-center w-20 h-15 rounded-md bg-[rgba(0,0,0,0.08)] text-3xl ${boardView ? 'bg-[rgba(0,0,0,0.2)] border-2 border-accentMain' : 'bg-[rgba(0,0,0,0.08)]'}`}>
                   <RiKeyboardBoxLine />
                 </div>
@@ -70,7 +71,7 @@ const Inbox = () => {
               <div className="flex flex-col justify-center items-center gap-y-1" onClick={() => {
                 setBoardView(false);
                 setOpenViewSelector(false)
-                }}>
+              }}>
                 <div className={`flex justify-center items-center w-20 h-15 rounded-md text-3xl ${!boardView ? 'bg-[rgba(0,0,0,0.2)] border-2 border-accentMain' : 'bg-[rgba(0,0,0,0.08)]'}`}>
                   <MdFormatListBulleted />
                 </div>
@@ -87,30 +88,40 @@ const Inbox = () => {
           <AddTaskPrompt />
         </div>
       </div>
-      {!boardView ?
-        <div className='h-full w-full overflow-y-scroll' style={{ scrollbarWidth: 'none' }}>
-          <div className="pendingTaskContainer w-6/10 mx-auto ">
-            <div className="taskList flex flex-col gap-y-3 my-3 ">
-              {
-                overdueData?.length > 0 && (
-                  <TasklistSection title={'Overdue'} titleColorClass={'text-accentMain'} taskData={overdueData} />
-                )
-              }
-              {
-                todaysTaskData?.length > 0 && (
-                  <TasklistSection title={'Today'} taskData={todaysTaskData} />
-                )
-              }
-              {
-                getUpcomingTaskData?.length > 0 && (
-                  <TasklistSection title={'Upcoming'} taskData={getUpcomingTaskData} />
-                )
-              }
-            </div>
+      {
+        allTaskData && allTaskData.length > 0 ? (
+          <>
+            {!boardView ?
+              <div className='h-full w-full overflow-y-scroll' style={{ scrollbarWidth: 'none' }}>
+                <div className="pendingTaskContainer w-6/10 mx-auto ">
+                  <div className="taskList flex flex-col gap-y-3 my-3 ">
+                    {
+                      overdueData?.length > 0 && (
+                        <TasklistSection title={'Overdue'} titleColorClass={'text-accentMain'} taskData={overdueData} />
+                      )
+                    }
+                    {
+                      todaysTaskData?.length > 0 && (
+                        <TasklistSection title={'Today'} taskData={todaysTaskData} />
+                      )
+                    }
+                    {
+                      getUpcomingTaskData?.length > 0 && (
+                        <TasklistSection title={'Upcoming'} taskData={getUpcomingTaskData} />
+                      )
+                    }
+                  </div>
+                </div>
+              </div>
+              :
+              <Boardview taskData={boardviewdata} />
+            }
+          </>
+        ) : (
+          <div className='h-full w-full flex justify-center items-center'>
+            <NoTaskToDisplay/>
           </div>
-        </div>
-        :
-        <Boardview taskData={boardviewdata} />
+        )
       }
     </>
   );

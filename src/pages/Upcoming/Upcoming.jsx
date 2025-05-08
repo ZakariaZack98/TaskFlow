@@ -3,9 +3,10 @@ import { TaskContext } from '../../contexts/TaskContext'
 import TasklistSection from '../../components/common/TasklistSection';
 import AddTaskPrompt from '../../components/common/AddTaskPrompt';
 import { GetMilliseconds } from '../../utils/utils';
+import NoTaskToDisplay from '../../components/common/NoTaskToDisplay';
 
 const Upcoming = () => {
-  const {allTaskData} = useContext(TaskContext);
+  const { allTaskData } = useContext(TaskContext);
   const [upcomingTasks, setUpcomingTasks] = useState([]);
   const [datesWithWorks, setDateWithWorks] = useState([]);
 
@@ -24,14 +25,22 @@ const Upcoming = () => {
         <AddTaskPrompt />
       </div>
       <div className='h-full w-full overflow-y-scroll' style={{ scrollbarWidth: 'none' }}>
-        <div className="pendingTaskContainer w-6/10 mx-auto ">
+        {
+          datesWithWorks && datesWithWorks.length > 0 ? (
+            <div className="pendingTaskContainer w-6/10 mx-auto ">
 
-          <div className="taskList flex flex-col gap-y-3 my-3 ">
-            {
-              datesWithWorks?.map(date => <TasklistSection key={date} title={date} taskData={upcomingTasks?.filter(task => task.date === date)}/>)
-            }
-          </div>
-        </div>
+              <div className="taskList flex flex-col gap-y-3 my-3 ">
+                {
+                  datesWithWorks?.map(date => <TasklistSection key={date} title={date} taskData={upcomingTasks?.filter(task => task.date === date)} />)
+                }
+              </div>
+            </div>
+          ) : (
+            <div className='h-full w-full flex justify-center items-center'>
+              <NoTaskToDisplay />
+            </div>
+          )
+        }
       </div>
     </>
   )
