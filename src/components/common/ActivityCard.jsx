@@ -60,7 +60,15 @@ const ActivityCard = ({ activityData }) => {
           <p className="font-medium">
             {activityData.message} <strong>{activityData.taskTitle}</strong>
             {(activityData.taskDate || activityData.taskPriority || activityData.taskProject || activityData.comment || activityData.motherTaskTitle) && (
-              <span className="conditional"> {activityData.comment ? ':' : activityData.motherTaskTitle ? 'under' : 'to'} <span className="font-bold">{new Date(new Date().setDate(new Date().getDate() + 1)).toDateString().includes(activityData.taskDate) ? 'Tomorrow' : new Date().toDateString().includes(activityData.taskDate) ? 'Today' : activityData.taskDate || activityData.taskPriority || activityData.taskProject || activityData.motherTaskTitle || `"${activityData.comment}"`}</span></span>
+              <span className="conditional"> {activityData.comment ?
+                 ':' :
+                  activityData.motherTaskTitle 
+                  ? 'under' 
+                  : 'to'} <span className="font-bold">{new Date(new Date().setDate(new Date().getDate() + 1)).toDateString().includes(activityData.taskDate) 
+                    ? 'Tomorrow' 
+                    : new Date().toDateString().includes(activityData.taskDate) 
+                    ? 'Today' 
+                    : activityData.taskDate || activityData.taskPriority || activityData.taskProject || activityData.motherTaskTitle || `"${activityData.comment}"`}</span></span>
             )}
           </p>
           <p className="text-sm text-fontSecondery">

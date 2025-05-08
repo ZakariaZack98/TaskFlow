@@ -1,9 +1,7 @@
-import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
 const UserNotVerified = () => {
   const navigate = useNavigate()
-  const auth = getAuth();
   const handleMail = () => {
     navigate('/signin')
   };
@@ -36,9 +34,9 @@ const UserNotVerified = () => {
                 stroke="currentColor"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="M3 12h18m-9-9l9 9-9 9"
                 />
               </svg>
@@ -50,7 +48,7 @@ const UserNotVerified = () => {
           <div className="relative">
             <div
               className="absolute inset-0 flex items-center"
-              aria-hidden="true"
+              ariaHidden="true"
             >
               <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
             </div>

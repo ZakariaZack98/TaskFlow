@@ -69,7 +69,6 @@ const TaskCard = ({ taskData, boardviewMode, complete }) => {
           onMouseOver={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
         >
-
           <div className="left flex items-start">
             <div className="flex  gap-x-1 ">
               <div className="flex items-start translate-y-1">
@@ -114,7 +113,8 @@ const TaskCard = ({ taskData, boardviewMode, complete }) => {
               </div>
             </div>
           </div>
-          {
+          { //? HIDE THE MODIFY ICONS IF THE TASK IS ALREADY COMPLETE ===
+          // * ========================================= ICON SECTION ======================================================
             !complete && (
               <div className="right flex flex-col justify-center items-center">
                 <div
@@ -157,7 +157,7 @@ const TaskCard = ({ taskData, boardviewMode, complete }) => {
                     <BsFillTrash3Fill onClick={() => RemoveTask(taskData)} />
                   </span>
                   <span className=" hover:text-accentMain relative">
-                    {
+                    { 
                       showTaskAction ? (
                         <IoMdCloseCircleOutline
                           onClick={() => setShowTaskAction((prev) => !prev)}
@@ -168,7 +168,8 @@ const TaskCard = ({ taskData, boardviewMode, complete }) => {
                         />
                       )
                     }
-                    {showTaskAction && (
+                    { //? OPEN TASK ACTION PANEL ===
+                    showTaskAction && (
                       <div className={`absolute top-6 -left-55`}>
                         <TaskAction
                           taskDataa={taskData}
