@@ -106,7 +106,7 @@ const TaskCard = ({ taskData, boardviewMode, complete }) => {
                       ? 'Tomorrow'
                       : new Date(new Date().setDate(new Date().getDate() - 1)).toDateString().includes(taskData.date)
                       ? 'Yesterday'
-                      : date
+                      : taskData.date
                     }
                   </p>
                 </div>
