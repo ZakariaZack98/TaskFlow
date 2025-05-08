@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import RoundedCheckbox from "../../components/common/RoundedCheckbox";
 import { FaAngleDown, FaLock } from "react-icons/fa6";
 import { HiOutlineBars3BottomLeft } from "react-icons/hi2";
-import { CiCirclePlus } from "react-icons/ci";
 import BtnPrimary from "../../components/common/BtnPrimary";
 import PrioritySelector from "../../components/common/PrioritySelector";
 import ProjectSelector from "../../components/common/ProjectSelector";
@@ -11,10 +10,16 @@ import _ from "../../lib/lib";
 import CommentCard from "../../components/common/CommentCard";
 import SubTaskCard from "../../components/common/SubTaskCard"; // Make sure this import exists
 import { GetDateNow, GetMilliseconds, GetTimeNow } from "../../utils/utils";
-import { onValue, ref, set} from "firebase/database";
+import { onValue, ref, set } from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import AddTaskPrompt from "../../components/common/AddTaskPrompt";
+import { GoPlusCircle } from "react-icons/go";
+import ReminderPropmpt from "../../components/taskpage/ReminderPropmpt";
+import LocationPrompt from "../../components/taskpage/LocationPrompt";
+import { CgCloseO } from "react-icons/cg";
+import { IoMdAlarm } from "react-icons/io";
+import { IoLocationOutline } from "react-icons/io5";
 
 const TaskPage = ({ taskData, setOpenTaskPage }) => {
   const [currentTaskData, setCurrentTaskData] = useState({});
@@ -25,10 +30,14 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
   const [project, setProject] = useState(taskData?.project || 'N/A');
   const [priority, setPriority] = useState(taskData?.priority || 'N/A');
   const [date, setDate] = useState(taskData.date || GetDateNow());
+  const [reminder, setReminder] = useState(null);
+  const [location, setLocation] = useState('');
   const [comment, setComment] = useState('');
   const [commentImgUrl, setCommentImgUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
+  const [openReminderPrompt, setOpenReminderPrompt] = useState(false);
+  const [openLocationPrompt, setOpenLocationPrompt] = useState(false);
   const uploadWidget = useRef(null);
 
 
@@ -53,10 +62,11 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
         } else {
           setComments([]);
         }
-        
         setProject(updatedData.project || 'Personal');
         setPriority(updatedData.priority || 3)
         setDate(updatedData.date || new Date().toDateString())
+        setReminder(updatedData.reminder || null);
+        setLocation(updatedData.location || '');
       }
     })
     return () => unsubscribe();
@@ -142,9 +152,10 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
     updatedTask.comments = comments;
     updatedTask.project = project;
     updatedTask.priority = priority;
-    updatedTask.date = date,
-      updatedTask.deadline = GetMilliseconds(date + ` ${new Date().toDateString().split(' ')[3]}`),
-      console.log(updatedTask)
+    updatedTask.date = date;
+    updatedTask.deadline = GetMilliseconds(date + ` ${new Date().toDateString().split(' ')[3]}`);
+    updatedTask.reminder = reminder;
+    updatedTask.location = location;
     const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskData.id}`);
     try {
       await set(taskRef, updatedTask);
@@ -158,7 +169,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
 
   const handleComment = async () => {
     if (!comment.trim()) return;
-    
+
     const newComment = {
       id: Date.now(),
       text: comment,
@@ -206,7 +217,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                 ))}
               </div>
             </div>
-            <div className="taskBody w-full h-[90%] flex">
+            <div className="relative taskBody w-full h-[90%] flex">
               {/* ===================================== LEFT SIDE MARKUP ================================================= */}
               {/* =========================== HEADING PART ================================ */}
               <div className="main h-full w-7/10 p-3 overflow-y-scroll ">
@@ -248,18 +259,18 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                     } subTaskList mx-3 duration-300 `}>
                   <div className="flex items-center gap-x-1 px-4">
                     <span className="-translate-y-2 relative z-50">
-                    <AddTaskPrompt isSubTask={true} motherTaskId={taskData.id}/>
+                      <AddTaskPrompt isSubTask={true} motherTaskId={taskData.id} />
                     </span>
                   </div>
                   {Array.isArray(subTasks) && subTasks.length > 0 && (
                     <div className="subtasks-container pl-2 w-9/10 mx-auto">
                       {subTasks.map((subtask, idx, arr) => (
                         <div className={idx < arr.length - 1 ? 'border-b border-[rgba(0,0,0,0.25)]' : ''}>
-                          <SubTaskCard 
-                          key={subtask.id} 
-                          subTaskData={subtask} 
-                          motherTaskId={taskData.id} 
-                        />
+                          <SubTaskCard
+                            key={subtask.id}
+                            subTaskData={subtask}
+                            motherTaskId={taskData.id}
+                          />
                         </div>
                       ))}
                     </div>
@@ -283,10 +294,10 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                         <img src={auth.currentUser?.photoURL || `https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png`} className="w-8 h-8 rounded-full bg-cover bg-center" alt="User" />
                       </picture>
                       <div className="inputField relative w-100 z-40">
-                        <input 
-                          type="text" 
-                          className="px-2 py-1 rounded-xl border-[3px] border-accentMain w-full " 
-                          value={comment} 
+                        <input
+                          type="text"
+                          className="px-2 py-1 rounded-xl border-[3px] border-accentMain w-full "
+                          value={comment}
                           onChange={e => setComment(e.target.value)}
                           onKeyPress={(e) => e.key === 'Enter' && handleComment()}
                         />
@@ -317,7 +328,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
               </div>
               {/* ===================================== LEFT SIDE MARKUP ENDS ================================================= */}
               {/* ======================================== SIDEBAR MARKUP STARTS ========================================== */}
-              <div className="sidebar h-full w-3/10 bg-sidebarMain p-5 relative">
+              <div className="sidebar h-full w-3/10 bg-sidebarMain p-5 relative overflow-y-scroll" style={{ scrollbarWidth: 'none' }}>
                 <div className="project border-b border-[rgba(0,0,0,0.14)] pb-2">
                   {/* ================================= PROJECT SELECTION ===================================== */}
                   <p className="font-semibold text-sm">Projects</p>
@@ -334,32 +345,66 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                 </div>
                 {/* ================================= REMINDER ===================================== */}
                 <div className="reminder py-4 border-b border-[#00000034]">
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm font-semibold">Add reminders</p>
+                  <div className="flex justify-between items-center cursor-pointer" onClick={() => setOpenReminderPrompt(prev => !prev)}>
+                    <p className="text-sm font-semibold">{reminder === null ? 'Add' : 'Update'} reminder</p>
                     <span>
-                      <FaLock className="text-red-500" />
+                      {
+                        openReminderPrompt ? <CgCloseO className="text-accentMain" /> : <GoPlusCircle />
+                      }
                     </span>
+                  </div>
+                  {
+                    reminder !== null && (
+                      <div className="flex items-center gap-x-2 text-fontSecondery my-1">
+                        <span className="text-xl">
+                          <IoMdAlarm />
+                        </span>
+                        <p className="text-sm">{new Date(reminder).toLocaleString()}</p>
+                      </div>
+                    )
+                  }
+                  <div className={`${openReminderPrompt ? 'h-45 mt-3 z-50' : 'h-0 overflow-hidden opacity-0'} duration-300 ease-linear`}>
+                    <ReminderPropmpt reminder={reminder} setReminder={setReminder} />
                   </div>
                 </div>
                 {/* ================================= LOCATION ===================================== */}
-                <div className="reminder py-4 border-b border-[#00000034]">
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm font-semibold">Add location</p>
+                <div className="reminder py-4 relative">
+                  <div className="flex justify-between items-center cursor-pointer" onClick={() => setOpenLocationPrompt(prev => !prev)}>
+                    <p className="text-sm font-semibold">{location.length !== 0 ? 'Update' : 'Add'} location</p>
                     <span>
-                      <FaLock className="text-red-500" />
+                      {
+                        openLocationPrompt ? <CgCloseO className="text-accentMain" /> : <GoPlusCircle />
+                      }
                     </span>
                   </div>
+                  {
+                    location.length !== 0 && (
+                      <div div className="locationLabel flex items-center gap-x-2 text-fontSecondery my-3">
+                        <span className="text-xl">
+                          <IoLocationOutline />
+                        </span>
+                        <p >{location}</p>
+                      </div>
+                    )
+                  }
+                  {
+                    openLocationPrompt && (
+                      <div className="absolute top-9 left-0 w-full">
+                        <LocationPrompt location={location} setLocation={setLocation} setOpenLocationPrompt={setOpenLocationPrompt}/>
+                      </div>
+                    )
+                  }
                 </div>
-                <div className="absolute bottom-5 right-5">
-                  <BtnPrimary label={'Update Task'} clickHandler={() => handleUpdateTask()} />
-                </div>
+              </div>
+              <div className="absolute -bottom-5 right-5">
+                <BtnPrimary label={'Update Task'} clickHandler={() => handleUpdateTask()} />
               </div>
             </div>
             {/* ======================================== SIDEBAR MARKUP ENDS================================================= */}
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
