@@ -180,7 +180,6 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
 
   const handleComment = async () => {
     if (!comment.trim()) return;
-
     const newComment = {
       id: Date.now(),
       text: comment,
@@ -188,10 +187,19 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
       createdAt: GetTimeNow(),
       commenterId: auth.currentUser?.uid
     }
-
+    const newActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'comment',
+      taskId: taskData.id,
+      taskTitle: taskData.title,
+      comment,
+      message: `You have added a comment to- `
+    }
     const commentRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskData?.id}/comments/${newComment.id}`);
+    const activityRef = ref(db, `activity/${auth.currentUser?.uid}`)
     try {
-      await set(commentRef, newComment);
+      await Promise.all([set(commentRef, newComment), push(activityRef, newActivity)])
       console.log('comment added');
       setComment('')
       setCommentImgUrl('')
@@ -209,12 +217,13 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
           className="w-6/10 h-9/10 flex justify-center items-center rounded-xl bg-white "
           style={{ boxShadow: "0 0 10 10 rgba(0, 0, 0, 0.97)" }}>
           <div className="w-[96%] h-[94%]">
+            {/* ================================= HEADING PART =============================================== */}
             <div className="heading flex justify-between border-b-2 border-accentMain pb-2">
               <div className="left flex items-center">
                 <RoundedCheckbox />
                 <div className="taskName flex flex-col">
-                  <p className="font-semibold text-sm">{currentTaskData?.title || "Take my cat to the vet"}</p>
-                  <div className="text-[12px] text-fontSecondery">in {currentTaskData?.category || "Personal"}</div>
+                  <p className="font-semibold text-sm">{currentTaskData?.title || "Title Missing"}</p>
+                  <div className="text-[12px] text-fontSecondery">in {currentTaskData?.category || "N/A"}</div>
                 </div>
               </div>
               <div className="iconSec flex items-center gap-x-3">

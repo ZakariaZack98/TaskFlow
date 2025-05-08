@@ -51,7 +51,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
         taskId: taskDataa.id,
         taskTitle: taskDataa.title,
         taskDate: todayStr,
-        message: `You have rescheduled a task Today `,
+        message: `You have rescheduled `,
       };
       Promise.all([
         update(taskRef, { date: todayStr, deadline: todayMilliseconds }),
@@ -82,7 +82,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
         taskId: taskDataa.id,
         taskTitle: taskDataa.title,
         taskDate: tomorrowStr,
-        message: `You have rescheduled a task Tomorrow `,
+        message: `You have rescheduled  `,
       };
       Promise.all([
         update(taskRef, { date: tomorrowStr, deadline: tomorrowMilliseconds }),
@@ -114,7 +114,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
         taskId: taskDataa.id,
         taskTitle: taskDataa.title,
         taskDate: weekendStr,
-        message: `You have rescheduled a task ${weekendStr} `,
+        message: `You have rescheduled `,
       };
       Promise.all([
         update(taskRef, {
@@ -124,7 +124,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
         push(activityRef, NewActivity),
       ])
         .then(() => {
-          toast.success(`Task has been recheduled to ${weekendStr}`);
+          toast.success(`Task has been recheduled to next friday`);
         })
         .catch((err) => {
           toast.error(`Task  rechedule Failed, ${err.message} `);
@@ -148,7 +148,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
         taskId: taskDataa.id,
         taskTitle: taskDataa.title,
         taskDate: nextWeekendStr,
-        message: `You have rescheduled a task ${nextWeekendStr} `,
+        message: `You have rescheduled `,
       };
       Promise.all([
         update(taskRef, {
@@ -158,7 +158,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
         push(activityRef, NewActivity),
       ])
         .then(() => {
-          toast.success(`Task has been recheduled to ${nextWeekendStr}`);
+          toast.success(`Task has been recheduled to next week`);
         })
         .catch((err) => {
           toast.error(`Task  rechedule Failed, ${err.message} `);

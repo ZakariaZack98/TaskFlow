@@ -103,11 +103,12 @@ const TaskCard = ({ taskData, boardviewMode, complete }) => {
                   <p className="text-fontSecondery">
                     {GetDateNow() === taskData.date
                       ? "Today"
-                      : Number(taskData.date.split(" ")[2]) -
-                        Number(GetDateNow().split(" ")[2]) ===
-                        1
-                        ? "Tomorrow"
-                        : taskData.date}
+                      : new Date(new Date().setDate(new Date().getDate() + 1)).toDateString().includes(taskData.date)
+                      ? 'Tomorrow'
+                      : new Date(new Date().setDate(new Date().getDate() - 1)).toDateString().includes(taskData.date)
+                      ? 'Yesterday'
+                      : date
+                    }
                   </p>
                 </div>
               </div>

@@ -21,16 +21,24 @@ import { signOut } from "firebase/auth";
 import { GetMilliseconds } from "../../utils/utils";
 import { FaRegCircleCheck } from "react-icons/fa6";
 
-const Sidebar = ({
-  userName = auth.currentUser?.displayName || "N/A",
-  imgUrl = auth?.currentUser?.photoURL ||
-    "https://images.pexels.com/photos/31630076/pexels-photo-31630076/free-photo-of-historic-street-scene-in-lisbon-with-cobblestones.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load",
-  category = [],
-}) => {
+const Sidebar = ({}) => {
   const todayMs = GetMilliseconds(new Date().toDateString());
   const projects = _.projects;
-  const { allTaskData, setAllTaskData, allCompletedTask, setAllCompletedTask } = useContext(TaskContext);
+  const {currentUser, setCurrentUser, allTaskData, setAllTaskData, allCompletedTask, setAllCompletedTask } = useContext(TaskContext);
   const [openProfilePopUp, setOpenProfilePopUp] = useState(false);
+
+  // TODO: FETCH USER DATA FOR REAL TIME UPDATE
+    useEffect(() => {
+      const uid = auth.currentUser?.uid;
+      if (!uid) return;
+      const userRef = ref(db, `users/${uid}`);
+      onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+          setCurrentUser(snapshot.val());
+        }
+      });
+      
+    }, []);
 
   /**
    * TODO: FETCH ALL TASKS DATA FROM THE DATABASE AFTER USER AUTHENTICATION ==============
@@ -124,11 +132,10 @@ const Sidebar = ({
           <div className="w-[30px] h-[30px] rounded-full ">
             <img
               className="w-full h-full object-cover rounded-full"
-              src={imgUrl}
-              alt="jd"
+              src={currentUser?.profile_picture || auth.currentUser?.photoURL || "https://i.pravatar.cc/300"}
             />
           </div>
-          <h2 className="text-xl">{userName}</h2>
+          <h2 className="text-xl">{auth.currentUser?.displayName || currentUser?.username}</h2>
           <span>
             <FaAngleDown />
           </span>
@@ -152,7 +159,10 @@ const Sidebar = ({
           <div className="border-b border-b-fontSecondery pb-2 ">
             {/* name part */}
             <div
-              onClick={() => navigate("/profile")}
+              onClick={() => {
+                navigate("/profile");
+                setOpenProfilePopUp(false);
+              }}
               className="flex group items-center hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer "
             >
               <div className="flex items-center gap-2 ">
@@ -256,14 +266,14 @@ const Sidebar = ({
                   <span
                     className={` text-fontSecondery transition-all text-xl ${
                       project === "Personal"
-                        ? "text-blue-500"
+                        ? "text-pink-500"
                         : project === "Shopping"
                         ? "text-green-500"
                         : project === "Works"
                         ? "text-orange-500"
                         : project === "Errands"
                         ? "text-shadow-cyan-700"
-                        : "text-gray-800"
+                        : "text-blue-500"
                     }`}
                   >
                     <CiHashtag />

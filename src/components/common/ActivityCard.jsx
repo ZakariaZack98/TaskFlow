@@ -50,7 +50,7 @@ const ActivityCard = ({ activityData }) => {
           />
         </picture>
         <div className="relative">
-          <div className={`absolute bottom-3 -left-6 rounded-full flex justify-center items-center w-5 h-5 ${activityData.type === 'delete' ? 'bg-red-500' : activityData.type === 'completion' ? 'bg-green-600' : 'bg-blue-500'} text-white`}>
+          <div className={`absolute bottom-3 -left-6 rounded-full flex justify-center items-center w-5 h-5 ${activityData.type === 'delete' ? 'bg-red-500' : activityData.type === 'completion' ? 'bg-green-600' : activityData.type === 'reschedule' ? 'bg-cyan-800' : 'bg-blue-500'} text-white`}>
             <span className='text-sm'>
               {activityIcons[activityData.type]}
             </span>
@@ -60,7 +60,7 @@ const ActivityCard = ({ activityData }) => {
           <p className="font-medium">
             {activityData.message} <strong>{activityData.taskTitle}</strong>
             {(activityData.taskDate || activityData.taskPriority || activityData.taskProject || activityData.comment || activityData.motherTaskTitle) && (
-              <span className="conditional"> {activityData.comment ? ':' : activityData.motherTaskTitle ? 'under' : 'to'} <span className="font-bold">{activityData.taskDate || activityData.taskPriority || activityData.taskProject || activityData.comment || activityData.motherTaskTitle}</span></span>
+              <span className="conditional"> {activityData.comment ? ':' : activityData.motherTaskTitle ? 'under' : 'to'} <span className="font-bold">{new Date(new Date().setDate(new Date().getDate() + 1)).toDateString().includes(activityData.taskDate) ? 'Tomorrow' : new Date().toDateString().includes(activityData.taskDate) ? 'Today' : activityData.taskDate || activityData.taskPriority || activityData.taskProject || activityData.motherTaskTitle || `"${activityData.comment}"`}</span></span>
             )}
           </p>
           <p className="text-sm text-fontSecondery">

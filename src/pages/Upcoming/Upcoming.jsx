@@ -31,7 +31,7 @@ const Upcoming = () => {
 
               <div className="taskList flex flex-col gap-y-3 my-3 ">
                 {
-                  datesWithWorks?.map(date => <TasklistSection key={date} title={date} taskData={upcomingTasks?.filter(task => task.date === date)} />)
+                  datesWithWorks?.map(date => <TasklistSection key={date} title={new Date(new Date().setDate(new Date().getDate() + 1)).toDateString().includes(date) ? 'Tomorrow' : date} taskData={upcomingTasks?.filter(task => task.date === date)} />)
                 }
               </div>
             </div>
