@@ -82,7 +82,7 @@ const Inbox = () => {
         }
       </div>
       <div className={!boardView ? "heading w-6/10 mx-auto pb-5 flex justify-between items-start" : "heading w-[90%] mx-auto pb-5 flex justify-between items-center"}>
-        <div className="left">
+        <div className="left w-full">
           <h1 className='text-3xl font-bold'>Inbox</h1>
           <AddTaskPrompt />
         </div>

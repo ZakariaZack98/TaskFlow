@@ -98,7 +98,7 @@ const AddTaskPrompt = ({ isSubTask, motherTaskId }) => {
   }
 
   return (
-    <div className='relative'>
+    <div className='relative w-full'>
       <div className="flex items-center gap-x-2 cursor-pointer mt-5" onClick={() => setOpenPrompt(prev => !prev)}>
         <span className='text-accentMain text-2xl'>
           <FaPlusCircle />
@@ -111,7 +111,7 @@ const AddTaskPrompt = ({ isSubTask, motherTaskId }) => {
       </div>
       {
         openPrompt && (
-          <div className={`rounded-lg ps-3 pt-3 pe-3 ${isSubTask ? 'pb-3 -translate-y-10 min-w-[35dvw]' : 'min-w-180'} w-full bg-white border border-fontSecondery flex flex-col gap-y-1 mt-3 absolute z-50 `} style={{ boxShadow: '0 0 5px 5px rgba(0, 0, 0, 0.1)' }}>
+          <div className={`rounded-lg ps-3 pt-3 pe-3 ${isSubTask ? 'pb-3 -translate-y-10 min-w-[35dvw]' : 'w-full'} w-full bg-white border border-fontSecondery flex flex-col gap-y-1 mt-3 absolute z-50 `} style={{ boxShadow: '0 0 5px 5px rgba(0, 0, 0, 0.1)' }}>
             <span className='absolute right-4 top-4 text-accentMain text-2xl cursor-pointer' onClick={() => setOpenPrompt(false)}>
               <IoMdCloseCircle />
             </span>

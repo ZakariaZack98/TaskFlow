@@ -51,129 +51,134 @@ const TaskCard = ({ taskData, boardviewMode }) => {
   };
 
   return (
-    <div className="mt-2">
+    <>
       {openTaskPage && (
         <TaskPage taskData={taskData} setOpenTaskPage={setOpenTaskpage} />
       )}
-      {openEditPrompt && (
-        <EditTaskPrompt
-          taskData={taskData}
-          setOpenEditPrompt={setOpenEditPrompt}
-        />
-      )}
-      <div
-        className="flex justify-between items-start cursor-pointer pb-3"
-        onMouseOver={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-      >
-        <div className="left flex items-start">
-          <div className="flex  gap-x-1 ">
-            <div className="flex items-start translate-y-1">
-              <span className={`text-xl ${hover ? "visible" : "invisible"}`}>
-                <PiDotsSixVerticalBold />
-              </span>
-              <span onClick={() => MarkAsComplete(taskData)}>
-                <RoundedCheckbox />
-              </span>
-            </div>
-            <div
-              className="flex flex-col"
-              onClick={() => setOpenTaskpage(true)}
-            >
-              <div className="flex items-center gap-x-2">
-                <p>{taskData.title}</p>
-                {
-                  //? OVERDUE TAG IF DEADLINE HAVE CROSSED ===
-                  taskData.deadline <
-                  GetMilliseconds(new Date().toDateString()) && (
-                    <span className="text-sm px-1 rounded border-2 border-red-600 text-red-600 font-semibold">
-                      overdue
-                    </span>
-                  )
-                }
-              </div>
-              <div className="flex justify-start items-center text-sm gap-x-2">
-                <span>
-                  <SlCalender />
+      <div className="relative mt-2 w-full">
+        {openEditPrompt && (
+          <div className="w-full absolute top-0 left-0">
+            <EditTaskPrompt
+              taskData={taskData}
+              setOpenEditPrompt={setOpenEditPrompt}
+            />
+          </div>
+        )}
+        <div
+          className="flex justify-between items-start cursor-pointer pb-3"
+          onMouseOver={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+        >
+
+          <div className="left flex items-start">
+            <div className="flex  gap-x-1 ">
+              <div className="flex items-start translate-y-1">
+                <span className={`text-xl ${hover ? "visible" : "invisible"}`}>
+                  <PiDotsSixVerticalBold />
                 </span>
-                <p className="text-fontSecondery">
-                  {GetDateNow() === taskData.date
-                    ? "Today"
-                    : Number(taskData.date.split(" ")[2]) -
-                      Number(GetDateNow().split(" ")[2]) ===
-                      1
-                      ? "Tomorrow"
-                      : taskData.date}
-                </p>
+                <span onClick={() => MarkAsComplete(taskData)}>
+                  <RoundedCheckbox />
+                </span>
+              </div>
+              <div
+                className="flex flex-col"
+                onClick={() => setOpenTaskpage(true)}
+              >
+                <div className="flex items-center gap-x-2">
+                  <p>{taskData.title}</p>
+                  {
+                    //? OVERDUE TAG IF DEADLINE HAVE CROSSED ===
+                    taskData.deadline <
+                    GetMilliseconds(new Date().toDateString()) && (
+                      <span className="text-sm px-1 rounded border-2 border-red-600 text-red-600 font-semibold">
+                        overdue
+                      </span>
+                    )
+                  }
+                </div>
+                <div className="flex justify-start items-center text-sm gap-x-2">
+                  <span>
+                    <SlCalender />
+                  </span>
+                  <p className="text-fontSecondery">
+                    {GetDateNow() === taskData.date
+                      ? "Today"
+                      : Number(taskData.date.split(" ")[2]) -
+                        Number(GetDateNow().split(" ")[2]) ===
+                        1
+                        ? "Tomorrow"
+                        : taskData.date}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="right flex flex-col justify-center items-center">
-          <div
-            className={`relative icons flex items-center gap-x-3 text-xl text-fontSecondery ${hover ? "visible" : "invisible"
-              }`}
-          >
-            <span
-              className="text-2xl hover:text-accentMain"
-              onClick={() => setOpenEditPrompt((prev) => !prev)}
+          <div className="right flex flex-col justify-center items-center">
+            <div
+              className={`relative icons flex items-center gap-x-3 text-xl text-fontSecondery ${hover ? "visible" : "invisible"
+                }`}
             >
-              <GoPencil />
-            </span>
-            <span
-              className={`text-2xl hover:text-accentMain relative `}
-              onClick={() => setRecheduleMode(!recheduleMode)}
-            >
-              <MdOutlineDateRange />
               <span
-                className={
-                  `absolute top-10 -left-50` +
-                  (recheduleMode ? " visible" : " invisible")
-                }
+                className="text-2xl hover:text-accentMain"
+                onClick={() => setOpenEditPrompt((prev) => !prev)}
               >
-                <CalendarPopup
-                  deadline={taskData?.deadline}
-                  onSelect={(selectedDate) => {
-                    console.log(selectedDate.toDateString());
-                    const selectedDateStr = selectedDate
-                      .toDateString()
-                      .split(" ")
-                      .slice(0, 3)
-                      .join(" "); //FORMATTING FOR DATABASE
-                    setDate(selectedDateStr);
-                    handleRechedule(taskData.id, selectedDateStr);
-                  }}
-                />
+                <GoPencil />
               </span>
-            </span>
-            <span className=" hover:text-accentMain">
-              <BsFillTrash3Fill onClick={() => RemoveTask(taskData)} />
-            </span>
-            <span className=" hover:text-accentMain relative">
-              {
-                showTaskAction ? (
-                  <IoMdCloseCircleOutline
-                    onClick={() => setShowTaskAction((prev) => !prev)}
+              <span
+                className={`text-2xl hover:text-accentMain relative `}
+                onClick={() => setRecheduleMode(!recheduleMode)}
+              >
+                <MdOutlineDateRange />
+                <span
+                  className={
+                    `absolute top-10 -left-50` +
+                    (recheduleMode ? " visible" : " invisible")
+                  }
+                >
+                  <CalendarPopup
+                    deadline={taskData?.deadline}
+                    onSelect={(selectedDate) => {
+                      console.log(selectedDate.toDateString());
+                      const selectedDateStr = selectedDate
+                        .toDateString()
+                        .split(" ")
+                        .slice(0, 3)
+                        .join(" "); //FORMATTING FOR DATABASE
+                      setDate(selectedDateStr);
+                      handleRechedule(taskData.id, selectedDateStr);
+                    }}
                   />
-                ) : (
-                  <PiDotsThreeOutline
-                    onClick={() => setShowTaskAction((prev) => !prev)}
-                  />
-                )
-              }
-              {showTaskAction && (
-                <div className={`absolute top-6 -left-55`}>
-                  <TaskAction
-                    taskDataa={taskData}
-                    showTaskAction={setShowTaskAction}
-                  />
-                </div>
-              )}
-            </span>
+                </span>
+              </span>
+              <span className=" hover:text-accentMain">
+                <BsFillTrash3Fill onClick={() => RemoveTask(taskData)} />
+              </span>
+              <span className=" hover:text-accentMain relative">
+                {
+                  showTaskAction ? (
+                    <IoMdCloseCircleOutline
+                      onClick={() => setShowTaskAction((prev) => !prev)}
+                    />
+                  ) : (
+                    <PiDotsThreeOutline
+                      onClick={() => setShowTaskAction((prev) => !prev)}
+                    />
+                  )
+                }
+                {showTaskAction && (
+                  <div className={`absolute top-6 -left-55`}>
+                    <TaskAction
+                      taskDataa={taskData}
+                      showTaskAction={setShowTaskAction}
+                    />
+                  </div>
+                )}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

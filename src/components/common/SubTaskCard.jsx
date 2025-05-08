@@ -14,7 +14,7 @@ const SubTaskCard = ({ subTaskData, motherTaskId }) => {
     const subTaskRef = ref(db, `tasks/${auth.currentUser?.uid}/${motherTaskId}/subTasks/${subTaskData.id}`)
     try {
       await remove(subTaskRef);
-      toast.warn(`Task deleted`)
+      toast.warn(`Sub-task deleted`)
     } catch (error) {
       toast.error('Error deleting task', error.message)
     }

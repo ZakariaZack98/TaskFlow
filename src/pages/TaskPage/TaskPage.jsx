@@ -10,7 +10,7 @@ import _ from "../../lib/lib";
 import CommentCard from "../../components/common/CommentCard";
 import SubTaskCard from "../../components/common/SubTaskCard"; // Make sure this import exists
 import { GetDateNow, GetMilliseconds, GetTimeNow } from "../../utils/utils";
-import { onValue, ref, set } from "firebase/database";
+import { onValue, push, ref, set } from "firebase/database";
 import { auth, db } from "../../../Database/FirebaseConfig";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import AddTaskPrompt from "../../components/common/AddTaskPrompt";
@@ -20,6 +20,7 @@ import LocationPrompt from "../../components/taskpage/LocationPrompt";
 import { CgCloseO } from "react-icons/cg";
 import { IoMdAlarm } from "react-icons/io";
 import { IoLocationOutline } from "react-icons/io5";
+import { toast } from "react-toastify";
 
 const TaskPage = ({ taskData, setOpenTaskPage }) => {
   const [currentTaskData, setCurrentTaskData] = useState({});
@@ -156,12 +157,22 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
     updatedTask.deadline = GetMilliseconds(date + ` ${new Date().toDateString().split(' ')[3]}`);
     updatedTask.reminder = reminder;
     updatedTask.location = location;
+    const newActivity = {
+      createdAt: GetTimeNow(),
+      timeStamp: Date.now(),
+      type: 'update',
+      taskId: taskData.id,
+      taskTitle: taskData.title,
+      message: 'You have updated '
+    };
     const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskData.id}`);
+    const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
     try {
-      await set(taskRef, updatedTask);
-      console.log('Task updated successfully')
+      await Promise.all([set(taskRef, updatedTask), push(activityRef, newActivity)]);
+      toast.success('Task updated.')
     } catch (error) {
-      console.error(error.message)
+      toast.error('Task update failed: ', error);
+      console.error(error);
     } finally {
       setOpenTaskPage(false);
     }
@@ -335,7 +346,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                   <ProjectSelector project={project} setProject={setProject} />
                 </div>
                 {/* ================================= DATE SELECTION ===================================== */}
-                <div className="date cursor-pointer relative" >
+                <div className="date cursor-pointer relative border-b border-[rgba(0,0,0,0.14)]">
                   <p className="text-sm text-secondary translate-y-2" >Date</p>
                   <DateSelector date={date} setDate={setDate} deadline={taskData?.deadline} />
                 </div>
@@ -379,7 +390,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                   </div>
                   {
                     location.length !== 0 && (
-                      <div div className="locationLabel flex items-center gap-x-2 text-fontSecondery my-3">
+                      <div div className="locationLabel flex items-center gap-x-2 text-fontSecondery my-1">
                         <span className="text-xl">
                           <IoLocationOutline />
                         </span>
@@ -389,8 +400,8 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                   }
                   {
                     openLocationPrompt && (
-                      <div className="absolute top-9 left-0 w-full">
-                        <LocationPrompt location={location} setLocation={setLocation} setOpenLocationPrompt={setOpenLocationPrompt}/>
+                      <div className="absolute top-7 left-0 w-full">
+                        <LocationPrompt location={location} setLocation={setLocation} setOpenLocationPrompt={setOpenLocationPrompt} />
                       </div>
                     )
                   }

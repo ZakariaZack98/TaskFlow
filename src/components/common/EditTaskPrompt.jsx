@@ -42,9 +42,8 @@ const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
     };
     const taskRef = ref(db, `tasks/${auth.currentUser?.uid}/${taskData.id}`);
     const activityRef = ref(db, `/activity/${auth.currentUser?.uid}`);
-    const promises = [set(taskRef, updatedTask), push(activityRef, newActivity)]
     try {
-      await Promise.all(promises);
+      await Promise.all([set(taskRef, updatedTask), push(activityRef, newActivity)]);
       toast.success('Task has been updated successfully')
     } catch (err) {
       toast.error("Error updating task:", err.message);
@@ -60,7 +59,7 @@ const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
 
   return (
     <div
-      className="absolute bg-white w-[40%] cursor-pointer ps-3 pt-3 pe-3 rounded-xl border z-30"
+      className="relative bg-white w-full  cursor-pointer ps-3 pt-3 pe-3 mb-3 rounded-xl border z-50"
       style={{ boxShadow: "0 0 5px 5px rgba(0, 0, 0, 0.1)" }}
     >
       <span

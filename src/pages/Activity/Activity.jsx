@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ActivitySection from '../../components/common/ActivitySection';
 import { get, ref } from 'firebase/database';
 import { auth, db } from '../../../Database/FirebaseConfig';
+import { TaskContext } from '../../contexts/TaskContext';
 
 const Activity = () => {
+  const {allTaskData} = useContext(TaskContext);
   const [activityDataArr, setActivityDataArr] = useState([]);
   const [datesArr, setDatesArr] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +29,7 @@ const Activity = () => {
         );
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [allTaskData]);
 
   return (
     <div className="w-6/10 h-full mx-auto">

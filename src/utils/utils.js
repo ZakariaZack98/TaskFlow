@@ -31,10 +31,13 @@ export const MarkAsComplete = task => {
     type: 'completion',
     taskId: task.id,
     taskTitle: task.title,
-    message: `You have completed a task- `
+    message: `You have completed `
   }
   setTimeout(() => {
     Promise.all([set(taskStatusRef, 'completed'), push(activityRef, newActivity)])
+    .then(() => {
+      toast.success('Task marked as complete');
+    })
     .catch(console.error)
   }, 700);
 }
@@ -59,4 +62,5 @@ export const MarkAsComplete = task => {
     .then(() => {
       toast.warning('Task has been deleted')
     })
+    .catch(error => toast.error('Error deleting task', error))
   };

@@ -6,7 +6,6 @@ import { GoProjectSymlink } from "react-icons/go";
 import { MdOutlineNextWeek, MdOutlineWeekend } from "react-icons/md";
 import _ from "../../lib/lib";
 import { FaFlag, FaRegWindowRestore } from "react-icons/fa";
-import { LuAlarmClock } from "react-icons/lu";
 import {
   IoDuplicateOutline,
   IoExtensionPuzzleOutline,
@@ -39,15 +38,12 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
     const activityRef = ref(db, `activity/${auth.currentUser?.uid}`);
     if (e.target.textContent === "today") {
       // set the tasks date (text format) & tasks deadline (milisecond format) to today
-
       const todayStr = new Date()
         .toDateString()
         .split(" ")
         .slice(0, 3)
         .join(" ");
-
-      const today = new Date();
-      const todayMilliseconds = today.getTime();
+      const todayMilliseconds = new Date().setHours(0,0,0,0);
       const NewActivity = {
         createdAt: GetTimeNow(),
         timeStamp: Date.now(),
@@ -70,7 +66,6 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
       update(taskRef, { date: todayStr, deadline: todayMilliseconds });
     } else if (e.target.textContent === "tomorrow") {
       // set the tasks date (text format) & tasks deadline (milisecond format) to tomorrow
-
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(today.getDate() + 1);
@@ -101,14 +96,11 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
         });
     } else if (e.target.textContent === "weekend") {
       // set the tasks date (text format) & tasks deadline (milisecond format) to next fridayconst
-
       const today = new Date();
-
       const weekend = new Date(today);
       const day = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 5 = Friday
       const daysToFriday = (5 - day + 7) % 7 || 7; //how many days to  friday
       weekend.setDate(today.getDate() + daysToFriday); //to add today and days left for weekend
-
       const weekendStr = weekend
         .toDateString()
         .split(" ")
@@ -139,14 +131,10 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
         });
     } else if (e.target.textContent === "next week") {
       // set the tasks date (text format) & tasks deadline (milisecond format) to 7 days later from today
-
       const today = new Date();
       const nextWeekend = new Date(today);
-
       const day = today.getDay();
-
       nextWeekend.setDate(today.getDate() + 7);
-
       const nextWeekendStr = nextWeekend
         .toDateString()
         .split(" ")
@@ -176,9 +164,6 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
           toast.error(`Task  rechedule Failed, ${err.message} `);
         });
     }
-    /**
-     * ? NOTE: if you call GetMiliSeconds('Tuesday 6 May 2025') you will get miliseconds of 6th May. The arg's date format should be same as New Date().toDateString()'s formatt
-     * */
   };
 
   // todo updatePriority function apply
@@ -250,7 +235,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
   };
 
   return (
-    <div>
+    <div className="relative z-50">
       <div className="relative">
         {openEditPrompt && (
           <div className="absolute top-0 -left-[230%] z-50 min-w-450 text-fontSecondery">
@@ -269,7 +254,6 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
       >
         {/* edit top part */}
         <div className="border-b border-b-fontSecondery pb-2 ">
-          {/* edit part */}
           <div
             onClick={() => setOpenEditPrompt((prev) => !prev)}
             className="flex group items-center justify-between hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer "
@@ -278,11 +262,9 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
               <span className="text-fontSecondery">
                 <CiEdit />
               </span>
-              <p className="text-fontSecondery">Edit</p>
+              <p className="text-fontSecondery">Edit Task</p>
             </div>
-            <p className="text-fontSecondery text-sm">CntlE</p>
           </div>
-          {/* go to project part */}
           <div
             onClick={() => navigate("/project")}
             className="flex group items-center justify-between  hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer "
@@ -293,44 +275,40 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
               </span>
               <p className="text-fontSecondery">Go to project</p>
             </div>
-            <p className="text-fontSecondery text-sm">↑G</p>
           </div>
         </div>
         {/* date and priority */}
-        <div className=" mt-3 flex flex-col gap-y-2">
+        <div className=" flex flex-col border-b border-fontSecondery pb-3">
           {/* date part */}
-          <div className="mt-2 flex flex-col gap-y-2">
-            {/* date text */}
+          <div className="mt-2 flex flex-col">
             <div className="flex items-center justify-between ">
-              <p className="text-black opacity-80">Date</p>
-              <p className="text-fontSecondery text-sm">T</p>
+              <p className="text-black opacity-80">Reschedule</p>
             </div>
-            {/* date icons */}
             <div className="flex items-center justify-between">
-              <span className="text-2xl text-green-500">
+              <span className=" text-green-500">
                 <CiCalendar
-                  className="text-3xl"
+                  className="text-[40px] rounded-md py-1 px-2 hover:bg-[rgba(0,0,0,0.11)] duration-200"
                   title="today"
                   onClick={(e) => updateSchedule(e)}
                 />
               </span>
-              <span className="text-2xl text-yellow-500">
+              <span className=" text-yellow-500">
                 <AiOutlineSun
-                  className="text-3xl"
+                  className="text-[40px] rounded-md py-1 px-2 hover:bg-[rgba(0,0,0,0.11)] duration-200"
                   title="tomorrow"
                   onClick={(e) => updateSchedule(e)}
                 />
               </span>
-              <span className="text-2xl text-blue-500">
+              <span className=" text-blue-500">
                 <MdOutlineWeekend
-                  className="text-3xl"
+                  className="text-[40px] rounded-md py-1 px-2 hover:bg-[rgba(0,0,0,0.11)] duration-200"
                   title="weekend"
                   onClick={(e) => updateSchedule(e)}
                 />
               </span>
-              <span className="text-2xl text-purple-500">
+              <span className=" text-purple-500">
                 <MdOutlineNextWeek
-                  className="text-3xl"
+                  className="text-[40px] rounded-md py-1 px-2 hover:bg-[rgba(0,0,0,0.11)] duration-200"
                   title="next week"
                   onClick={(e) => updateSchedule(e)}
                 />
@@ -338,13 +316,11 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
             </div>
           </div>
           {/* priority part */}
-          <div className="mt-2 flex flex-col gap-3">
-            {/* date text */}
+          <div className=" flex flex-col ">
             <div className="flex items-center justify-between ">
               <p className="text-black opacity-80">Priority</p>
-              <p className="text-fontSecondery text-sm">Y</p>
             </div>
-            <div className="flex  items-center gap-7">
+            <div className="flex justify-around items-center gap-7">
               {/* priority  icons */}
               {priorities?.map((priority) => (
                 <span
@@ -369,16 +345,6 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
             </div>
           </div>
         </div>
-        {/* reminders */}
-        <div className="border-b border-b-fontSecondery pb-2 pt-2 mt-4 border-t border-t-fontSecondery hover:bg-gray-200   px-1  rounded cursor-pointer">
-          <div className="flex items-center gap-2 ">
-            <span className="text-fontSecondery">
-              <LuAlarmClock />
-            </span>
-            <p className="text-fontSecondery">Reminders</p>
-          </div>
-        </div>
-        {/* icons part */}
         <div className=" border-b-fontSecondery  mt-1.5 ">
           {/* icon move */}
           <div
@@ -391,9 +357,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
               </span>
               <p className="text-fontSecondery">Move to</p>
             </div>
-            <p className="text-fontSecondery text-sm">V</p>
           </div>
-          {/* icon duplicate */}
           <div
             onClick={handleDuplicate}
             className="flex group items-center justify-between hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer "
@@ -404,9 +368,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
               </span>
               <p className="text-fontSecondery">Duplicate</p>
             </div>
-            <p className="text-fontSecondery text-sm">cntl c</p>
           </div>
-          {/* copy link */}
           <div className="flex group items-center justify-between hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
             <div className="flex items-center gap-2 ">
               <span className="text-fontSecondery">
@@ -414,9 +376,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
               </span>
               <p className="text-fontSecondery">Copy link</p>
             </div>
-            <p className="text-fontSecondery text-sm">C</p>
           </div>
-          {/* new window */}
           <div className="flex group items-center justify-between hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
             <div className="flex items-center gap-2 ">
               <span className="text-fontSecondery">
@@ -424,11 +384,9 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
               </span>
               <p className="text-fontSecondery">Open in new Window</p>
             </div>
-            <p className="text-fontSecondery text-sm">A</p>
           </div>
         </div>
-        {/* extention */}
-        <div className="border-b border-b-fontSecondery pb-2 pt-2 mt-1.5 border-t border-t-fontSecondery  ">
+        <div className="border-b border-b-fontSecondery pb-2 pt-2 mt-1.5 border-t border-t-fontSecondery opacity-50 ">
           <div className="flex items-center gap-2 ">
             <span className="text-fontSecondery">
               <IoExtensionPuzzleOutline />
@@ -436,7 +394,6 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
             <p className="text-fontSecondery">Add Extentions</p>
           </div>
         </div>
-        {/* delete */}
         <div className="flex mt-1.5 group items-center justify-between   hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer ">
           <div
             onClick={() => RemoveTask(taskDataa)}
@@ -447,7 +404,6 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
             </span>
             <p className="text-accentMain">Delete</p>
           </div>
-          <p className="text-fontSecondery text-sm">Delete</p>
         </div>
       </div>
       {/* my project part */}
