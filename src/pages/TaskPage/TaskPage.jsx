@@ -223,7 +223,7 @@ const TaskPage = ({ taskData, setOpenTaskPage }) => {
                 <RoundedCheckbox />
                 <div className="taskName flex flex-col">
                   <p className="font-semibold text-sm">{currentTaskData?.title || "Title Missing"}</p>
-                  <div className="text-[12px] text-fontSecondery">in {currentTaskData?.category || "N/A"}</div>
+                  <div className="text-[12px] text-fontSecondery">in {currentTaskData?.project || "N/A"}</div>
                 </div>
               </div>
               <div className="iconSec flex items-center gap-x-3">

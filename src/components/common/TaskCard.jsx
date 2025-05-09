@@ -129,7 +129,10 @@ const TaskCard = ({ taskData, boardviewMode, complete }) => {
                   </span>
                   <span
                     className={`text-2xl hover:text-accentMain relative `}
-                    onClick={() => setRecheduleMode(!recheduleMode)}
+                    onClick={() => {
+                      setRecheduleMode(prev => !prev);
+                      setShowTaskAction(false);
+                    }}
                   >
                     <MdOutlineDateRange />
                     <span
@@ -160,11 +163,16 @@ const TaskCard = ({ taskData, boardviewMode, complete }) => {
                     { 
                       showTaskAction ? (
                         <IoMdCloseCircleOutline
-                          onClick={() => setShowTaskAction((prev) => !prev)}
+                          onClick={() => {
+                            setShowTaskAction(false);
+                          }}
                         />
                       ) : (
                         <PiDotsThreeOutline
-                          onClick={() => setShowTaskAction((prev) => !prev)}
+                          onClick={() => {
+                            setShowTaskAction(true);
+                            setRecheduleMode(false)
+                          }}
                         />
                       )
                     }

@@ -41,7 +41,7 @@ export default function CalendarPopup({ deadline, onSelect }) {
   };
 
   return (
-    <div className="bg-white p-4 rounded-2xl shadow-xl w-72">
+    <div className="bg-white p-4 rounded-2xl shadow-xl w-72 relative z-50">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <button onClick={prevMonth} className="text-gray-500 hover:text-[#E44332]">&lt;</button>
