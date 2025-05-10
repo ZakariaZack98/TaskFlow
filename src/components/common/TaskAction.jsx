@@ -255,7 +255,7 @@ const TaskAction = ({ taskDataa, showTaskAction }) => {
         {/* edit top part */}
         <div className="border-b border-b-fontSecondery pb-2 ">
           <div
-            onClick={() => setOpenEditPrompt((prev) => !prev)}
+            onClick={() => setOpenEditPrompt(true)}
             className="flex group items-center justify-between hover:bg-gray-200   px-1 p-0.5 rounded cursor-pointer "
           >
             <div className="flex items-center gap-2 ">

@@ -59,7 +59,7 @@ const EditTaskPrompt = ({ taskData, setOpenEditPrompt }) => {
 
   return (
     <div
-      className="relative bg-white w-full  cursor-pointer ps-3 pt-3 pe-3 mb-3 rounded-xl border z-50"
+      className="relative bg-white w-full max-w-230  cursor-pointer ps-3 pt-3 pe-3 mb-3 rounded-xl border z-50"
       style={{ boxShadow: "0 0 5px 5px rgba(0, 0, 0, 0.1)" }}
     >
       <span

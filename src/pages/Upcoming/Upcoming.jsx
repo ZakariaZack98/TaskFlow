@@ -10,12 +10,14 @@ const Upcoming = () => {
   const [upcomingTasks, setUpcomingTasks] = useState([]);
   const [datesWithWorks, setDateWithWorks] = useState([]);
 
+  // TODO: GETTING ALL UPCOMING TASK DATA
   useEffect(() => {
     setUpcomingTasks(allTaskData.filter(task => task?.deadline > GetMilliseconds(new Date().toDateString())));
   }, [allTaskData])
 
+  // TODO: GETTING ALL THE UNIQUE DATES ON WHICH TASKS ARE ASSIGNED & SORTING THEM BY DEADLINES
   useEffect(() => {
-    setDateWithWorks(Array.from(new Set([...upcomingTasks?.map(task => task?.date)])));
+    setDateWithWorks(Array.from(new Set([...upcomingTasks?.map(task => task?.date)])).sort((a, b) => a.slice(8,10) - b.slice(8,10)));
   }, [upcomingTasks])
 
   return (
