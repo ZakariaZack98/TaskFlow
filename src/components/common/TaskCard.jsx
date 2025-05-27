@@ -15,6 +15,7 @@ import TaskAction from "./TaskAction";
 import { toast } from "react-toastify";
 import { BsFillTrash3Fill } from "react-icons/bs";
 import { IoMdCloseCircleOutline } from "react-icons/io";
+import { FaFlag } from "react-icons/fa6";
 
 const TaskCard = ({ taskData, boardviewMode, complete }) => {
   const [hover, setHover] = useState(false);
@@ -109,6 +110,10 @@ const TaskCard = ({ taskData, boardviewMode, complete }) => {
                       : taskData.date
                     }
                   </p>
+                </div>
+                <div className="flex items-center gap-x-2">
+                  <FaFlag className={taskData.priority === 1 ? 'text-red-500' : taskData.priority === 2 ? 'text-orange-500' : taskData.priority === 3 ? 'text-blue-500' : 'text-green-500'}/>
+                  <p className="text-sm opacity-60">Priority#{taskData.priority}</p>
                 </div>
               </div>
             </div>
