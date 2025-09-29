@@ -5,6 +5,7 @@ import { auth } from "../../Database/FirebaseConfig";
 import { TaskContext, TaskProvider } from "../contexts/TaskContext";
 import { onAuthStateChanged } from "firebase/auth";
 import UserNotVerified from "./common/UserNotVerified";
+import SignIn from "../pages/SignIn/SignIn";
 
 const CommonLayout = () => {
   const location = useLocation();
@@ -31,7 +32,7 @@ const CommonLayout = () => {
       </TaskProvider>
     );
   } else {
-    content = <UserNotVerified />;
+    content = <SignIn />;
   }
 
   return <>{content}</>;

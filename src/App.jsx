@@ -12,6 +12,7 @@ import Activity from "./pages/Activity/Activity";
 import FiltersANDlabels from "./pages/FiltersANDlabels/FiltersANDlabels";
 import Completed from "./pages/Completed/Completed";
 import Profile from "./pages/Profile/Profile";
+import NotFound from "./pages/NotFound/NotFound";
 
 const App = () => {
   return (
@@ -29,7 +30,7 @@ const App = () => {
         </Route>
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
-        <Route path="*" element={<UserNotVerified />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
